@@ -2,7 +2,7 @@ import re
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def procContexto(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
+def procContexto(classe, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog):
     # Tipos de intervenção
     # --------------------------------------------------
     intervCatalog = ['Apreciar','Assessorar','Comunicar','Decidir','Executar','Iniciar']
@@ -24,7 +24,7 @@ def procContexto(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
         if myReg["estado"]!='H' and myReg['procTrans'] not in ['S','N']:
             ListaErros.append('Erro::' + myReg['codigo'] + '::transversalidade desconhecida::' + myReg['procTrans'])
     elif myReg["nivel"] == 3:
-        ListaErros.append('Erro::' + myReg['codigo'] + '::não tem transversalidade preenchida')
+        warningsDic[myReg['codigo']] = "Warning::" + myReg['codigo'] + "::não tem transversalidade preenchida"
     # Donos -----
     if classe["Dono do processo"]:
         donos = brancos.sub('', classe["Dono do processo"])

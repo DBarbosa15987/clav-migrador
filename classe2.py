@@ -1,4 +1,5 @@
 from itertools import islice
+from nanoid import generate
 import pandas as pd
 import json
 import re
@@ -45,7 +46,6 @@ def calcNivel(cod):
 # --------------------------------------------------
 #
 # Processa as notas de aplicação
-from nanoid import generate
 
 def procNotas(notas, codClasse, chave1=None, chave2=None):
     res = []
@@ -104,10 +104,11 @@ def processSheet(sheet, nome):
 
     myClasse = []
     ListaErros = []
+    warningsDic = {}
     ProcHarmonizacao = []
     indN3 = calcSubdivisoes(df)
 
-    for index, row in df.iterrows():
+    for _, row in df.iterrows():
         myReg = {}
         if row["Código"]:
             # Código -----
@@ -117,8 +118,6 @@ def processSheet(sheet, nome):
             # Estado -----
             if row["Estado"]:
                 myReg["estado"] = calcEstado(row["Estado"])
-                if myReg["estado"] == 'H':
-                    ProcHarmonizacao.append( myReg["codigo"])
             else:
                 myReg["estado"] = 'A'
             # Título -----
@@ -127,6 +126,7 @@ def processSheet(sheet, nome):
             else:
                 if myReg["estado"] != 'H':
                     ListaErros.append('Erro::' + myReg['codigo'] + '::classe sem título')
+
             # Descrição -----
             myReg["descricao"] = norm_brancos.sub(' ', str(row["Descrição"]))
             # Notas de aplicação -----
@@ -141,11 +141,14 @@ def processSheet(sheet, nome):
             
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
-                contexto.procContexto(row, myReg, ListaErros, entCatalog, tipCatalog, legCatalog)
+                contexto.procContexto(row, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog)
 
             # Processamento das Decisões
             if (myReg["nivel"] == 3 and not indN3[myReg['codigo']]) or myReg["nivel"] == 4:
                 decisao.procDecisoes(row, myReg, ListaErros, entCatalog, tipCatalog, legCatalog)
+
+            if myReg["estado"] == 'H' and myReg["codigo"] not in warningsDic:
+                ProcHarmonizacao.append(myReg["codigo"])
 
             myClasse.append(myReg)
 
@@ -156,6 +159,9 @@ def processSheet(sheet, nome):
     if len(ListaErros) > 0:
         print("Erros: ")
         print('\n'.join(ListaErros))
+    if len(warningsDic) > 0:
+        print("Warnigns: ")
+        print('\n'.join(warningsDic.values()))
     if len(ProcHarmonizacao) > 0:
         print("Processos em Harmonização: ")
         print('\n'.join(ProcHarmonizacao))

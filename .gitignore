@@ -1,3 +1,4 @@
 files/*.json
 ontologia/*.ttl
 __pycache__
+Makefile
