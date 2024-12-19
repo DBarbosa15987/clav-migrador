@@ -20,7 +20,6 @@ def tiGenTTL():
     fin = open('./files/ti.json')
     termos = json.load(fin)
 
-    # g = Graph(base=uri_ontologia)
     g = Graph()
     g.bind("", ns)
     g.bind("dc", dc)
@@ -46,11 +45,8 @@ def legGenTTL():
     fin = open('./files/leg.json')
     leg = json.load(fin)
 
-    # g = Graph(base=uri_ontologia)
     g = Graph()
     g.bind("", ns)
-    g.bind("dc", dc)
-    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
 
     for l in leg:
         cod = l['codigo']
@@ -85,11 +81,8 @@ def tipologiaGenTTL():
     fin = open('./files/tip.json')
     tipologias = json.load(fin)
 
-    # g = Graph(base=uri_ontologia)
     g = Graph()
     g.bind("", ns)
-    g.bind("dc", dc)
-    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
 
     for t in tipologias:
         sigla = t['sigla']
@@ -114,11 +107,8 @@ def entidadeGenTTL():
     fin = open('./files/ent.json')
     entidades = json.load(fin)
 
-    # g = Graph(base=uri_ontologia)
     g = Graph()
     g.bind("", ns)
-    g.bind("dc", dc)
-    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
 
     for e in entidades:
         sigla = e['sigla']
@@ -171,12 +161,9 @@ def classeGenTTL(c):
                     'Comunicar': 'temParticipanteComunicador','Decidir': 'temParticipanteDecisor',
                     'Executar': 'temParticipanteExecutor','Iniciar': 'temParticipanteIniciador'}
     
-    # g = Graph(base=uri_ontologia)
     g = Graph()
     g.bind("", ns)
-    g.bind("dc", dc)
-    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
-    
+
     for classe in classes:
         print(classe['codigo'])
         # codigo, estado, nível e título
