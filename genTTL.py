@@ -2,6 +2,12 @@ import json
 import re
 from nanoid import generate
 from datetime import date
+from rdflib import Graph, Namespace, Literal, RDF, RDFS, OWL, URIRef
+from rdflib.namespace import RDF,OWL
+
+ns = Namespace("http://jcr.di.uminho.pt/m51-clav#")
+dc = Namespace("http://purl.org/dc/elements/1.1/")
+uri_ontologia = URIRef("http://jcr.di.uminho.pt/m51-clav")
 
 agora = date.today()
 # YY-mm-dd
@@ -12,178 +18,144 @@ dataAtualizacao = agora.strftime("%Y-%m-%d")
 # ------------------------------------------------------
 def tiGenTTL():
     fin = open('./files/ti.json')
-    fout = open('./ontologia/ti.ttl', 'w')
     termos = json.load(fin)
 
-    ttl = ""
-
-    ttl = """@prefix : <http://jcr.di.uminho.pt/m51-clav#> .
-@prefix dc: <http://purl.org/dc/elements/1.1#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix obda: <https://w3id.org/obda/vocabulary#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@base <http://jcr.di.uminho.pt/m51-clav> ."""
-
-    ttl += "\n# -------------- Data de atualização da ontologia ----------\n"
-    ttl += "<http://jcr.di.uminho.pt/m51-clav> dc:date \"" + dataAtualizacao + "\" .\n"
-    ttl += "\n# -------------- TERMOS DE ÍNDICE --------------------------\n"
-
+    # g = Graph(base=uri_ontologia)
+    g = Graph()
+    g.bind("", ns)
+    g.bind("dc", dc)
+    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao)))
+    
     for ti in termos:
         ticod = "ti_" + ti['codigo'] + '_' + generate('abcdef', 6)
-        ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + ticod + '\n'
-        ttl += ":" + ticod + " rdf:type owl:NamedIndividual ,\n"
-        ttl += "\t:TermoIndice ;\n"
-        ttl += "\trdfs:label \"TI: " + ti['termo'] + "\";\n"
-        ttl += "\t:estaAssocClasse :c" + ti['codigo'] + ";\n"
-        ttl += "\t:estado \"Ativo\";\n"
-        ttl += "\t:termo " + "\"" + ti['termo'] + "\"" + ".\n"
+        tiUri = ns[ticod]
+        g.add((tiUri,RDF.type, OWL.NamedIndividual))
+        g.add((tiUri,RDF.type, ns.TermoIndice))
+        g.add((tiUri, RDFS.label, Literal(f"TI: {ti['termo']}")))
+        g.add((tiUri, ns.estaAssocClasse, ns[f"c{ti['codigo']}"]))
+        g.add((tiUri, ns.estado, Literal("Ativo")))
+        g.add((tiUri, ns.termo, Literal(ti['termo'])))
 
-    fout.write(ttl)
     fin.close()
-    fout.close()
+    g.serialize(format="ttl",destination="./ontologia/ti.ttl")
+
 
 # --- Migra a legislação -------------------------------
 # ------------------------------------------------------
 def legGenTTL():
     fin = open('./files/leg.json')
-    fout = open('./ontologia/leg.ttl', 'w')
     leg = json.load(fin)
 
-    ttl = ""
-
-    ttl = """@prefix : <http://jcr.di.uminho.pt/m51-clav#> .
-@prefix dc: <http://purl.org/dc/elements/1.1#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix obda: <https://w3id.org/obda/vocabulary#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@base <http://jcr.di.uminho.pt/m51-clav> ."""
+    # g = Graph(base=uri_ontologia)
+    g = Graph()
+    g.bind("", ns)
+    g.bind("dc", dc)
+    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
 
     for l in leg:
-        ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + l['codigo'] + '\n'
-        ttl += ":leg_" + l['codigo'] + " rdf:type owl:NamedIndividual ,\n"
-        ttl += "\t:Legislacao ;\n"
-        ttl += "\t:codigo \"" + l['codigo'] + "\";\n"
-        ttl += "\trdfs:label \"Leg.: " + l['codigo'] + "\";\n"
-        ttl += "\t:diplomaTipo " + "\"" + l['tipo'] + "\";\n"
-        ttl += "\t:diplomaNumero " + "\"" + l['numero'] + "\";\n"
-        ttl += "\t:diplomaData " + "\"" + l['data'] + "\";\n"
-        ttl += "\t:diplomaSumario " + "\"" + l['sumario'] + "\";\n"
-        ttl += "\t:diplomaEstado " + "\"" + l['estado'] + "\";\n"
-        
+        cod = l['codigo']
+        lcod = "leg_" + cod
+        lUri = ns[lcod]
+        g.add((lUri,RDF.type, OWL.NamedIndividual))
+        g.add((lUri,RDF.type, ns.Legislacao))
+        g.add((lUri,ns.codigo,Literal(cod)))
+        g.add((lUri,RDFS.label, Literal(f"Leg.: {cod}")))
+        g.add((lUri,ns.diplomaTipo,Literal(l['tipo'])))
+        g.add((lUri,ns.diplomaNumero,Literal(l['numero'])))
+        g.add((lUri,ns.diplomaData,Literal(l['data'])))
+        g.add((lUri,ns.diplomaSumario,Literal(l['sumario'])))
+        g.add((lUri,ns.diplomaEstado,Literal(l['estado'])))
+
         if 'fonte' in l:
-            ttl += "\t:diplomaFonte " + "\"" + l['fonte'] + "\";\n"
+            g.add((lUri,ns.diplomaFonte,Literal(l['fonte'])))
 
         if 'entidade' in l:
             for e in l['entidade']:
-                ttl += "\t:temEntidadeResponsavel " + ":ent_" + e + ";\n"
+                g.add((lUri,ns.temEntidadeResponsavel,ns[f"ent_{e}"]))
 
-        ttl += "\t:diplomaLink " + "\"" + l['link'] + "\".\n"
+        g.add((lUri,ns.diplomaLink,Literal(l['link'])))
 
-    fout.write(ttl)
     fin.close()
-    fout.close()
+    g.serialize(format="ttl",destination="./ontologia/leg.ttl")
+
 
 # --- Migra as tipologias ------------------------------
 # ------------------------------------------------------
 def tipologiaGenTTL():
     fin = open('./files/tip.json')
-    fout = open('./ontologia/tip.ttl', 'w')
     tipologias = json.load(fin)
 
-    ttl = ""
-
-    ttl = """@prefix : <http://jcr.di.uminho.pt/m51-clav#> .
-@prefix dc: <http://purl.org/dc/elements/1.1#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix obda: <https://w3id.org/obda/vocabulary#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@base <http://jcr.di.uminho.pt/m51-clav> ."""
+    # g = Graph(base=uri_ontologia)
+    g = Graph()
+    g.bind("", ns)
+    g.bind("dc", dc)
+    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
 
     for t in tipologias:
-        ttl += "###  http://jcr.di.uminho.pt/m51-clav#tip_" + t['sigla'] + '\n'
-        ttl += ":tip_" + t['sigla'] + " rdf:type owl:NamedIndividual ,\n"
-        ttl += "\t\t:TipologiaEntidade ;\n"
-        ttl += "\t:tipEstado \"Ativa\";\n"
-        ttl += "\t:tipSigla " + "\"" + t['sigla'] 
+        sigla = t['sigla']
+        tcod = "tip_" + sigla
+        tUri = ns[tcod]
+        g.add((tUri,RDF.type, OWL.NamedIndividual))
+        g.add((tUri,RDF.type, ns.TipologiaEntidade))
+        g.add((tUri,ns.tipEstado, Literal("Ativa")))
+        g.add((tUri,ns.tipSigla, Literal(sigla)))
         if 'designacao' in t.keys():
-            ttl += "\";\n" + "\t:tipDesignacao " + "\"" + t['designacao'] + "\".\n"
+            g.add((tUri,ns.tipDesignacao, Literal(t['designacao'])))
         else:
-            print("AVISO: a tipologia " + t['sigla'] + " não tem designação definida.")
-            ttl += ".\n"
+            print("AVISO: a tipologia " + sigla + " não tem designação definida.")
 
-    fout.write(ttl)
     fin.close()
-    fout.close()
+    g.serialize(format="ttl",destination="./ontologia/tip.ttl")
+
 
 # --- Migra as entidades -------------------------------
 # ------------------------------------------------------
 def entidadeGenTTL():
     fin = open('./files/ent.json')
-    fout = open('./ontologia/ent.ttl', 'w')
     entidades = json.load(fin)
 
-    ttl = ""
-
-    ttl = """@prefix : <http://jcr.di.uminho.pt/m51-clav#> .
-@prefix dc: <http://purl.org/dc/elements/1.1#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix obda: <https://w3id.org/obda/vocabulary#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@base <http://jcr.di.uminho.pt/m51-clav> ."""
+    # g = Graph(base=uri_ontologia)
+    g = Graph()
+    g.bind("", ns)
+    g.bind("dc", dc)
+    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
 
     for e in entidades:
-        ttl += "###  http://jcr.di.uminho.pt/m51-clav#ent_" + e['sigla'] + '\n'
-        ttl += ":ent_" + e['sigla'] + " rdf:type owl:NamedIndividual ,\n"
-        ttl += "\t\t:Entidade ;\n"
-
-        ttl += "\t:entSigla " + "\"" + e['sigla'] + "\";\n"
-        ttl += "\t:entDesignacao " + "\"" + e['designacao'] + "\";\n"
+        sigla = e['sigla']
+        ecod = "ent_" + sigla
+        eUri = ns[ecod]
+        g.add((eUri,RDF.type, OWL.NamedIndividual))
+        g.add((eUri,RDF.type, ns.Entidade))
+        g.add((eUri,ns.entSigla, Literal(sigla)))
+        g.add((eUri,ns.entDesignacao, Literal(e['designacao'])))
 
         if 'estado' in e:
-            ttl += "\t:entEstado " + "\"Inativa\";\n"
+            g.add((eUri,ns.entEstado, Literal("Inativa")))
         else:
-            ttl += "\t:entEstado " + "\"Ativa\";\n"
+            g.add((eUri,ns.entEstado, Literal("Ativa")))
             
         if 'sioe' in e:
-            ttl += "\t:entSIOE " + "\"" + e['sioe'] + "\";\n"
+            g.add((eUri,ns.entSIOE, Literal(e['sioe'])))
         
         if 'dataCriacao' in e:
-            ttl += "\t:entDataCriacao " + "\"" + e['dataCriacao'] + "\";\n"
+            g.add((eUri,ns.entDataCriacao, Literal(e['dataCriacao'])))
             
         if 'dataExtincao' in e:
-            ttl += "\t:entDataExtincao " + "\"" + e['dataExtincao'] + "\";\n"
-        
-        ttl += "\t:entInternacional " + "\"" + e['internacional'] + "\".\n"    
-        
+            g.add((eUri,ns.entDataExtincao, Literal(e['dataExtincao'])))
+
+        g.add((eUri,ns.entInternacional, Literal(e['internacional'])))
         if 'tipologias' in e:
             for tip in e['tipologias']:
-                ttl += ":ent_" + e['sigla'] + " :pertenceTipologiaEnt " + ":tip_" + tip + " .\n"
+                g.add((ns[f"ent_{sigla}"],ns.pertenceTipologiaEnt,ns[f"tip_{tip}"]))
 
-    fout.write(ttl)
     fin.close()
-    fout.close()
+    g.serialize(format="ttl",destination="./ontologia/ent.ttl")
+
 
 # --- Migra uma classe ---------------------------------
 # ------------------------------------------------------
 def classeGenTTL(c):
     fin = open('./files/' + c + '.json')
-    fout = open('./ontologia/' + c + '.ttl', 'w')
     classes = json.load(fin)
 
     # Carregam-se os catálogos 
@@ -199,87 +171,88 @@ def classeGenTTL(c):
                     'Comunicar': 'temParticipanteComunicador','Decidir': 'temParticipanteDecisor',
                     'Executar': 'temParticipanteExecutor','Iniciar': 'temParticipanteIniciador'}
     
-    ttl = """
-@prefix : <http://jcr.di.uminho.pt/m51-clav#> .
-@prefix dc: <http://purl.org/dc/elements/1.1#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix obda: <https://w3id.org/obda/vocabulary#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@base <http://jcr.di.uminho.pt/m51-clav> .
-"""
+    # g = Graph(base=uri_ontologia)
+    g = Graph()
+    g.bind("", ns)
+    g.bind("dc", dc)
+    g.add((uri_ontologia, dc.date, Literal(dataAtualizacao))) # datatype=XSD.date
     
     for classe in classes:
         print(classe['codigo'])
         # codigo, estado, nível e título
-        ttl += f"""
-###  http://jcr.di.uminho.pt/m51-clav#c{ classe['codigo'] }
-:c{ classe['codigo'] } rdf:type owl:NamedIndividual ;
-\t:classeStatus '{ classe['estado'] }';
-\trdf:type :Classe_N{classe['nivel']} ;
-\t:codigo '{ classe['codigo'] }' ;
-\t:titulo '{ classe['titulo'] }' ;\n"""
+        codigoUri = ns[f"c{classe['codigo']}"] 
+        g.add((codigoUri,RDF.type, OWL.NamedIndividual))
+        g.add((codigoUri,ns.classeStatus, Literal(classe['estado'])))
+        g.add((codigoUri,RDF.type, ns[f"Classe_N{classe['nivel']}"]))
+        g.add((codigoUri,ns.codigo, Literal(classe['codigo'])))
+        g.add((codigoUri,ns.titulo, Literal(classe['titulo'])))
+        
         # Relação hierárquica-------------------------------
         if classe['nivel'] == 1:
-            ttl += "\t:pertenceLC :lc1 ;\n"
-            ttl += "\t:temPai :lc1 ;\n"
+            g.add((codigoUri,ns.pertenceLC, ns.lc1))
+            g.add((codigoUri,ns.temPai, ns.lc1))
         elif classe['nivel'] in [2,3,4]:
             partes = classe['codigo'].split('.')
             pai = '.'.join(partes[0:-1])
-            ttl += "\t:pertenceLC :lc1 ;\n"
-            ttl += "\t:temPai :c" + pai + " ;\n"
+            g.add((codigoUri,ns.pertenceLC, ns.lc1))
+            g.add((codigoUri,ns.temPai, ns[f"c{pai}"]))
+        
         # ------------------------------------------------
         # Descrição
         if classe["descricao"]:
-            ttl += "\t:descricao '" + classe["descricao"] + "' .\n"
+            g.add((codigoUri,ns.descricao, Literal(classe["descricao"])))
+
         # ------------------------------------------------
         # Notas de Aplicação -----------------------------
         if 'notasAp' in classe.keys():
             for n in classe['notasAp']:
-                ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + n['idNota'] + "\n"
-                ttl += ":" + n['idNota'] + " rdf:type owl:NamedIndividual ,\n"
-                ttl += "\t\t:NotaAplicacao ;\n"
-                ttl += "\trdfs:label \"Nota de Aplicação\";\n"
-                ttl += "\t:conteudo " + "\"" + n['nota'] + "\".\n\n"
+
+                notaUri = ns[n['idNota']] 
+                g.add((notaUri,RDF.type, OWL.NamedIndividual))
+                g.add((notaUri,RDF.type, ns.NotaAplicacao))
+                g.add((notaUri,RDFS.label, Literal("Nota de Aplicação")))
+                g.add((notaUri,ns.conteudo, Literal(n['nota'])))
                 # criar as relações com das notas de aplicação com a classe
-                ttl += ":c" + classe['codigo'] +" :temNotaAplicacao " + ":" + n['idNota'] + " .\n\n"
+                g.add((codigoUri,ns.temNotaAplicacao, ns[n['idNota']]))
+
         # ------------------------------------------------
         # Exemplos de Notas de Aplicação -----------------
         if 'exemplosNotasAp' in classe.keys():
             for e in classe['exemplosNotasAp']:
-                ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + e['idExemplo'] + "\n"
-                ttl += ":" + e['idExemplo'] + " rdf:type owl:NamedIndividual ,\n"
-                ttl += "\t\t:ExemploNotaAplicacao ;\n"
-                ttl += "\trdfs:label \"Exemplo de nota de aplicação\";\n"
-                ttl += "\t:conteudo " + "\"" + e['exemplo'] + "\".\n\n"
+
+                exemploUri = ns[e['idExemplo']]
+                g.add((exemploUri,RDF.type, OWL.NamedIndividual))
+                g.add((exemploUri,RDF.type, ns.ExemploNotaAplicacao))
+                g.add((exemploUri,RDFS.label, Literal("Exemplo de nota de aplicação")))
+                g.add((exemploUri,ns.conteudo, Literal(e['exemplo'])))
                 # criar as relações com das notas de aplicação com a classe
-                ttl += ":c" + classe['codigo'] +" :temExemploNA " + ":" + e['idExemplo'] + " .\n\n"
+                g.add((codigoUri,ns.temExemploNA, ns[e['idExemplo']]))
+
         # ------------------------------------------------
         # Notas de Exclusão ------------------------------
         if 'notasEx' in classe.keys():
             for n in classe['notasEx']:
-                ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + n['idNota'] + "\n"
-                ttl += ":" + n['idNota'] + " rdf:type owl:NamedIndividual ,\n"
-                ttl += "\t\t:NotaExclusao ;\n"
-                ttl += "\t:label \"Nota de Exclusão\";\n"
+
+                notaUri = ns[n['idNota']]
+                g.add((notaUri,RDF.type, OWL.NamedIndividual))
+                g.add((notaUri,RDF.type, ns.NotaExclusao))
+                g.add((notaUri,RDFS.label, Literal("Nota de Exclusão")))
                 nota = re.sub(r'\"', '\"', n['nota'])
-                ttl += "\t:conteudo " + "\"" + nota + "\".\n\n"
+                g.add((notaUri,ns.conteudo, Literal(nota)))
                 # criar as relações com das notas de aplicação com a classe
-                ttl += ":c" + classe['codigo'] + " :temNotaExclusao " + ":" + n['idNota'] + " .\n\n"
+                g.add((codigoUri,ns.temNotaExclusao, ns[n['idNota']]))
+
         # ------------------------------------------------
         # Tipo de Processo -------------------------------
         if 'tipoProc' in classe.keys():
             if classe['tipoProc'] == 'PC':
-                ttl += ":c" + classe['codigo'] + " :processoTipoVC :vc_processoTipo_pc .\n"
+                g.add((codigoUri,ns.processoTipoVC,ns.vc_processoTipo_pc))
             else:
-                ttl += ":c" + classe['codigo'] + " :processoTipoVC :vc_processoTipo_pe .\n"
+                g.add((codigoUri,ns.processoTipoVC,ns.vc_processoTipo_pe))
         # ------------------------------------------------
         # Transversalidade -------------------------------
         if 'procTrans' in classe.keys():
-            ttl += ":c" + classe['codigo'] + " :processoTransversal " + "\"" + classe['procTrans'] + "\" .\n"
+            g.add((codigoUri,ns.processoTransversal,Literal(classe['procTrans'])))
         # ------------------------------------------------
         # Donos
         # ------------------------------------------------
@@ -289,7 +262,8 @@ def classeGenTTL(c):
                     prefixo = 'ent_'
                 else:
                     prefixo = 'tip_'
-                ttl += ":c" + classe['codigo'] + " :temDono" + " :" + prefixo + d + " .\n"
+                g.add((codigoUri,ns.temDono,ns[prefixo + d]))
+
         # ------------------------------------------------
         # Participantes ----------------------------------
         # Um processo tem participantes se for transversal
@@ -299,121 +273,137 @@ def classeGenTTL(c):
                     prefixo = 'ent_'
                 else:
                     prefixo = 'tip_'
-                ttl += ":c" + classe['codigo'] + " :" + intervCatalog[p['interv']] + " :" + prefixo + p['id'] + " .\n"
+                g.add((codigoUri,ns[intervCatalog[p['interv']]],ns[prefixo + p['id']]))
+
         # ------------------------------------------------
         # Legislação -------------------------------------
         if 'legislacao' in classe.keys():
             for l in classe['legislacao']:
                 if l in legCatalog:
-                    ttl += ":c" + classe['codigo'] + " :temLegislacao" + " :leg_" + l + " .\n"
+                    g.add((codigoUri,ns.temLegislacao,ns[f"leg_{l}"]))
+
         # ------------------------------------------------------------
         # Processos Relacionados -------------------------------------
         if 'processosRelacionados' in classe:
             for index, p in enumerate(classe['processosRelacionados']):
-                ttl += ":c" + classe['codigo'] + " :temRelProc" + " :c" + p + " .\n"
+
+                g.add((codigoUri,ns.temRelProc,ns[f"c{p}"]))
                 if 'proRel' in classe:
-                    ttl += ":c" + classe['codigo'] + " :" + classe['proRel'][index] + " :c" + p + " .\n"
+                    g.add((codigoUri,ns[classe['proRel'][index]],ns[f"c{p}"]))
+
         # ------------------------------------------------------------
         # PCA --------------------------------------------------------
         if 'pca' in classe:
-            ttl += ":c" + classe['codigo'] + " :temPCA :pca_c" + classe['codigo'] + ".\n"
-            ttl += "###  http://jcr.di.uminho.pt/m51-clav#pca_c" + classe['codigo'] + "\n"
-            ttl += ":pca_c" + classe['codigo'] + " rdf:type owl:NamedIndividual ,\n"
-            ttl += "\t:PCA .\n"
+
+            pcaUri = ns[f"pca_c{classe['codigo']}"]
+            g.add((codigoUri,ns.temPCA,pcaUri))
+            g.add((pcaUri,RDF.type,OWL.NamedIndividual))
+            g.add((pcaUri,RDF.type,ns.PCA))
+
             if type(classe['pca']['valores']) != list:
                 if str(classe['pca']['valores']) == 'NE':
-                    ttl += ":pca_c" + classe['codigo'] + " :pcaValor \"NE\" .\n"
+                    g.add((pcaUri,ns.pcaValor,Literal("NE")))
                 else:
-                    ttl += ":pca_c" + classe['codigo'] + " :pcaValor " + str(classe['pca']['valores']) + ".\n"
+                    g.add((pcaUri,ns.pcaValor,Literal(str(classe['pca']['valores']))))
             else:
                 for v in classe['pca']['valores']:
-                    ttl += ":pca_c" + classe['codigo'] + " :pcaValor " + str(v) + ".\n"
+                    g.add((pcaUri,ns.pcaValor,Literal(str(v))))
+
         # ------------------------------------------------------------
         # Nota ao PCA ------------------------------------------------
             if 'notas' in classe['pca']:
-                ttl += ":pca_c" + classe['codigo'] + " :pcaNota " + "\"" + classe['pca']['notas'] + "\".\n"
+                g.add((pcaUri,ns.pcaNota,Literal(classe['pca']['notas'])))
+
         # ------------------------------------------------------------
         # Forma de Contagem do PCA -----------------------------------
             if 'formaContagem' in classe['pca']:
-                ttl += ":pca_c" + classe['codigo'] + " :pcaFormaContagemNormalizada :vc_pcaFormaContagem_" + classe['pca']['formaContagem'] + " .\n"
+                g.add((pcaUri,ns.pcaFormaContagemNormalizada,ns[f"vc_pcaFormaContagem_{classe['pca']['formaContagem']}"]))
             if 'subFormaContagem' in classe['pca']:
-                ttl += ":pca_c" + classe['codigo'] + " :pcaSubformaContagem :vc_pcaSubformaContagem_" + classe['pca']['subFormaContagem'] + " .\n"
+                g.add((pcaUri,ns.pcaSubformaContagem,ns[f"vc_pcaSubformaContagem_{classe['pca']['subFormaContagem']}"]))
+
         # ------------------------------------------------------------
         # Justificação do PCA ----------------------------------------
             if 'justificacao' in classe['pca']:
-                ttl += "###  http://jcr.di.uminho.pt/m51-clav#just_pca_c" + classe['codigo'] + "\n"
-                ttl += ":just_pca_c" + classe['codigo'] + " rdf:type owl:NamedIndividual ,\n"
-                ttl += "\t\t:JustificacaoPCA .\n"
-                ttl += ":pca_c"  + classe['codigo'] + " :temJustificacao :just_pca_c" + classe['codigo'] + " .\n"
+
+                justUri = ns[f"just_pca_c{classe['codigo']}"]
+                g.add((justUri,RDF.type,OWL.NamedIndividual))
+                g.add((justUri,RDF.type,ns.JustificacaoPCA))
+                g.add((ns[f"pca_c{classe['codigo']}"],ns.temJustificacao,justUri))
+
                 for crit in classe['pca']['justificacao']:
-                    ttl += ":" + crit['critCodigo'] + " rdf:type owl:NamedIndividual ,\n"
+
+                    critUri = ns[crit['critCodigo']]
+                    g.add((critUri,RDF.type,OWL.NamedIndividual))
 
                     if crit['tipo'] == 'legal':
-                        ttl += "\t\t:CriterioJustificacaoLegal ;\n"
+                        g.add((critUri,RDF.type,ns.CriterioJustificacaoLegal))
                     elif crit['tipo'] == 'utilidade':
-                        ttl += "\t\t:CriterioJustificacaoUtilidadeAdministrativa ;\n"
+                        g.add((critUri,RDF.type,ns.CriterioJustificacaoUtilidadeAdministrativa))
                     elif crit['tipo'] == 'gestionário':
-                        ttl += "\t\t:CriterioJustificacaoGestionario ;\n"
+                        g.add((critUri,RDF.type,ns.CriterioJustificacaoGestionario))
 
-                    ttl += "\t:conteudo \"" + crit['conteudo'] + "\" .\n"
-                    ttl += ":just_pca_c" + classe['codigo'] + " :temCriterio :" + crit['critCodigo'] + ". \n"
+                    g.add((critUri,ns.conteudo,Literal(crit['conteudo'])))
+                    g.add((justUri,ns.temCriterio,ns[crit['critCodigo']]))
 
                     if 'legRefs' in crit:
                         for ref in crit['legRefs']:
-                            ttl += ":" + crit['critCodigo'] + " :critTemLegAssoc :leg_" + ref + " .\n"
+                            g.add((critUri,ns.critTemLegAssoc,ns[f"leg_{ref}"]))
 
                     if 'procRefs' in crit:
                         for ref in crit['procRefs']:
-                            ttl += ":" + crit['critCodigo'] + " :critTemProcRel :c" + ref + " .\n"
+                            g.add((critUri,ns.critTemProcRel,ns[f"c{ref}"]))
 
         # ------------------------------------------------------------
         # DF ---------------------------------------------------------
         if 'df' in classe:
-            ttl += ":c" + classe['codigo'] + " :temDF :df_c" + classe['codigo'] + ".\n"
-            ttl += "###  http://jcr.di.uminho.pt/m51-clav#df_c" + classe['codigo'] + "\n"
-            ttl += ":df_c" + classe['codigo'] + " rdf:type owl:NamedIndividual ,\n"
-            ttl += "\t\t:DestinoFinal .\n"
 
-            ttl += ":df_c" + classe['codigo'] + " :dfValor \"" + classe['df']['valor'] + "\" .\n"
+            dfUri = ns[f"df_c{classe['codigo']}"]
+
+            g.add((codigoUri,ns.temDF,dfUri))
+            g.add((dfUri,RDF.type,OWL.NamedIndividual))
+            g.add((dfUri,RDF.type,ns.DestinoFinal))
+            g.add((dfUri,ns.dfValor,Literal(classe['df']['valor'])))
 
             if 'nota' in classe['df']:
-                ttl += ":df_c" + classe['codigo'] + " :dfNota \"" + classe['df']['nota'] + "\" .\n"
+                g.add((dfUri,ns.dfNota,Literal(classe['df']['nota'])))
 
         # ------------------------------------------------------------
         # Justificação do DF -----------------------------------------
             if 'justificacao' in classe['df']:
-                ttl += "###  http://jcr.di.uminho.pt/m51-clav#just_df_c" + classe['codigo'] + "\n"
-                ttl += ":just_df_c" + classe['codigo'] + " rdf:type owl:NamedIndividual ,\n"
-                ttl += "\t\t:JustificacaoDF .\n"
-                ttl += ":df_c"  + classe['codigo'] + " :temJustificacao :just_df_c" + classe['codigo'] + " .\n"
+
+                justDfUri = ns[f"just_df_c{classe['codigo']}"]
+                g.add((justDfUri,RDF.type,OWL.NamedIndividual))
+                g.add((justDfUri,RDF.type,ns.JustificacaoDF))
+                g.add((dfUri,ns.temJustificacao,justDfUri))
+
                 for crit in classe['df']['justificacao']:
-                    ttl += ":" + crit['critCodigo'] + " rdf:type owl:NamedIndividual ,\n"
+
+                    critUri = ns[crit['critCodigo']]
+                    g.add((critUri,RDF.type,OWL.NamedIndividual))
 
                     if crit['tipo'] == 'legal':
-                        ttl += "\t\t:CriterioJustificacaoLegal ;\n"
+                        g.add((critUri,RDF.type,ns.CriterioJustificacaoLegal))
                     elif crit['tipo'] == 'densidade':
-                        ttl += "\t\t:CriterioJustificacaoDensidadeInfo ;\n"
+                        g.add((critUri,RDF.type,ns.CriterioJustificacaoDensidadeInfo))
                     elif crit['tipo'] == 'complementaridade':
-                        ttl += "\t\t:CriterioJustificacaoComplementaridadeInfo ;\n"
+                        g.add((critUri,RDF.type,ns.CriterioJustificacaoComplementaridadeInfo))
 
-                    ttl += "\t:conteudo \"" + crit['conteudo'] + "\" .\n"
-                    ttl += ":just_df_c" + classe['codigo'] + " :temCriterio :" + crit['critCodigo'] + ". \n"
+                    g.add((critUri,ns.conteudo,Literal(crit['conteudo'])))
+                    g.add((justDfUri,ns.temCriterio,critUri))
 
                     if 'legRefs' in crit:
                         for ref in crit['legRefs']:
-                            ttl += ":" + crit['critCodigo'] + " :critTemLegAssoc :leg_" + ref + " .\n"
+                            g.add((critUri,ns.critTemLegAssoc,ns[f"leg_{ref}"]))
 
                     if 'procRefs' in crit:
                         for ref in crit['procRefs']:
-                            ttl += ":" + crit['critCodigo'] + " :critTemProcRel :c" + ref + " .\n"
+                            g.add((critUri,ns.critTemProcRel,ns[f"c{ref}"]))
     
-
-    fout.write(ttl)
-    
+    g.serialize(format="ttl",destination='./ontologia/' + c + '.ttl')
     fin.close()
-    fout.close()
 
-# Invocação dos migradores -----------------------------------------------------------
+# Invocação dos migradores 
+# ------------------------------------------------------
 
 tiGenTTL()
 entidadeGenTTL()
@@ -425,5 +415,3 @@ classes = ['100','150','200','250','300','350','400','450','500','550','600',
 for c in classes:
     print('Classe: ', c)
     classeGenTTL(c)
-
-    
