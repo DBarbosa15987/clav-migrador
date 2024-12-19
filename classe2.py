@@ -20,11 +20,11 @@ sepExtra = re.compile(r'#$|^#')
 # Calcula e normaliza o estado da classe
 def calcEstado(e):
     global hreg, ireg
-    if e.strip() == '':
+    if e.strip() == '': 
         return 'A'
-    elif hreg.search(e):
+    elif hreg.search(e): 
         return 'H'
-    elif ireg.search(e):
+    elif ireg.search(e): 
         return 'I'
     else: 
         return 'Erro'
@@ -57,7 +57,6 @@ def procNotas(notas, codClasse, chave1=None, chave2=None):
     notas = sepExtra.sub('', notas)
     filtradas = notas.split('#')
     for na in filtradas:
-        na = re.sub(r'\"', '\\\"', na)
         res.append({
             chave1: chave2 + '_' + codClasse + '_' + generate('1234567890abcdef', 12),
             chave2: na

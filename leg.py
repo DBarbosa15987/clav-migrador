@@ -85,7 +85,7 @@ def processSheet(sheet, nome):
             # Sumário:----------------------------------------------------
             if row["Sumário"]:
                 mySum = brancos.sub('', str(row["Sumário"]))
-                myReg["sumario"] = re.sub(r'\"', '\\\"', mySum)
+                myReg["sumario"] = mySum
             # Fonte:------------------------------------------------------
             if row["Fonte"]:
                 myReg["fonte"] = brancos.sub('', str(row["Fonte"])).strip()

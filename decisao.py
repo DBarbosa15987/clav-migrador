@@ -93,7 +93,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             if res := re.search(r'(?:Critério legal:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'legal'
                 conteudo = res.group(1)
-                myCrit['conteudo'] = re.sub(r'\"', '\\\"', conteudo)
+                myCrit['conteudo'] = conteudo
                 myCrit['legRefs'] = []
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 for ref in legRefs:
@@ -110,7 +110,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             if res := re.search(r'(?:Critério gestionário:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'gestionário'
                 conteudo = res.group(1)
-                myCrit['conteudo'] = re.sub(r'\"', '\\\"', conteudo)
+                myCrit['conteudo'] = conteudo
                 # Referências a legislação no texto do critério -----------
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 if len(list(legRefs)) > 0:
@@ -132,7 +132,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             if res := re.search(r'(?:Critério de utilidade administrativa:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'utilidade'
                 conteudo = res.group(1)
-                myCrit['conteudo'] = re.sub(r'\"', '\\\"', conteudo)
+                myCrit['conteudo'] = conteudo
                 # Referências a legislação no texto do critério -----------
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 if len(list(legRefs)) > 0:
@@ -183,7 +183,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             if res := re.search(r'(?:Critério legal:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'legal'
                 conteudo = res.group(1)
-                myCrit['conteudo'] = re.sub(r'\"', '\\\"', conteudo)
+                myCrit['conteudo'] = conteudo
                 myCrit['legRefs'] = []
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 for ref in legRefs:
@@ -200,7 +200,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             if res := re.search(r'(?:Critério de densidade informacional:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'densidade'
                 conteudo = res.group(1)
-                myCrit['conteudo'] = re.sub(r'\"', '\\\"', conteudo)
+                myCrit['conteudo'] = conteudo
                 # Referências a legislação no texto do critério -----------
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 if len(list(legRefs)) > 0:
@@ -230,7 +230,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             if res := re.search(r'(?:Critério de complementaridade informacional:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'complementaridade'
                 conteudo = res.group(1)
-                myCrit['conteudo'] = re.sub(r'\"', '\\\"', conteudo)
+                myCrit['conteudo'] = conteudo
                 # Referências a legislação no texto do critério -----------
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 if len(list(legRefs)) > 0:
