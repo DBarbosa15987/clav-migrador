@@ -71,7 +71,7 @@ def legGenTTL():
         ttl += ":leg_" + l['codigo'] + " rdf:type owl:NamedIndividual ,\n"
         ttl += "\t:Legislacao ;\n"
         ttl += "\t:codigo \"" + l['codigo'] + "\";\n"
-        ttl += "\t:rdfs:label \"Leg.: " + l['codigo'] + "\";\n"
+        ttl += "\trdfs:label \"Leg.: " + l['codigo'] + "\";\n"
         ttl += "\t:diplomaTipo " + "\"" + l['tipo'] + "\";\n"
         ttl += "\t:diplomaNumero " + "\"" + l['numero'] + "\";\n"
         ttl += "\t:diplomaData " + "\"" + l['data'] + "\";\n"
@@ -242,7 +242,7 @@ def classeGenTTL(c):
                 ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + n['idNota'] + "\n"
                 ttl += ":" + n['idNota'] + " rdf:type owl:NamedIndividual ,\n"
                 ttl += "\t\t:NotaAplicacao ;\n"
-                ttl += "\t:rdfs:label \"Nota de Aplicação\";\n"
+                ttl += "\trdfs:label \"Nota de Aplicação\";\n"
                 ttl += "\t:conteudo " + "\"" + n['nota'] + "\".\n\n"
                 # criar as relações com das notas de aplicação com a classe
                 ttl += ":c" + classe['codigo'] +" :temNotaAplicacao " + ":" + n['idNota'] + " .\n\n"
@@ -253,7 +253,7 @@ def classeGenTTL(c):
                 ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + e['idExemplo'] + "\n"
                 ttl += ":" + e['idExemplo'] + " rdf:type owl:NamedIndividual ,\n"
                 ttl += "\t\t:ExemploNotaAplicacao ;\n"
-                ttl += "\t:rdfs:label \"Exemplo de nota de aplicação\";\n"
+                ttl += "\trdfs:label \"Exemplo de nota de aplicação\";\n"
                 ttl += "\t:conteudo " + "\"" + e['exemplo'] + "\".\n\n"
                 # criar as relações com das notas de aplicação com a classe
                 ttl += ":c" + classe['codigo'] +" :temExemploNA " + ":" + e['idExemplo'] + " .\n\n"
@@ -264,7 +264,7 @@ def classeGenTTL(c):
                 ttl += "###  http://jcr.di.uminho.pt/m51-clav#" + n['idNota'] + "\n"
                 ttl += ":" + n['idNota'] + " rdf:type owl:NamedIndividual ,\n"
                 ttl += "\t\t:NotaExclusao ;\n"
-                ttl += "\t:rdfs:label \"Nota de Exclusão\";\n"
+                ttl += "\t:label \"Nota de Exclusão\";\n"
                 nota = re.sub(r'\"', '\"', n['nota'])
                 ttl += "\t:conteudo " + "\"" + nota + "\".\n\n"
                 # criar as relações com das notas de aplicação com a classe

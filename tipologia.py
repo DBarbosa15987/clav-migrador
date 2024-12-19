@@ -3,7 +3,7 @@ import pandas as pd
 import json
 
 import re
-brancos = re.compile(r'\r\n|\n|\r')
+brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
 def processSheet(sheet, nome):
