@@ -9,7 +9,7 @@ allErros = []
 
 def rel_4_inv_0(sheet):
     """
-    A função devolve as classes que não cumprem
+    A função devolve a lista de classes que não cumprem
     com este invariante:
 
     "Um processo sem desdobramento ao 4º nível
@@ -34,7 +34,7 @@ def rel_4_inv_0(sheet):
 
 def rel_4_inv_1_1(sheet,sheetName):
     """
-    A função devolve as classes que não cumprem
+    A função devolve a lista de classes que não cumprem
     com este invariante:
 
     "A relação eCruzadoCom é simétrica."
@@ -51,7 +51,7 @@ def rel_4_inv_1_1(sheet,sheetName):
                 if fileName not in cache:
                     with open(f"files/{fileName}.json","r") as f:
                         cache[fileName] = json.load(f)
-                # Verificar agora se o processo cruzado também contém a relação eCruzadoCom com o outro processo
+                # Econtrar o processo em questão
                 cruzado = [x for x in cache[fileName] if x["codigo"]==c]
 
                 # FIXME: A classe menciona uma classe que não existe!
@@ -63,21 +63,67 @@ def rel_4_inv_1_1(sheet,sheetName):
                     print("-"*15)
                     # Por enquanto ignora-se quando não existe
                     continue
-                    
                 # cruzadoCod = cruzado[0]["codigo"]
                 proRels2 = cruzado[0].get("proRel")
                 proRelCods2 = cruzado[0].get("processosRelacionados")
                 if proRelCods2 and proRels2 and (len(proRelCods2)==len(proRels2)):
                     eCruzadoCom2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x=="eCruzadoCom"]
-                    # Se não cruza de volta então não cumpre com o invariante
+                    # Se não eCruzadoCom de volta então não cumpre com o invariante
                     if classe["codigo"] not in eCruzadoCom2:
                         erros.append(classe["codigo"])
-                # Se não existe então também não cruza
+                # Se não existe então também não contém eCruzadoCom,
+                # e por isso não cumpre com o invariante
                 else:
                     erros.append(classe["codigo"])
-    print(f"Erros:{len(erros)}")
+    # print(f"Erros:{len(erros)}")
     return erros
 
+
+
+
+def rel_4_inv_3(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "A relação eSintetizadoPor é antisimétrica."
+    """
+
+    cache = {sheetName:sheet}
+    erros = []
+    for classe in sheet:
+        proRels = classe.get("proRel")
+        proRelCods = classe.get("processosRelacionados")
+        if proRels and proRelCods:
+            eSintetizadoPor = [proRelCods[i] for i,x in enumerate(proRels) if x=="eSintetizadoPor"]
+            for c in eSintetizadoPor:
+                fileName = re.search(r'^\d{3}', c).group(0)
+                if fileName not in cache:
+                    with open(f"files/{fileName}.json","r") as f:
+                        cache[fileName] = json.load(f)
+                # Econtrar o processo em questão
+                sintetizado = [x for x in cache[fileName] if x["codigo"]==c]
+
+                # FIXME: A classe menciona uma classe que não existe!
+                if len(sintetizado) == 0:
+                    print("-"*15)
+                    print(classe["codigo"])
+                    print("eSintetizadoPor")
+                    print(c)
+                    print("-"*15)
+                    # Por enquanto ignora-se quando não existe
+                    continue
+
+                proRels2 = sintetizado[0].get("proRel")
+                proRelCods2 = sintetizado[0].get("processosRelacionados")
+                if proRelCods2 and proRels2 and (len(proRelCods2)==len(proRels2)):
+                    eSintetizadoPor2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x=="eSintetizadoPor"]
+                    # Se existe a relação eSintetizadoPor aqui também, não cumpre com o invariante
+                    if classe["codigo"] in eSintetizadoPor2:
+                        erros.append(classe["codigo"])
+
+    print(f"Erros:{len(erros)}")
+    return erros
 
 
 
@@ -87,5 +133,7 @@ for sheetName in sheets:
         file = json.load(f)
     rel_4_inv_0(file)
     rel_4_inv_1_1(file,sheetName)
+    rel_4_inv_3(file,sheetName)
+
 t1 = time.time()
 print(t1-t0)
