@@ -6,6 +6,7 @@ sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
 
 allErros = []
+i=0
 
 def rel_4_inv_0(sheet):
     """
@@ -33,8 +34,6 @@ def rel_4_inv_0(sheet):
     return erros
 
 
-i=0
-
 def checkAntissimetrico(sheet,sheetName,rel):
 
     global allErros
@@ -43,7 +42,7 @@ def checkAntissimetrico(sheet,sheetName,rel):
     for classe in sheet:
         proRels = classe.get("proRel")
         proRelCods = classe.get("processosRelacionados")
-        if proRels and proRelCods:
+        if proRels and proRelCods and (len(proRelCods)==len(proRels)):
             relacao = [proRelCods[i] for i,x in enumerate(proRels) if x==rel]
             for c in relacao:
                 fileName = re.search(r'^\d{3}', c).group(0)
@@ -149,6 +148,27 @@ def rel_4_inv_4(sheet,sheetName):
 
     return checkAntissimetrico(sheet,sheetName,"eSucessorDe")
 
+
+def rel_4_inv_11(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Um PN não pode ter em simultâneo relações de 
+    'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
+    """
+
+    erros = []
+    for classe in sheet:
+        # TODO: saber aqui quais é que "quebram o inv"
+        proRels = classe.get("proRel")
+        # proRelCods = classe.get("processosRelacionados")
+        # Se a classe contém ambas as relações, nãp cumpre com o invariante
+        if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
+            erros.append(classe['codigo'])
+    return erros
+
+
 t0 = time.time()
 for sheetName in sheets:
     with open(f"files/{sheetName}.json",'r') as f:
@@ -157,6 +177,7 @@ for sheetName in sheets:
     rel_4_inv_1_1(file,sheetName)
     rel_4_inv_3(file,sheetName)
     rel_4_inv_4(file,sheetName)
+    rel_4_inv_11(file)
 
 
 t1 = time.time()
