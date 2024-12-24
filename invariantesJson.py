@@ -35,6 +35,12 @@ def rel_4_inv_0(sheet):
 
 
 def checkAntissimetrico(sheet,sheetName,rel):
+    """
+    Verifica para uma `sheet` se uma dada relação
+    é antisimétrica.
+
+    Retorna a lista das classes em que isto não se verifica.
+    """
 
     global allErros
     cache = {sheetName:sheet}
@@ -76,6 +82,16 @@ def checkAntissimetrico(sheet,sheetName,rel):
 
 
 def checkJustRef(sheet,nivel):
+    """
+    Verifica para uma `sheet` se as classes do nível passado
+    por input (3 ou 4) referenciam as legislações mencionadas
+    nas justificações de pca e df.
+
+    No caso da classe ser de nível 4 aceita-se que a
+    legislação possa estar mencionada apenas na classe pai.
+
+    Retorna a lista das classes em que isto não se verifica.
+    """
 
     erros = []
     classesN = [x for x in sheet if x["nivel"] == nivel]
