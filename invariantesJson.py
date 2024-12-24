@@ -70,7 +70,7 @@ def checkAntissimetrico(sheet,sheetName,rel):
                     if classe["codigo"] in relacao2:
                         erros.append(classe["codigo"])
 
-    print(f"Erros:{len(erros)}")
+    # print(f"Erros:{len(erros)}")
     # allErros += erros
     return erros
 
@@ -149,7 +149,7 @@ def rel_4_inv_4(sheet,sheetName):
     return checkAntissimetrico(sheet,sheetName,"eSucessorDe")
 
 
-def rel_4_inv_11(sheet,sheetName):
+def rel_4_inv_11(sheet):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -169,6 +169,52 @@ def rel_4_inv_11(sheet,sheetName):
     return erros
 
 
+def rel_4_inv_12(sheet):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Um diploma legislativo referenciado num critério de
+    justicação tem de estar associado na zona de contexto
+    do processo que tem essa justificação (Classes de nível 3)"
+    """
+    
+    erros = []
+    classesN3 = [x for x in sheet if x["nivel"] == 3]
+    for classe in classesN3:
+        # verificação no pca
+        if "pca" in classe:
+            justificacaoPca = classe["pca"].get("justificacao")
+            if justificacaoPca:
+                pcaLegRefs = [x["legRefs"] for x in justificacaoPca if x["tipo"]=="legal"]
+                # Concatenar lista de listas e remover repetidos
+                pcaLegRefs = list(set(sum(pcaLegRefs,[])))
+                for leg in pcaLegRefs:
+                    # Se a legislação mencionada no pca não se encontra 
+                    # na lista de legislação associada à classe,
+                    # então não cumpre com o invariante
+                    if "legislacao" not in classe or leg not in classe["legislacao"]:
+                        # TODO: dar mais detalhe sobre o erro
+                        erros.append(classe["codigo"])                
+
+        # verificação no df
+        if "df" in classe:
+            justificacaoDf = classe["df"].get("justificacao")
+            if justificacaoDf:
+                dfLegRefs = [x["legRefs"] for x in justificacaoDf if x["tipo"]=="legal"]
+                # Concatenar lista de listas e remover repetidos
+                dfLegRefs = list(set(sum(dfLegRefs,[])))
+                for leg in dfLegRefs:
+                    # Se a legislação mencionada no df não se encontra 
+                    # na lista de legislação associada à classe,
+                    # então não cumpre com o invariante
+                    if "legislacao" not in classe or leg not in classe["legislacao"]:
+                        # TODO: dar mais detalhe sobre o erro
+                        erros.append(classe["codigo"])    
+
+    return erros
+
+
 t0 = time.time()
 for sheetName in sheets:
     with open(f"files/{sheetName}.json",'r') as f:
@@ -178,8 +224,10 @@ for sheetName in sheets:
     rel_4_inv_3(file,sheetName)
     rel_4_inv_4(file,sheetName)
     rel_4_inv_11(file)
+    rel_4_inv_12(file)
 
 
 t1 = time.time()
 print(t1-t0)
 print(allErros)
+print(len(allErros))
