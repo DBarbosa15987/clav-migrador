@@ -218,6 +218,40 @@ def checkJustRef(sheet,nivel):
     return erros
 
 
+def checkUniqueInst():
+    """
+    Função que verifica a unicidade das instâncias
+    mencionadas nos seguintes invariantes:
+
+    * 2 Classes (nível 1, 2 ou 3) não podem ter a mesma instância NotaAplicacao;
+    * 2 Classes (nível 1, 2 ou 3) não podem ter a mesma instância NotaExclusao;
+    * 2 Classes (nível 1, 2 ou 3) não podem ter a mesma instância ExemploNotaAplicacao;
+    """
+
+    notas = {
+        "notasAp":{}, # ex: {"nota_200.30.301_df9148e99f28": ["200.30.301","100"] }
+        "exemplosNotasAp":{}, # ex: {"exemplo_200.30.301_bdd4fbd33603": ["200.30.301","100"] }
+        "notasEx":{}, # ex: {"nota_200.30.301_4f1104c7755b": ["200.30.301","100"] }
+    }
+
+    for sheet in sheets:
+        with open(f"files/{sheet}.json",'r') as f:
+            data = json.load(f)
+            for classe in data:
+                if classe["nivel"] in [1,2,3]:
+                    for nota,key in [("notasAp","idNota"), ("exemplosNotasAp","idExemplo"), ("notasEx","idNota")]:
+                        if classe.get(nota):
+                            for n in classe[nota]:
+                                if n[key] in notas[nota]:
+                                    notas[nota][n[key]].append(classe["codigo"])
+                                else:
+                                    notas[nota][n[key]] = [classe["codigo"]]
+
+    print(f"notasAp: {[(k,v) for k,v in notas["notasAp"].items() if len(v) > 1]}")
+    print(f"exemplosNotasAp: {[(k,v) for k,v in notas["exemplosNotasAp"].items() if len(v) > 1]}")
+    print(f"notasEx: {[(k,v) for k,v in notas["notasEx"].items() if len(v) > 1]}")
+
+
 def rel_4_inv_1_1(sheet,sheetName):
     """
     A função devolve a lista de classes que não cumprem
@@ -326,6 +360,7 @@ def rel_4_inv_12(sheet):
 
 
 def rel_4_inv_13(sheet):
+    # TODO: NÍVEL 4 VER APENAS O PAI
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -334,12 +369,13 @@ def rel_4_inv_13(sheet):
     justicação tem de estar associado na zona de contexto do
     processo que tem essa justificação (Classes de nível 4)"
     """
-    
+
     return checkJustRef(sheet,4)
 
 # checkClasses()
 
 t0 = time.time()
+# folha a folha
 for sheetName in sheets:
     with open(f"files/{sheetName}.json",'r') as f:
         file = json.load(f)
@@ -351,6 +387,9 @@ for sheetName in sheets:
     rel_4_inv_12(file)
     rel_4_inv_13(file)
 
+# tudo de uma vez
+
+checkUniqueInst()
 
 t1 = time.time()
 print(t1-t0)
