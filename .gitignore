@@ -1,4 +1,6 @@
 files/*.json
 ontologia/*.ttl
+!ontologia/clav-base-v5.ttl
 __pycache__
 Makefile
+testing
