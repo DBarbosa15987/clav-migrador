@@ -8,6 +8,73 @@ sheets = ['100','150','200','250','300','350','400','450','500','550','600',
 allErros = []
 i=0
 
+
+def checkClasses():
+    """
+    Função que verifica se existem códigos de classe repetidas
+    e se todas as classes mencionadas (em relações) existem de facto.
+
+    A função produz um relatório destes erros e retorna `False` se
+    encontrar algo e `True` se não houver inconsistências deste tipo.
+    """
+
+    declaracoes = {} # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
+    relacoes = {} # {"200":["100.10.001"]} -> "200" é mencionado por "100.10.001"
+    report = {
+        "declaracoesRepetidas" : [],
+        "relacoesInvalidas" : []
+    }
+
+    for sheet in sheets:
+        with open(f"files/{sheet}.json",'r') as f:
+            data = json.load(f)
+            for classe in data:
+
+                cod = classe['codigo']
+                # TODO: remover?
+                if cod in declaracoes:
+                    declaracoes[cod].append(sheet+".ttl")
+                else:
+                    declaracoes[cod] = [sheet+".ttl"]
+
+                proRels = classe.get("processosRelacionados")
+                df = classe.get("df")
+                pca = classe.get("pca")
+                if proRels:
+                    for proRel in proRels:
+                        if proRel in relacoes:
+                            relacoes[proRel].append(cod)
+                        else:
+                            relacoes[proRel] = [cod]
+                    
+                if df:
+                    justificacao = df.get("justificacao")
+                    if justificacao:
+                        for j in justificacao:
+                            procRefs = j.get("procRefs")
+                            if procRefs:
+                                for p in procRefs:
+                                    if p in relacoes:
+                                        relacoes[proRel].append(cod)
+                                    else:
+                                        relacoes[proRel] = [cod]
+
+                if pca:
+                    justificacao = pca.get("justificacao")
+                    if justificacao:
+                        for j in justificacao:
+                            procRefs = j.get("procRefs")
+                            if procRefs:
+                                for p in procRefs:
+                                    if p in relacoes:
+                                        relacoes[proRel].append(cod)
+                                    else:
+                                        relacoes[proRel] = [cod]
+
+    print([(k,v) for k,v in declaracoes.items() if len(v)>1])
+    print('\n'.join([str((k,v,len(relacoes[k]))) for k,v in relacoes.items() if k not in declaracoes]))
+
+
 def rel_4_inv_0(sheet):
     """
     A função devolve a lista de classes que não cumprem
@@ -270,6 +337,7 @@ def rel_4_inv_13(sheet):
     
     return checkJustRef(sheet,4)
 
+# checkClasses()
 
 t0 = time.time()
 for sheetName in sheets:
@@ -286,5 +354,5 @@ for sheetName in sheets:
 
 t1 = time.time()
 print(t1-t0)
-print(allErros)
-print(len(allErros))
+# print(allErros)
+# print(len(allErros))
