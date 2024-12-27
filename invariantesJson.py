@@ -440,7 +440,7 @@ def rel_3_inv_6(sheet):
     for classe in sheet:
         if classe["nivel"] == 3:
             # Verificar se tem filhos
-            filhos = [c["codigo"] for c in sheet if c["codigo"].startswith(classe["codigo"]+".") ] 
+            filhos = [c["codigo"] for c in sheet if c["codigo"].startswith(classe["codigo"]+".") ]
             if len(filhos) == 0:
                 pca = classe.get("pca")
                 df = classe.get("df")
@@ -448,6 +448,48 @@ def rel_3_inv_6(sheet):
                 if not pca or not df:
                     erros.append(classe["codigo"])
     # allErros+=erros
+    return erros
+
+def rel_5_inv_1(sheet):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Quando o PN em causa é suplemento para outro,
+    deve ser acrescentado um critério de utilidade
+    administrativa na justificação do respetivo PCA"
+    """
+    # FIXME: ver a coisa dos filhos que estava na query "MINUS {?s :temFilho ?f}"
+    global allErros
+    erros = []
+    for classe in sheet:
+        if classe["nivel"] == 3: # FIXME fazer isto?
+            filhos = [x for x in sheet if x["codigo"].startswith(classe["codigo"] + ".")]
+            if not filhos: # FIXME porquê?
+                proRel = classe.get("proRel")
+                if proRel and "eSuplementoPara" in proRel:
+                    just = classe.get("pca",{}).get("justificacao")
+                    if just:
+                        justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                        if not justUtilidade:
+                            erros.append(classe["codigo"])
+                    else:
+                        erros.append(classe["codigo"])
+
+    allErros+=erros
+    return erros
+
+            proRel = classe.get("proRel")
+            if proRel and "eSuplementoPara" in proRel:
+                just = classe.get("pca",{}).get("justificacao")
+                if just:
+                    justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                    if not justUtilidade:
+                        erros.append(classe["codigo"])
+                else:
+                    erros.append(classe["codigo"])
+
+    allErros+=erros
     return erros
 
 checkClasses()
