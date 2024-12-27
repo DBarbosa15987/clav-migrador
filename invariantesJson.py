@@ -370,6 +370,39 @@ def rel_4_inv_13(sheet):
     return checkJustRef(sheet,4)
 
 
+def rel_4_inv_5(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+    
+    "A relação eSuplementoDe é antisimétrica."
+    """
+
+    return checkAntissimetrico(sheet,sheetName,"eSuplementoDe")
+
+
+def rel_4_inv_6(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+    
+    "A relação eSuplementoPara é antisimétrica."
+    """
+
+    return checkAntissimetrico(sheet,sheetName,"eSuplementoPara")
+
+
+def rel_4_inv_2(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+    
+    "A relação eSinteseDe é antisimétrica."
+    """
+
+    return checkAntissimetrico(sheet,sheetName,"eSinteseDe")
+
+
 checkClasses()
 
 t0 = time.time()
@@ -379,8 +412,11 @@ for sheetName in sheets:
         file = json.load(f)
     rel_4_inv_0(file)
     rel_4_inv_1_1(file,sheetName)
+    rel_4_inv_2(file,sheetName)
     rel_4_inv_3(file,sheetName)
     rel_4_inv_4(file,sheetName)
+    rel_4_inv_5(file,sheetName)
+    rel_4_inv_6(file,sheetName)
     rel_4_inv_11(file)
     rel_4_inv_12(file)
     rel_4_inv_13(file)
