@@ -150,12 +150,11 @@ def checkAntissimetrico(sheet,sheetName,rel):
 
 def checkJustRef(sheet,nivel):
     """
-    Verifica para uma `sheet` se as classes do nível passado
-    por input (3 ou 4) referenciam as legislações mencionadas
-    nas justificações de pca e df.
+    Verifica se as classes do `nível` passado por input (3 ou 4)
+    referenciam as legislações mencionadas nas justificações de pca e df.
 
-    No caso da classe ser de nível 4 aceita-se que a
-    legislação possa estar mencionada apenas na classe pai.
+    No caso da classe ser de nível 4 a legislação é mencionada
+    apenas na classe pai.
 
     Retorna a lista das classes em que isto não se verifica.
     """
@@ -174,20 +173,20 @@ def checkJustRef(sheet,nivel):
                     # Se a legislação mencionada no pca não se encontra 
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
-                    if "legislacao" not in classe or leg not in classe["legislacao"]:
-                        # Se a classe for de nível 4 verifica-se se 
-                        # a legislação é mencionada no pai
-                        if nivel == 4:
-                            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
-                            classePai = [x for x in sheet if x["codigo"] == pai]
-                            if classePai:
-                                classePai = classePai[0]
-                                if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                    erros.append(classe["codigo"])
+                    if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
+                        # TODO: dar mais detalhe sobre o erro
+                        erros.append(classe["codigo"])
 
-                        else:
-                            # TODO: dar mais detalhe sobre o erro
-                            erros.append(classe["codigo"])
+                    # Se a classe for de nível 4 verifica-se se 
+                    # a legislação é mencionada no pai
+                    elif nivel == 4:
+                        pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
+                        # TODO: fazer um search pela lista melhor
+                        classePai = [x for x in sheet if x["codigo"] == pai]
+                        if classePai:
+                            classePai = classePai[0]
+                            if "legislacao" not in classePai or leg not in classePai["legislacao"]:
+                                erros.append(classe["codigo"])
 
         # verificação no df
         if "df" in classe:
@@ -200,20 +199,19 @@ def checkJustRef(sheet,nivel):
                     # Se a legislação mencionada no df não se encontra 
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
-                    if "legislacao" not in classe or leg not in classe["legislacao"]:
-                        # Se a classe for de nível 4 verifica-se se 
-                        # a legislação é mencionada no pai
-                        if nivel == 4:
-                            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
-                            classePai = [x for x in sheet if x["codigo"] == pai]
-                            if classePai:
-                                classePai = classePai[0]
-                                if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                    erros.append(classe["codigo"])
+                    if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
+                        # TODO: dar mais detalhe sobre o erro
+                        erros.append(classe["codigo"])
 
-                        else:
-                            # TODO: dar mais detalhe sobre o erro
-                            erros.append(classe["codigo"])
+                    # Se a classe for de nível 4 verifica-se se 
+                    # a legislação é mencionada no pai
+                    if nivel == 4:
+                        pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
+                        classePai = [x for x in sheet if x["codigo"] == pai]
+                        if classePai:
+                            classePai = classePai[0]
+                            if "legislacao" not in classePai or leg not in classePai["legislacao"]:
+                                erros.append(classe["codigo"])
 
     return erros
 
@@ -239,13 +237,13 @@ def checkUniqueInst():
             data = json.load(f)
             for classe in data:
                 if classe["nivel"] in [1,2,3]:
-                    for nota,key in [("notasAp","idNota"), ("exemplosNotasAp","idExemplo"), ("notasEx","idNota")]:
+                    for nota,k in [("notasAp","idNota"),("exemplosNotasAp","idExemplo"),("notasEx","idNota")]:
                         if classe.get(nota):
                             for n in classe[nota]:
-                                if n[key] in notas[nota]:
-                                    notas[nota][n[key]].append(classe["codigo"])
+                                if n[k] in notas[nota]:
+                                    notas[nota][n[k]].append(classe["codigo"])
                                 else:
-                                    notas[nota][n[key]] = [classe["codigo"]]
+                                    notas[nota][n[k]] = [classe["codigo"]]
 
     print(f"notasAp: {[(k,v) for k,v in notas["notasAp"].items() if len(v) > 1]}")
     print(f"exemplosNotasAp: {[(k,v) for k,v in notas["exemplosNotasAp"].items() if len(v) > 1]}")
@@ -360,7 +358,6 @@ def rel_4_inv_12(sheet):
 
 
 def rel_4_inv_13(sheet):
-    # TODO: NÍVEL 4 VER APENAS O PAI
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -372,7 +369,8 @@ def rel_4_inv_13(sheet):
 
     return checkJustRef(sheet,4)
 
-# checkClasses()
+
+checkClasses()
 
 t0 = time.time()
 # folha a folha
@@ -388,8 +386,8 @@ for sheetName in sheets:
     rel_4_inv_13(file)
 
 # tudo de uma vez
+# checkUniqueInst()
 
-checkUniqueInst()
 
 t1 = time.time()
 print(t1-t0)
