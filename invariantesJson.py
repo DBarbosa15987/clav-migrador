@@ -426,6 +426,30 @@ def rel_4_inv_2(sheet,sheetName):
     return checkAntissimetrico(sheet,sheetName,"eSinteseDe")
 
 
+def rel_3_inv_6(sheet):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+    
+    "As relações temDF e temPCA, existem numa classe 3 
+    se esta não tiver filhos"
+    """
+
+    global allErros
+    erros = []
+    for classe in sheet:
+        if classe["nivel"] == 3:
+            # Verificar se tem filhos
+            filhos = [c["codigo"] for c in sheet if c["codigo"].startswith(classe["codigo"]+".") ] 
+            if len(filhos) == 0:
+                pca = classe.get("pca")
+                df = classe.get("df")
+                # TODO: especificar melhor os erros aqui
+                if not pca or not df:
+                    erros.append(classe["codigo"])
+    # allErros+=erros
+    return erros
+
 checkClasses()
 
 t0 = time.time()
@@ -444,6 +468,9 @@ for sheetName in sheets:
     rel_4_inv_11(file)
     rel_4_inv_12(file)
     rel_4_inv_13(file)
+
+
+    rel_3_inv_6(file)
 
 # tudo de uma vez
 # checkUniqueInst()
