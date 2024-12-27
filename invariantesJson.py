@@ -250,13 +250,14 @@ def checkUniqueInst():
     print(f"notasEx: {[(k,v) for k,v in notas["notasEx"].items() if len(v) > 1]}")
 
 
-def rel_4_inv_1_1(sheet,sheetName):
+def checkSimetrico(sheet,sheetName,rel):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    Verifica para uma `sheet` se uma dada relação
+    é simétrica.
 
-    "A relação eCruzadoCom é simétrica."
+    Retorna a lista das classes em que isto não se verifica.
     """
+
     global i,allErros
     cache = {sheetName:sheet}
     erros = []
@@ -264,35 +265,35 @@ def rel_4_inv_1_1(sheet,sheetName):
         proRels = classe.get("proRel")
         proRelCods = classe.get("processosRelacionados")
         if proRels and proRelCods:
-            eCruzadoCom = [proRelCods[i] for i,x in enumerate(proRels) if x=="eCruzadoCom"]
-            for c in eCruzadoCom:
-                fileName = re.search(r'^\d{3}', c).group(0)
+            relacoes = [proRelCods[i] for i,x in enumerate(proRels) if x==rel]
+            for r in relacoes:
+                fileName = re.search(r'^\d{3}', r).group(0)
                 if fileName not in cache:
                     with open(f"files/{fileName}.json","r") as f:
                         cache[fileName] = json.load(f)
                 # Econtrar o processo em questão
-                cruzado = [x for x in cache[fileName] if x["codigo"]==c]
+                classeRel = [x for x in cache[fileName] if x["codigo"]==r]
 
                 # FIXME: A classe menciona uma classe que não existe!
-                if len(cruzado) == 0:
+                if len(classeRel) == 0:
                     print("-"*15)
                     print(classe["codigo"])
-                    print("eCruzadoCom")
-                    print(c)
+                    print(rel)
+                    print(r)
                     print("-"*15)
                     # Por enquanto ignora-se quando não existe
                     continue
 
-                proRels2 = cruzado[0].get("proRel")
-                proRelCods2 = cruzado[0].get("processosRelacionados")
+                proRels2 = classeRel[0].get("proRel")
+                proRelCods2 = classeRel[0].get("processosRelacionados")
                 if proRelCods2 and proRels2 and (len(proRelCods2)==len(proRels2)):
-                    eCruzadoCom2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x=="eCruzadoCom"]
-                    # Se não eCruzadoCom de volta então não cumpre com o invariante
-                    if classe["codigo"] not in eCruzadoCom2:
+                    relacoes2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x==rel]
+                    # Se a `rel` não se verifica de volta então não cumpre com o invariante
+                    if classe["codigo"] not in relacoes2:
                         erros.append(classe["codigo"])
                     else:
                         i+=1
-                # Se não existe então também não contém eCruzadoCom,
+                # Se não existe, então também não contém `rel`,
                 # e por isso não cumpre com o invariante
                 else:
                     erros.append(classe["codigo"])
@@ -300,6 +301,28 @@ def rel_4_inv_1_1(sheet,sheetName):
     # print(f"Erros:{len(erros)}")
     # allErros += erros
     return erros
+
+
+
+def rel_4_inv_1_1(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "A relação eCruzadoCom é simétrica."
+    """
+    return checkSimetrico(sheet,sheetName,"eCruzadoCom")
+
+
+def rel_4_inv_1_2(sheet,sheetName):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "A relação eComplementarDe é simétrica"
+    """
+
+    return checkSimetrico(sheet,sheetName,"eComplementarDe")
 
 
 def rel_4_inv_3(sheet,sheetName):
@@ -412,6 +435,7 @@ for sheetName in sheets:
         file = json.load(f)
     rel_4_inv_0(file)
     rel_4_inv_1_1(file,sheetName)
+    rel_4_inv_1_2(file,sheetName)
     rel_4_inv_2(file,sheetName)
     rel_4_inv_3(file,sheetName)
     rel_4_inv_4(file,sheetName)
