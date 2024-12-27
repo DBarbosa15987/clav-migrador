@@ -430,8 +430,8 @@ def rel_3_inv_6(sheet):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
-    
-    "As relações temDF e temPCA, existem numa classe 3 
+
+    "As relações temDF e temPCA, existem numa classe 3
     se esta não tiver filhos"
     """
 
@@ -479,17 +479,33 @@ def rel_5_inv_1(sheet):
     allErros+=erros
     return erros
 
+
+def rel_7_inv_2(sheet):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Quando o PN em causa é complementar de outro,
+    a justificação do DF deverá conter o critério 
+    de complementaridade informacional"
+    """
+    # TODO: faltam as coisas dos (?crit :critTemProcRel ?o)?
+    global allErros
+    erros = []
+    for classe in sheet:
+        if classe["nivel"] == 3:
             proRel = classe.get("proRel")
-            if proRel and "eSuplementoPara" in proRel:
-                just = classe.get("pca",{}).get("justificacao")
+            if proRel and "eComplementarDe" in proRel:
+                just = classe.get("df",{}).get("justificacao")
                 if just:
-                    justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
-                    if not justUtilidade:
+                    justComplementaridade = [x for x in just if x["tipo"]=="complementaridade"]
+                    # TODO: faltam erros melhores aqui
+                    if not justComplementaridade:
                         erros.append(classe["codigo"])
                 else:
                     erros.append(classe["codigo"])
 
-    allErros+=erros
+    allErros += erros
     return erros
 
 checkClasses()
