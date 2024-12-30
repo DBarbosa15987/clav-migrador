@@ -67,20 +67,17 @@ def rel_4_inv_0(sheet):
     tem de ter uma justificação associada ao PCA."
     """
 
-    # global allErros
-    classesN3 = [x for x in sheet if x["nivel"] == 3]
     erros = []
-    for classe in classesN3:
-        filhos = [x for x in sheet if x["codigo"].startswith(classe["codigo"] + ".")]
-        # Se não tem filhos tem de ter uma justificação associada ao PCA
-        if len(filhos) == 0:
-            if classe.get("pca"):
-                if not classe["pca"].get("justificacao"):
+    for classe in sheet:
+        if classe["nivel"] == 3:
+            filhos = [x for x in sheet if x["codigo"].startswith(classe["codigo"] + ".")]
+            # Se não tem filhos tem de ter uma justificação associada ao PCA
+            if len(filhos) == 0:
+                if classe.get("pca"):
+                    if not classe["pca"].get("justificacao"):
+                        erros.append(classe["codigo"])
+                else:
                     erros.append(classe["codigo"])
-            else:
-                erros.append(classe["codigo"])
-    # print(erros)
-    # allErros += erros
     return erros
 
 
@@ -142,60 +139,62 @@ def checkJustRef(sheet,nivel):
     Retorna a lista das classes em que isto não se verifica.
     """
 
+    # global allErros
     erros = []
-    classesN = [x for x in sheet if x["nivel"] == nivel]
-    for classe in classesN:
-        # verificação no pca
-        if "pca" in classe:
-            justificacaoPca = classe["pca"].get("justificacao")
-            if justificacaoPca:
-                pcaLegRefs = [x["legRefs"] for x in justificacaoPca if x["tipo"]=="legal"]
-                # Concatenar lista de listas e remover repetidos
-                pcaLegRefs = set(sum(pcaLegRefs,[]))
-                for leg in pcaLegRefs:
-                    # Se a legislação mencionada no pca não se encontra 
-                    # na lista de legislação associada à classe,
-                    # então não cumpre com o invariante
-                    if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
-                        # TODO: dar mais detalhe sobre o erro
-                        erros.append(classe["codigo"])
+    for classe in sheet:
+        if classe["nivel"] == nivel:
+            # verificação no pca
+            if "pca" in classe:
+                justificacaoPca = classe["pca"].get("justificacao")
+                if justificacaoPca:
+                    pcaLegRefs = [x["legRefs"] for x in justificacaoPca if x["tipo"]=="legal"]
+                    # Concatenar lista de listas e remover repetidos
+                    pcaLegRefs = set(sum(pcaLegRefs,[]))
+                    for leg in pcaLegRefs:
+                        # Se a legislação mencionada no pca não se encontra 
+                        # na lista de legislação associada à classe,
+                        # então não cumpre com o invariante
+                        if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
+                            # TODO: dar mais detalhe sobre o erro
+                            erros.append(classe["codigo"])
 
-                    # Se a classe for de nível 4 verifica-se se 
-                    # a legislação é mencionada no pai
-                    elif nivel == 4:
-                        pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
-                        # TODO: fazer um search pela lista melhor
-                        classePai = [x for x in sheet if x["codigo"] == pai]
-                        if classePai:
-                            classePai = classePai[0]
-                            if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                erros.append(classe["codigo"])
+                        # Se a classe for de nível 4 verifica-se se 
+                        # a legislação é mencionada no pai
+                        elif nivel == 4:
+                            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
+                            # TODO: fazer um search pela lista melhor
+                            classePai = [x for x in sheet if x["codigo"] == pai]
+                            if classePai:
+                                classePai = classePai[0]
+                                if "legislacao" not in classePai or leg not in classePai["legislacao"]:
+                                    erros.append(classe["codigo"])
 
-        # verificação no df
-        if "df" in classe:
-            justificacaoDf = classe["df"].get("justificacao")
-            if justificacaoDf:
-                dfLegRefs = [x["legRefs"] for x in justificacaoDf if x["tipo"]=="legal"]
-                # Concatenar lista de listas e remover repetidos
-                dfLegRefs = set(sum(dfLegRefs,[]))
-                for leg in dfLegRefs:
-                    # Se a legislação mencionada no df não se encontra 
-                    # na lista de legislação associada à classe,
-                    # então não cumpre com o invariante
-                    if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
-                        # TODO: dar mais detalhe sobre o erro
-                        erros.append(classe["codigo"])
+            # verificação no df
+            if "df" in classe:
+                justificacaoDf = classe["df"].get("justificacao")
+                if justificacaoDf:
+                    dfLegRefs = [x["legRefs"] for x in justificacaoDf if x["tipo"]=="legal"]
+                    # Concatenar lista de listas e remover repetidos
+                    dfLegRefs = set(sum(dfLegRefs,[]))
+                    for leg in dfLegRefs:
+                        # Se a legislação mencionada no df não se encontra 
+                        # na lista de legislação associada à classe,
+                        # então não cumpre com o invariante
+                        if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
+                            # TODO: dar mais detalhe sobre o erro
+                            erros.append(classe["codigo"])
 
-                    # Se a classe for de nível 4 verifica-se se 
-                    # a legislação é mencionada no pai
-                    if nivel == 4:
-                        pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
-                        classePai = [x for x in sheet if x["codigo"] == pai]
-                        if classePai:
-                            classePai = classePai[0]
-                            if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                erros.append(classe["codigo"])
+                        # Se a classe for de nível 4 verifica-se se 
+                        # a legislação é mencionada no pai
+                        if nivel == 4:
+                            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', classe["codigo"]).group(1)
+                            classePai = [x for x in sheet if x["codigo"] == pai]
+                            if classePai:
+                                classePai = classePai[0]
+                                if "legislacao" not in classePai or leg not in classePai["legislacao"]:
+                                    erros.append(classe["codigo"])
 
+    # allErros+=erros
     return erros
 
 
@@ -284,7 +283,6 @@ def checkSimetrico(sheet,sheetName,rel):
     # print(f"Erros:{len(erros)}")
     # allErros += erros
     return erros
-
 
 
 def rel_4_inv_1_1(sheet,sheetName):
