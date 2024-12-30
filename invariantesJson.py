@@ -1,6 +1,7 @@
 import json
 import time
 import re
+from errorReport import ErrorReport
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
@@ -9,7 +10,7 @@ allErros = []
 i=0
 
 
-def checkClasses():
+def checkClasses(err: ErrorReport):
     """
     Função que verifica se existem códigos de classe repetidas
     e se todas as classes mencionadas (em relações) existem de facto.
@@ -18,34 +19,24 @@ def checkClasses():
     encontrar algo e `True` se não houver inconsistências deste tipo.
     """
 
-    declaracoes = {} # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
-    relacoes = {} # {"200":["100.10.001"]} -> "200" é mencionado por "100.10.001"
-    report = {
-        "declaracoesRepetidas" : [],
-        "relacoesInvalidas" : []
-    }
-
     for sheet in sheets:
         with open(f"files/{sheet}.json",'r') as f:
             data = json.load(f)
             for classe in data:
 
                 cod = classe['codigo']
-                # TODO: remover?
-                if cod in declaracoes:
-                    declaracoes[cod].append(sheet+".ttl")
-                else:
-                    declaracoes[cod] = [sheet+".ttl"]
+                err.addDecl(cod,sheet)
 
                 proRels = classe.get("processosRelacionados")
+                rels = classe.get("proRel")
                 df = classe.get("df")
                 pca = classe.get("pca")
                 if proRels:
-                    for proRel in proRels:
-                        if proRel in relacoes:
-                            relacoes[proRel].append(cod)
-                        else:
-                            relacoes[proRel] = [cod]
+                    for i,proRel in enumerate(proRels):
+                        rel = None
+                        if rels and len(rels)==len(proRels):
+                            rel = rels[i]
+                        err.addRelacao(proRel,rel,cod)
                     
                 if df:
                     justificacao = df.get("justificacao")
@@ -54,10 +45,7 @@ def checkClasses():
                             procRefs = j.get("procRefs")
                             if procRefs:
                                 for p in procRefs:
-                                    if p in relacoes:
-                                        relacoes[proRel].append(cod)
-                                    else:
-                                        relacoes[proRel] = [cod]
+                                    err.addRelacao(p,"procRef",cod,"df")
 
                 if pca:
                     justificacao = pca.get("justificacao")
@@ -66,14 +54,9 @@ def checkClasses():
                             procRefs = j.get("procRefs")
                             if procRefs:
                                 for p in procRefs:
-                                    if p in relacoes:
-                                        relacoes[proRel].append(cod)
-                                    else:
-                                        relacoes[proRel] = [cod]
+                                    err.addRelacao(p,"procRef",cod,"pca")
 
-    print([(k,v) for k,v in declaracoes.items() if len(v)>1])
-    print('\n'.join([str((k,v,len(relacoes[k]))) for k,v in relacoes.items() if k not in declaracoes]))
-
+    return err.evalStruct()
 
 def rel_4_inv_0(sheet):
     """
@@ -511,6 +494,10 @@ def rel_7_inv_2(sheet):
 checkClasses()
 
 t0 = time.time()
+err = ErrorReport()
+
+checkClasses(err)
+
 # folha a folha
 for sheetName in sheets:
     with open(f"files/{sheetName}.json",'r') as f:
