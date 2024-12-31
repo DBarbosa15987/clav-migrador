@@ -1,3 +1,5 @@
+import json
+
 class ErrorReport:
 
     def __init__(self):
@@ -5,8 +7,6 @@ class ErrorReport:
             "declaracoes": {}, # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
             "relacoes": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
         }
-        self.structOk = False
-        self.invsOk = False
         self.globalErrors = {"struct":{},"erroInv":{}}
         self.erroInv = {}
         self.warnings = {}
@@ -14,8 +14,6 @@ class ErrorReport:
 
     # def clear(self):
     #     self.struct = {"declaracoes": {}, "relacoes": {}}
-    #     self.structOk = False
-    #     self.invsOk = False
     #     self.erroInv = {}
     #     self.warnings = {}
 
@@ -51,10 +49,6 @@ class ErrorReport:
             self.globalErrors["struct"]["relsInvalidas"] = relsInvalidas
             ok = False
         
-        print(f"repetidas:{repetidas}")
-        print("relsInvalidas:\n")
-        print("\n".join([str(x) for x in relsInvalidas]))
-
         return ok
 
 
@@ -64,3 +58,41 @@ class ErrorReport:
             self.erroInv[inv].append((s, p, o))
         else:
             self.erroInv[inv] = [(s, p, o)]
+
+
+    def printInv(self):
+
+        for inv,info in self.erroInv.items():
+            print(f"\n{inv}:\n")
+            match inv:
+                case "rel_4_inv_0":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_4_inv_1_1":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_4_inv_1_2":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_4_inv_2":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_4_inv_3":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1]} {i[2]}" for i in info])}")
+                case "rel_4_inv_4":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_4_inv_5":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_4_inv_6":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case _:
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+
+
+    def dumpReport(self,dumpFileName="dump.json"):
+        with open(f"dump/{dumpFileName}",'w') as f:
+            json.dump(self.erroInv,f,ensure_ascii=False, indent=4)

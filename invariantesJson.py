@@ -58,7 +58,8 @@ def checkClasses(err: ErrorReport):
 
     return err.evalStruct()
 
-def rel_4_inv_0(sheet):
+
+def rel_4_inv_0(sheet,err: ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -67,7 +68,6 @@ def rel_4_inv_0(sheet):
     tem de ter uma justificação associada ao PCA."
     """
 
-    erros = []
     for classe in sheet:
         if classe["nivel"] == 3:
             filhos = [x for x in sheet if x["codigo"].startswith(classe["codigo"] + ".")]
@@ -75,13 +75,12 @@ def rel_4_inv_0(sheet):
             if len(filhos) == 0:
                 if classe.get("pca"):
                     if not classe["pca"].get("justificacao"):
-                        erros.append(classe["codigo"])
+                        err.addFalhaInv("rel_4_inv_0",classe["codigo"])
                 else:
-                    erros.append(classe["codigo"])
-    return erros
+                    err.addFalhaInv("rel_4_inv_0",classe["codigo"])
 
 
-def checkAntissimetrico(sheet,sheetName,rel):
+def checkAntissimetrico(sheet,sheetName,rel,err: ErrorReport,invName):
     """
     Verifica para uma `sheet` se uma dada relação
     é antisimétrica.
@@ -89,7 +88,6 @@ def checkAntissimetrico(sheet,sheetName,rel):
     Retorna a lista das classes em que isto não se verifica.
     """
 
-    global allErros
     cache = {sheetName:sheet}
     erros = []
     for classe in sheet:
@@ -121,14 +119,10 @@ def checkAntissimetrico(sheet,sheetName,rel):
                     relacao2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x==rel]
                     # Se existe a relação `rel` aqui também, não cumpre com o invariante
                     if classe["codigo"] in relacao2:
-                        erros.append(classe["codigo"])
-
-    # print(f"Erros:{len(erros)}")
-    # allErros += erros
-    return erros
+                        err.addFalhaInv(invName,classe["codigo"],rel,sintetizado[0]["codigo"])
 
 
-def checkJustRef(sheet,nivel):
+def checkJustRef(sheet,nivel,err:ErrorReport,invName):
     """
     Verifica se as classes do `nível` passado por input (3 ou 4)
     referenciam as legislações mencionadas nas justificações de pca e df.
@@ -139,8 +133,6 @@ def checkJustRef(sheet,nivel):
     Retorna a lista das classes em que isto não se verifica.
     """
 
-    # global allErros
-    erros = []
     for classe in sheet:
         if classe["nivel"] == nivel:
             # verificação no pca
@@ -156,7 +148,7 @@ def checkJustRef(sheet,nivel):
                         # então não cumpre com o invariante
                         if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
                             # TODO: dar mais detalhe sobre o erro
-                            erros.append(classe["codigo"])
+                            err.addFalhaInv(invName,classe["codigo"])
 
                         # Se a classe for de nível 4 verifica-se se 
                         # a legislação é mencionada no pai
@@ -166,8 +158,9 @@ def checkJustRef(sheet,nivel):
                             classePai = [x for x in sheet if x["codigo"] == pai]
                             if classePai:
                                 classePai = classePai[0]
+                                # TODO: dar mais detalhe sobre o erro
                                 if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                    erros.append(classe["codigo"])
+                                    err.addFalhaInv(invName,classe["codigo"])
 
             # verificação no df
             if "df" in classe:
@@ -182,7 +175,7 @@ def checkJustRef(sheet,nivel):
                         # então não cumpre com o invariante
                         if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
                             # TODO: dar mais detalhe sobre o erro
-                            erros.append(classe["codigo"])
+                            err.addFalhaInv(invName,classe["codigo"])
 
                         # Se a classe for de nível 4 verifica-se se 
                         # a legislação é mencionada no pai
@@ -192,10 +185,7 @@ def checkJustRef(sheet,nivel):
                             if classePai:
                                 classePai = classePai[0]
                                 if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                    erros.append(classe["codigo"])
-
-    # allErros+=erros
-    return erros
+                                    err.addFalhaInv(invName,classe["codigo"])
 
 
 def checkUniqueInst():
@@ -232,7 +222,7 @@ def checkUniqueInst():
     print(f"notasEx: {[(k,v) for k,v in notas["notasEx"].items() if len(v) > 1]}")
 
 
-def checkSimetrico(sheet,sheetName,rel):
+def checkSimetrico(sheet,sheetName,rel,err: ErrorReport,invName):
     """
     Verifica para uma `sheet` se uma dada relação
     é simétrica.
@@ -285,17 +275,18 @@ def checkSimetrico(sheet,sheetName,rel):
     return erros
 
 
-def rel_4_inv_1_1(sheet,sheetName):
+def rel_4_inv_1_1(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
 
     "A relação eCruzadoCom é simétrica."
     """
-    return checkSimetrico(sheet,sheetName,"eCruzadoCom")
+
+    return checkSimetrico(sheet,sheetName,"eCruzadoCom",err,"rel_4_inv_1_1")
 
 
-def rel_4_inv_1_2(sheet,sheetName):
+def rel_4_inv_1_2(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -303,10 +294,10 @@ def rel_4_inv_1_2(sheet,sheetName):
     "A relação eComplementarDe é simétrica"
     """
 
-    return checkSimetrico(sheet,sheetName,"eComplementarDe")
+    return checkSimetrico(sheet,sheetName,"eComplementarDe",err,"rel_4_inv_1_2")
 
 
-def rel_4_inv_3(sheet,sheetName):
+def rel_4_inv_3(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -314,10 +305,10 @@ def rel_4_inv_3(sheet,sheetName):
     "A relação eSintetizadoPor é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSintetizadoPor")
+    return checkAntissimetrico(sheet,sheetName,"eSintetizadoPor",err,"rel_4_inv_3")
 
 
-def rel_4_inv_4(sheet,sheetName):
+def rel_4_inv_4(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -325,10 +316,10 @@ def rel_4_inv_4(sheet,sheetName):
     "A relação eSucessorDe é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSucessorDe")
+    return checkAntissimetrico(sheet,sheetName,"eSucessorDe",err,"rel_4_inv_4")
 
 
-def rel_4_inv_11(sheet):
+def rel_4_inv_11(sheet,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -337,18 +328,16 @@ def rel_4_inv_11(sheet):
     'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
     """
 
-    erros = []
     for classe in sheet:
         # TODO: saber aqui quais é que "quebram o inv"
         proRels = classe.get("proRel")
         # proRelCods = classe.get("processosRelacionados")
-        # Se a classe contém ambas as relações, nãp cumpre com o invariante
+        # Se a classe contém ambas as relações, não cumpre com o invariante
         if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
-            erros.append(classe['codigo'])
-    return erros
+            err.addFalhaInv("rel_4_inv_11",classe['codigo'])
 
 
-def rel_4_inv_12(sheet):
+def rel_4_inv_12(sheet,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -358,10 +347,10 @@ def rel_4_inv_12(sheet):
     do processo que tem essa justificação (Classes de nível 3)"
     """
 
-    return checkJustRef(sheet,3)
+    return checkJustRef(sheet,3,err,"rel_4_inv_12")
 
 
-def rel_4_inv_13(sheet):
+def rel_4_inv_13(sheet,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -371,10 +360,10 @@ def rel_4_inv_13(sheet):
     processo que tem essa justificação (Classes de nível 4)"
     """
 
-    return checkJustRef(sheet,4)
+    return checkJustRef(sheet,4,err,"rel_4_inv_13")
 
 
-def rel_4_inv_5(sheet,sheetName):
+def rel_4_inv_5(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -382,10 +371,10 @@ def rel_4_inv_5(sheet,sheetName):
     "A relação eSuplementoDe é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSuplementoDe")
+    return checkAntissimetrico(sheet,sheetName,"eSuplementoDe",err,"rel_4_inv_5")
 
 
-def rel_4_inv_6(sheet,sheetName):
+def rel_4_inv_6(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -393,10 +382,10 @@ def rel_4_inv_6(sheet,sheetName):
     "A relação eSuplementoPara é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSuplementoPara")
+    return checkAntissimetrico(sheet,sheetName,"eSuplementoPara",err,"rel_4_inv_6")
 
 
-def rel_4_inv_2(sheet,sheetName):
+def rel_4_inv_2(sheet,sheetName,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -404,7 +393,7 @@ def rel_4_inv_2(sheet,sheetName):
     "A relação eSinteseDe é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSinteseDe")
+    return checkAntissimetrico(sheet,sheetName,"eSinteseDe",err,"rel_4_inv_2")
 
 
 def rel_3_inv_6(sheet):
@@ -489,7 +478,6 @@ def rel_7_inv_2(sheet):
     allErros += erros
     return erros
 
-checkClasses()
 
 t0 = time.time()
 err = ErrorReport()
@@ -500,20 +488,27 @@ checkClasses(err)
 for sheetName in sheets:
     with open(f"files/{sheetName}.json",'r') as f:
         file = json.load(f)
-    rel_4_inv_0(file)
-    rel_4_inv_1_1(file,sheetName)
-    rel_4_inv_1_2(file,sheetName)
-    rel_4_inv_2(file,sheetName)
-    rel_4_inv_3(file,sheetName)
-    rel_4_inv_4(file,sheetName)
-    rel_4_inv_5(file,sheetName)
-    rel_4_inv_6(file,sheetName)
-    rel_4_inv_11(file)
-    rel_4_inv_12(file)
-    rel_4_inv_13(file)
+    rel_4_inv_0(file,err)
+    rel_4_inv_1_1(file,sheetName,err)
+    rel_4_inv_1_2(file,sheetName,err)
+    rel_4_inv_2(file,sheetName,err)
+    rel_4_inv_3(file,sheetName,err)
+    rel_4_inv_4(file,sheetName,err)
+    rel_4_inv_5(file,sheetName,err)
+    rel_4_inv_6(file,sheetName,err)
+    rel_4_inv_11(file,err)
+    rel_4_inv_12(file,err)
+    rel_4_inv_13(file,err)
+
+    # rel_3_inv_6(file)
 
 
-    rel_3_inv_6(file)
+    # rel_6_inv_2(file)
+    # rel_5_inv_3(file)
+    # rel_9_inv_2(file)
+
+    # rel_5_inv_1(file)
+    # rel_7_inv_2(file)
 
 # tudo de uma vez
 # checkUniqueInst()
@@ -521,5 +516,5 @@ for sheetName in sheets:
 
 t1 = time.time()
 print(t1-t0)
-# print(allErros)
-# print(len(allErros))
+err.printInv()
+err.dumpReport()
