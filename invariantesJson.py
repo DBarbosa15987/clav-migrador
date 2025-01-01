@@ -483,6 +483,30 @@ def rel_7_inv_2(sheet):
     return erros
 
 
+def rel_3_inv_1(sheet,err:ErrorReport):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Só existe desdobramento caso o PCA ou DF sejam distintos"
+    """
+
+    # FIXME notas
+    for classe in sheet:
+        if classe["nivel"] == 3:
+            filhos = [x for x in sheet if x["codigo"].startswith(classe["codigo"] + ".")]
+            if filhos:
+                valoresPca = [f["pca"]["valores"] for f in filhos if f.get("pca",{}).get("valores")]
+                valoresDf = [f["df"]["valor"] for f in filhos if f.get("df",{}).get("valor")]
+                # TODO: especificar melhor o erro
+                # Se for diferente, então existem valores repetidos
+                # E por isso não cumpre com o invariante
+                if len(valoresPca) != set(valoresPca):
+                    err.addFalhaInv("rel_3_inv_1",classe["codigo"])
+                if len(valoresDf) != set(valoresDf):
+                    err.addFalhaInv("rel_3_inv_1",classe["codigo"])
+
+
 t0 = time.time()
 err = ErrorReport()
 
