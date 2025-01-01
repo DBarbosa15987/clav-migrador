@@ -507,6 +507,22 @@ def rel_3_inv_1(sheet,err:ErrorReport):
                     err.addFalhaInv("rel_3_inv_1",classe["codigo"])
 
 
+def rel_3_inv_5(sheet,err:ErrorReport):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "As relações temDF e temPCA, não existem numa
+    classe 3 se esta tiver filhos"
+    """
+
+    # TODO: especificar melhor o erro
+    for classe in sheet:
+        if classe["nivel"] == 3:
+            filhos = [x for x in sheet if x["codigo"].startswith(classe["codigo"] + ".")]
+            if filhos and (classe.get("pca") or classe.get("df")):
+                err.addFalhaInv("rel_3_inv_5",classe["codigo"])
+   
 t0 = time.time()
 err = ErrorReport()
 

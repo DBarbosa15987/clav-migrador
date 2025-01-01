@@ -12,12 +12,6 @@ class ErrorReport:
         self.warnings = {}
 
 
-    # def clear(self):
-    #     self.struct = {"declaracoes": {}, "relacoes": {}}
-    #     self.erroInv = {}
-    #     self.warnings = {}
-
-
     def addDecl(self,cod,fileName):
         # "cod" aparece declarado repetidamente no(s) ficheiro(s) set(declaracoes[cod])
         declaracoes = self.struct["declaracoes"]
@@ -95,6 +89,12 @@ class ErrorReport:
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
 
                 case "rel_2_inv_3":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                case "rel_9_inv_2":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                case "rel_3_inv_1":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                case "rel_3_inv_5":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
 
                 case _:
