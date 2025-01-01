@@ -188,7 +188,7 @@ def checkJustRef(sheet,nivel,err:ErrorReport,invName):
                                     err.addFalhaInv(invName,classe["codigo"])
 
 
-def checkUniqueInst():
+def checkUniqueInst(err:ErrorReport):
     """
     Função que verifica a unicidade das instâncias
     mencionadas nos seguintes invariantes:
@@ -199,27 +199,35 @@ def checkUniqueInst():
     """
 
     notas = {
-        "notasAp":{}, # ex: {"nota_200.30.301_df9148e99f28": ["200.30.301","100"] }
-        "exemplosNotasAp":{}, # ex: {"exemplo_200.30.301_bdd4fbd33603": ["200.30.301","100"] }
-        "notasEx":{}, # ex: {"nota_200.30.301_4f1104c7755b": ["200.30.301","100"] }
+        "rel_2_inv_1": {}, # ex: {"nota_200.30.301_df9148e99f28": ["200.30.301","100"] }
+        "rel_2_inv_2": {}, # ex: {"exemplo_200.30.301_bdd4fbd33603": ["200.30.301","100"] }
+        "rel_2_inv_3": {}, # ex: {"nota_200.30.301_4f1104c7755b": ["200.30.301","100"] }
     }
+
+    corr = [
+        ("notasAp","idNota","rel_2_inv_1"),
+        ("exemplosNotasAp","idExemplo","rel_2_inv_2"),
+        ("notasEx","idNota","rel_2_inv_3")
+    ]
 
     for sheet in sheets:
         with open(f"files/{sheet}.json",'r') as f:
             data = json.load(f)
             for classe in data:
                 if classe["nivel"] in [1,2,3]:
-                    for nota,k in [("notasAp","idNota"),("exemplosNotasAp","idExemplo"),("notasEx","idNota")]:
+                    for nota,idNota,invName in corr:
                         if classe.get(nota):
                             for n in classe[nota]:
-                                if n[k] in notas[nota]:
-                                    notas[nota][n[k]].append(classe["codigo"])
+                                if n[idNota] in notas[invName]:
+                                    notas[invName][n[idNota]].append(classe["codigo"])
                                 else:
-                                    notas[nota][n[k]] = [classe["codigo"]]
+                                    notas[invName][n[idNota]] = [classe["codigo"]]
 
-    print(f"notasAp: {[(k,v) for k,v in notas["notasAp"].items() if len(v) > 1]}")
-    print(f"exemplosNotasAp: {[(k,v) for k,v in notas["exemplosNotasAp"].items() if len(v) > 1]}")
-    print(f"notasEx: {[(k,v) for k,v in notas["notasEx"].items() if len(v) > 1]}")
+    for inv,nota in notas.items():
+        for id,cods in nota.items():
+            # TODO: mais detalhe no erro
+            if len(cods) > 1:
+                err.addFalhaInv(inv,id)
 
 
 def checkSimetrico(sheet,sheetName,rel,err: ErrorReport,invName):
@@ -396,7 +404,7 @@ def rel_4_inv_2(sheet,sheetName,err:ErrorReport):
     return checkAntissimetrico(sheet,sheetName,"eSinteseDe",err,"rel_4_inv_2")
 
 
-def rel_3_inv_6(sheet):
+def rel_3_inv_6(sheet,err:ErrorReport):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -405,8 +413,6 @@ def rel_3_inv_6(sheet):
     se esta não tiver filhos"
     """
 
-    global allErros
-    erros = []
     for classe in sheet:
         if classe["nivel"] == 3:
             # Verificar se tem filhos
@@ -416,9 +422,7 @@ def rel_3_inv_6(sheet):
                 df = classe.get("df")
                 # TODO: especificar melhor os erros aqui
                 if not pca or not df:
-                    erros.append(classe["codigo"])
-    # allErros+=erros
-    return erros
+                    err.addFalhaInv("rel_3_inv_6",classe["codigo"])
 
 def rel_5_inv_1(sheet):
     """
@@ -500,7 +504,7 @@ for sheetName in sheets:
     rel_4_inv_12(file,err)
     rel_4_inv_13(file,err)
 
-    # rel_3_inv_6(file)
+    rel_3_inv_6(file,err)
 
 
     # rel_6_inv_2(file)
@@ -511,7 +515,7 @@ for sheetName in sheets:
     # rel_7_inv_2(file)
 
 # tudo de uma vez
-# checkUniqueInst()
+checkUniqueInst(err)
 
 
 t1 = time.time()

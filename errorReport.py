@@ -52,7 +52,7 @@ class ErrorReport:
         return ok
 
 
-    def addFalhaInv(self,inv,s,p=None,o=None,title=""):
+    def addFalhaInv(self,inv,s,p=None,o=None):
 
         if inv in self.erroInv:
             self.erroInv[inv].append((s, p, o))
@@ -88,9 +88,17 @@ class ErrorReport:
                 case "rel_4_inv_6":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
 
-                case _:
+                case "rel_2_inv_1":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
 
+                case "rel_2_inv_2":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case "rel_2_inv_3":
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+                case _:
+                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
 
 
     def dumpReport(self,dumpFileName="dump.json"):
