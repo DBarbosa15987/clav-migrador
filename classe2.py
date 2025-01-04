@@ -6,6 +6,7 @@ import re
 
 import contexto
 import decisao
+from errorReport import ErrorReport
 
 hreg = re.compile(r'[hH][aA][rR][mM][oO]?[nN]?')
 ireg = re.compile(r'[iI][nN][Aa][tT]?[iI]?[vV]?')
@@ -80,7 +81,7 @@ def calcSubdivisoes(df):
                 indN3[pai] = True
     return indN3
 
-def processSheet(sheet, nome):
+def processSheet(sheet, nome,err:ErrorReport):
     # Carregam-se os catálogos 
     # --------------------------------------------------
     ecatalog = open('./files/entCatalog.json')
@@ -102,7 +103,7 @@ def processSheet(sheet, nome):
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
 
-    myClasse = []
+    myClasse = {}
     ListaErros = []
     warningsDic = {}
     ProcHarmonizacao = []
@@ -112,9 +113,9 @@ def processSheet(sheet, nome):
         myReg = {}
         if row["Código"]:
             # Código -----
-            myReg["codigo"] = re.sub(r'(\r\n|\n|\r|[ \u202F\u00A0])','', str(row["Código"]))
+            cod = re.sub(r'(\r\n|\n|\r|[ \u202F\u00A0])','', str(row["Código"]))
             # Nível -----
-            myReg["nivel"] = calcNivel(myReg["codigo"])
+            myReg["nivel"] = calcNivel(cod)
             # Estado -----
             if row["Estado"]:
                 myReg["estado"] = calcEstado(row["Estado"])
@@ -125,32 +126,33 @@ def processSheet(sheet, nome):
                 myReg["titulo"] = brancos.sub('', row["Título"])
             else:
                 if myReg["estado"] != 'H':
-                    ListaErros.append('Erro::' + myReg['codigo'] + '::classe sem título')
+                    ListaErros.append('Erro::' + cod + '::classe sem título')
 
             # Descrição -----
             myReg["descricao"] = norm_brancos.sub(' ', str(row["Descrição"]))
             # Notas de aplicação -----
             if row["Notas de aplicação"]:
-                myReg["notasAp"] = procNotas(row["Notas de aplicação"], myReg["codigo"])
+                myReg["notasAp"] = procNotas(row["Notas de aplicação"], cod)
             # Exemplos de notas de aplicação -----
             if row["Exemplos de NA"]:
-                myReg["exemplosNotasAp"] = procNotas(row["Exemplos de NA"], myReg["codigo"], 'idExemplo', 'exemplo')
+                myReg["exemplosNotasAp"] = procNotas(row["Exemplos de NA"], cod, 'idExemplo', 'exemplo')
             # Notas de exclusão -----
             if row["Notas de exclusão"]:
-                myReg["notasEx"] = procNotas(row["Notas de exclusão"], myReg["codigo"])
+                myReg["notasEx"] = procNotas(row["Notas de exclusão"], cod)
             
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
-                contexto.procContexto(row, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog)
+                contexto.procContexto(row,cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog)
 
             # Processamento das Decisões
-            if (myReg["nivel"] == 3 and not indN3[myReg['codigo']]) or myReg["nivel"] == 4:
-                decisao.procDecisoes(row, myReg, ListaErros, entCatalog, tipCatalog, legCatalog)
+            if (myReg["nivel"] == 3 and not indN3[cod]) or myReg["nivel"] == 4:
+                decisao.procDecisoes(row,cod, myReg, ListaErros, entCatalog, tipCatalog, legCatalog)
 
-            if myReg["estado"] == 'H' and myReg["codigo"] not in warningsDic:
-                ProcHarmonizacao.append(myReg["codigo"])
+            if myReg["estado"] == 'H' and cod not in warningsDic:
+                ProcHarmonizacao.append(cod)
 
-            myClasse.append(myReg)
+            err.addDecl(cod,nome)
+            myClasse[cod] = myReg
 
     outFile = open("./files/"+fnome+".json", "w", encoding="utf-8")
     

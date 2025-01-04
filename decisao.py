@@ -3,7 +3,7 @@ import re
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
+def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
     # PCA -----
     if classe["Prazo de conservação administrativa"]:
         myReg['pca'] = {}
@@ -33,7 +33,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
     # ERRO: um dos dois, PCA ou Nota ao PCA, tem de ter um valor válido
     if myReg["estado"]!='H':
         if classe["Prazo de conservação administrativa"] and (myReg['pca']['valores'] == "NE") and 'notas' not in myReg['pca'].keys():
-            ListaErros.append('Erro::' + myReg['codigo'] + '::PCA e Nota ao PCA não podem ser simultaneamente inválidos')
+            ListaErros.append('Erro::' + cod + '::PCA e Nota ao PCA não podem ser simultaneamente inválidos')
     # Forma de Contagem do PCA -----
     if 'pca' in myReg.keys() and myReg['pca']['valores'] != "NE":
         formaContagem = brancos.sub('', str(classe["Forma de contagem do PCA"]))
@@ -76,10 +76,10 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             elif re.search(r'9\s+-', formaContagem):
                 myReg['pca']['subFormaContagem'] = 'F01.09'
             else:
-                ListaErros.append('Erro::' + myReg['codigo'] + '::Não consegui extrair a subforma de contagem::' + formaContagem)
+                ListaErros.append('Erro::' + cod + '::Não consegui extrair a subforma de contagem::' + formaContagem)
         else:
             myReg['pca']['formaContagem'] = "Desconhecida"
-            ListaErros.append('Erro::' + myReg['codigo'] + '::Forma de contagem do PCA desconhecida::' + formaContagem)
+            ListaErros.append('Erro::' + cod + '::Forma de contagem do PCA desconhecida::' + formaContagem)
     # Justificação do PCA -----
     if 'pca' in myReg and classe["Justificação PCA"]:
         just = brancos.sub('', classe["Justificação PCA"])
@@ -87,7 +87,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
         criterios = just.split('#')
         myReg['pca']['justificacao'] = []
         for index,crit in enumerate(criterios):
-            jcodigo = "just_pca_c" + myReg['codigo'] + "_" + str(index)
+            jcodigo = "just_pca_c" + cod + "_" + str(index)
             myCrit = {'critCodigo': jcodigo}
             # --- Critério Legal ------------------------------------------
             if res := re.search(r'(?:Critério legal:\s*)(.+)', crit, re.I):
@@ -154,7 +154,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             myReg['pca']['justificacao'].append(myCrit)
       
     # DF ------------------------------------------------------
-    # print("--> ", myReg['codigo'])
+    # print("--> ", cod)
     if classe["Destino final"]:
         myReg['df'] = {}
         df = brancos.sub('', classe["Destino final"]).upper()
@@ -163,13 +163,13 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
             myReg['df']['valor'] = df
         else: 
             if myReg["estado"]!='H':
-                ListaErros.append('Erro::' + myReg['codigo'] + '::Valor inválido para o DF::' + df)
+                ListaErros.append('Erro::' + cod + '::Valor inválido para o DF::' + df)
     # Nota ao DF ------------------------------------------------------
     if "Nota ao DF" in classe and classe["Nota ao DF"]:
         myReg['df']['nota'] = brancos.sub('', classe["Nota ao DF"])
     # ERRO: um dos dois, DF ou Nota ao DF, tem de ter um valor válido
     if myReg["estado"]!='H' and classe["Destino final"] and (myReg['df']['valor'] == "NE") and not myReg['df']['nota']:
-        ListaErros.append('Erro::' + myReg['codigo'] + '::DF e Nota ao DF não podem ser simultaneamente inválidos')
+        ListaErros.append('Erro::' + cod + '::DF e Nota ao DF não podem ser simultaneamente inválidos')
     # Justificação do DF ----------------------------------------------
     if 'df' in myReg and classe["Justificação DF"]:
         just = brancos.sub('', classe["Justificação DF"])
@@ -177,7 +177,7 @@ def procDecisoes(classe, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
         criterios = just.split('#')
         myReg['df']['justificacao'] = []
         for index,crit in enumerate(criterios):
-            jcodigo = "just_df_c" + myReg['codigo'] + "_" + str(index)
+            jcodigo = "just_df_c" + cod + "_" + str(index)
             myCrit = {'critCodigo': jcodigo}
             # --- Critério Legal ------------------------------------------
             if res := re.search(r'(?:Critério legal:\s*)(.+)', crit, re.I):
