@@ -1,15 +1,23 @@
 import json
 
-class ErrorReport:
+class Report:
 
     def __init__(self):
         self.struct = {
             "declaracoes": {}, # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
-            "relacoes": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+            "relsInvalidas": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+        }
+        self.missingRels = {
+            "relsSimetricas": [],
+            "relsInverseOf": []
         }
         self.globalErrors = {"struct":{},"erroInv":{}}
         self.erroInv = {}
         self.warnings = {}
+
+
+    def addMissingRels(self,proc,rel,cod,tipo):
+        self.missingRels[tipo].append((proc,rel,cod))
 
 
     def addDecl(self,cod,fileName):
@@ -21,28 +29,33 @@ class ErrorReport:
             declaracoes[cod] = [fileName+".ttl"]
 
 
-    def addRelacao(self,proRel,rel,cod,tipoProcRef=None):
+    def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
         # "cod" é mencionado por relacoes[cod]
-        relacoes = self.struct["relacoes"]
+        relacoes = self.struct["relsInvalidas"]
         if proRel in relacoes:
             relacoes[proRel].append((cod,rel,tipoProcRef))
         else:
             relacoes[proRel] = [(cod,rel,tipoProcRef)]
 
 
-    def evalStruct(self):
+    def checkRelsInvalidas(self):
 
         ok = True
-        repetidas = [(k,v) for k,v in self.struct["declaracoes"].items() if len(v)>1]
-        relsInvalidas = [(k,v,len(self.struct["relacoes"][k])) for k,v in self.struct["relacoes"].items() if k not in self.struct["declaracoes"]]
 
+        if len(self.struct["relsInvalidas"])>0:
+            # ...
+            ok = False
+        
+        return ok
+
+
+    def checkRepetidos(self):
+        
+        repetidas = [(k,v) for k,v in self.struct["declaracoes"].items() if len(v)>1]
         if repetidas:
             self.globalErrors["struct"]["repetidas"] = repetidas
             ok = False
-        if relsInvalidas:
-            self.globalErrors["struct"]["relsInvalidas"] = relsInvalidas
-            ok = False
-        
+
         return ok
 
 
@@ -61,33 +74,24 @@ class ErrorReport:
             match inv:
                 case "rel_4_inv_0":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_4_inv_1_1":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_4_inv_1_2":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_4_inv_2":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_4_inv_3":
                     print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1]} {i[2]}" for i in info])}")
                 case "rel_4_inv_4":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_4_inv_5":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_4_inv_6":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_2_inv_1":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_2_inv_2":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case "rel_2_inv_3":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
                 case "rel_9_inv_2":
@@ -96,7 +100,6 @@ class ErrorReport:
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
                 case "rel_3_inv_5":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
                 case _:
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
 

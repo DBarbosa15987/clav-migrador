@@ -6,7 +6,7 @@ import re
 
 import contexto
 import decisao
-from errorReport import ErrorReport
+from errorReport import Report
 
 hreg = re.compile(r'[hH][aA][rR][mM][oO]?[nN]?')
 ireg = re.compile(r'[iI][nN][Aa][tT]?[iI]?[vV]?')
@@ -81,7 +81,7 @@ def calcSubdivisoes(df):
                 indN3[pai] = True
     return indN3
 
-def processSheet(sheet, nome,err:ErrorReport):
+def processSheet(sheet, nome,err:Report):
     # Carregam-se os catálogos 
     # --------------------------------------------------
     ecatalog = open('./files/entCatalog.json')
