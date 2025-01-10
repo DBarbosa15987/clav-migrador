@@ -49,7 +49,7 @@ def processClasses(rep: Report):
             allClasses[cod] = classe
 
         proRels = classe.get("processosRelacionados")
-        rels = classe.get("proRel",[])
+        rels = classe.get("proRel")
         df = classe.get("df")
         pca = classe.get("pca")
 
@@ -562,7 +562,10 @@ rep = Report()
 
 
 allClasses = processClasses(rep)
-ok = rep.checkRelsInvalidas()
+ok = rep.checkStruct()
+if not ok:
+    rep.fixMissingRels(allClasses)
+    
 
 # folha a folha
 # for sheetName in sheets:

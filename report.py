@@ -22,9 +22,38 @@ class Report:
         self.missingRels[tipo].append((proc,rel,cod))
 
 
-    def fixMissingRels():
-        # TODO
-        pass
+    def fixMissingRels(self,allClasses):
+
+        for r in self.missingRels["relsSimetricas"]:
+            classe = allClasses.get(r[0])
+            # FIXME: decidir o que fazer com processos em harmonização
+            if not classe:
+                self.addWarning("R",r)
+                continue
+            proRel = classe.get("proRel")
+            proRelCod = classe.get("processosRelacionados")
+            if proRel and proRelCod:
+                classe["proRel"].append(r[1])
+                classe["processosRelacionados"].append(r[2])
+            else:
+                classe["proRel"] = [r[1]]
+                classe["processosRelacionados"] = [r[2]]
+
+
+        for r in self.missingRels["relsInverseOf"]:
+            classe = allClasses.get(r[0])
+            # FIXME: decidir o que fazer com processos em harmonização
+            if not classe:
+                self.addWarning("R",r)
+                continue
+            proRel = classe.get("proRel")
+            proRelCod = classe.get("processosRelacionados")
+            if proRel and proRelCod:
+                classe["proRel"].append(r[1])
+                classe["processosRelacionados"].append(r[2])
+            else:
+                classe["proRel"] = [r[1]]
+                classe["processosRelacionados"] = [r[2]]
 
 
     def addDecl(self,cod,fileName):
@@ -78,6 +107,12 @@ class Report:
                     self.warnings["harmonizacao"].append(msg)
                 else:
                     self.warnings["harmonizacao"] = [msg]
+            case "R":
+                if "relHarmonizacao" in self.warnings:
+                    self.warnings["relHarmonizacao"].append(msg)
+                else:
+                    self.warnings["relHarmonizacao"] = [msg]
+
             case _:
                 pass
 
@@ -120,6 +155,9 @@ class Report:
 
 
     def dumpReport(self,dumpFileName="dump.json"):
-        print(self.warnings)
+        report = {}
+        report["globalErrors"] = self.globalErrors
+        report["warnings"] = self.warnings
+
         with open(f"dump/{dumpFileName}",'w') as f:
-            json.dump(self.globalErrors,f,ensure_ascii=False, indent=4)
+            json.dump(report,f,ensure_ascii=False, indent=4)
