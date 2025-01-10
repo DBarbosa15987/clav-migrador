@@ -65,6 +65,23 @@ class Report:
             self.globalErrors["erroInv"][inv] = [(s, p, o)]
 
 
+    def addWarning(self,tipo,msg):
+
+        match tipo:
+            case "I":
+                if "inferencias" in self.warnings:
+                    self.warnings["inferencias"].append(" ".join(list(msg)))
+                else:
+                    self.warnings["inferencias"] = [" ".join(list(msg))]
+            case "H":
+                if "harmonizacao" in self.warnings:
+                    self.warnings["harmonizacao"].append(msg)
+                else:
+                    self.warnings["harmonizacao"] = [msg]
+            case _:
+                pass
+
+
     def printInv(self):
 
         for inv,info in self.globalErrors["erroInv"].items():
@@ -103,5 +120,6 @@ class Report:
 
 
     def dumpReport(self,dumpFileName="dump.json"):
+        print(self.warnings)
         with open(f"dump/{dumpFileName}",'w') as f:
             json.dump(self.globalErrors,f,ensure_ascii=False, indent=4)
