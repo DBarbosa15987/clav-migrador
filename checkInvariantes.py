@@ -43,7 +43,7 @@ def processClasses(rep: Report):
         # por isso não é incluída para verificação de invariantes. Deve
         # ser marcada como warning.
         if classe["estado"] == "H":
-            # TODO: add warning
+            rep.addWarning("H",cod)
             continue
         else:
             allClasses[cod] = classe
@@ -54,8 +54,7 @@ def processClasses(rep: Report):
         pca = classe.get("pca")
 
         if proRels:
-            # TODO: decidir o que fazer com os "em harmonização"
-            for proc,rel in list(itertools.zip_longest(proRels, rels, fillvalue=None)):
+            for proc,rel in zip(proRels, rels):
                 # Se não existir, é registada como inválida, se existir confirma-se
                 # se as simetrias e anti-simetrias estão corretas
                 if proc not in data.keys():
@@ -71,7 +70,7 @@ def processClasses(rep: Report):
                             rep.addMissingRels(proc,rel,cod,"relsSimetricas")
                     elif rel in relsInverseOf.keys():
                         if (cod,relsInverseOf[rel]) not in zip(proRels2,rels2):
-                                rep.addMissingRels(proc,relsInverseOf[rel],cod,"relsInverseOf")
+                            rep.addMissingRels(proc,relsInverseOf[rel],cod,"relsInverseOf")
 
         if df:
             justificacao = df.get("justificacao")
@@ -117,7 +116,7 @@ def rel_4_inv_0(sheet,rep: Report):
                     rep.addFalhaInv("rel_4_inv_0",cod)
 
 
-def checkAntissimetrico(sheet,sheetName,rel,rep: Report,invName):
+def checkAntissimetrico(allClasses,rel,rep: Report,invName):
     """
     Verifica para uma `sheet` se uma dada relação
     é antisimétrica.
@@ -125,37 +124,31 @@ def checkAntissimetrico(sheet,sheetName,rel,rep: Report,invName):
     Retorna a lista das classes em que isto não se verifica.
     """
 
-    cache = {sheetName:sheet}
-    for classe in sheet:
+
+    for cod,classe in allClasses.items():
         proRels = classe.get("proRel")
         proRelCods = classe.get("processosRelacionados")
-        if proRels and proRelCods and (len(proRelCods)==len(proRels)):
-            relacoes = [proRelCods[i] for i,x in enumerate(proRels) if x==rel]
+        if proRels and proRelCods:
+            relacoes = [c for c,r in zip(proRelCods,proRels) if r==rel]
             for c in relacoes:
-                fileName = re.search(r'^\d{3}', c).group(0)
-                if fileName not in cache:
-                    with open(f"files/{fileName}.json","r") as f:
-                        cache[fileName] = json.load(f)
-                # Econtrar o processo em questão
-                relacao = [x for x in cache[fileName] if x["codigo"]==c]
+                relacao = allClasses.get(c)
 
-                # FIXME: A classe menciona uma classe que não existe!
-                if len(relacao) == 0:
+                # TODO: no futuro assumir que está certo, porque só depois de validado é que se chega a esta função
+                if not relacao:
                     print("-"*15)
-                    print(classe["codigo"])
+                    print(cod)
                     print(rel)
                     print(c)
                     print("-"*15)
-                    # Por enquanto ignora-se quando não existe
                     continue
 
-                proRels2 = relacao[0].get("proRel")
-                proRelCods2 = relacao[0].get("processosRelacionados")
-                if proRelCods2 and proRels2 and (len(proRelCods2)==len(proRels2)):
-                    relacoes2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x==rel]
+                proRels2 = relacao.get("proRel")
+                proRelCods2 = relacao.get("processosRelacionados")
+                if proRelCods2 and proRels2:
+                    relacoes2 = [c for c,r in zip(proRelCods2,proRels2) if r==rel]
                     # Se existe a relação `rel` aqui também, não cumpre com o invariante
-                    if classe["codigo"] in relacoes2:
-                        rep.addFalhaInv(invName,classe["codigo"],rel,relacao[0]["codigo"])
+                    if cod in relacoes2:
+                        rep.addFalhaInv(invName,cod,rel,c)
 
 
 def checkJustRef(sheet,nivel,rep: Report,invName):
@@ -270,60 +263,60 @@ def checkUniqueInst(rep: Report):
                 rep.addFalhaInv(inv,id)
 
 
-def checkSimetrico(sheet,sheetName,rel,rep: Report,invName):
+def checkSimetrico(allClasses,rel,rep: Report,invName):
     """
     Verifica para uma `sheet` se uma dada relação
     é simétrica.
 
     Retorna a lista das classes em que isto não se verifica.
     """
+    pass
+    # global i,allErros
+    # cache = {sheetName:sheet}
+    # erros = []
+    # for classe in sheet:
+    #     proRels = classe.get("proRel")
+    #     proRelCods = classe.get("processosRelacionados")
+    #     if proRels and proRelCods:
+    #         relacoes = [proRelCods[i] for i,x in enumerate(proRels) if x==rel]
+    #         for r in relacoes:
+    #             fileName = re.search(r'^\d{3}', r).group(0)
+    #             if fileName not in cache:
+    #                 with open(f"files/{fileName}.json","r") as f:
+    #                     cache[fileName] = json.load(f)
+    #             # Econtrar o processo em questão
+    #             classeRel = [x for x in cache[fileName] if x["codigo"]==r]
 
-    global i,allErros
-    cache = {sheetName:sheet}
-    erros = []
-    for classe in sheet:
-        proRels = classe.get("proRel")
-        proRelCods = classe.get("processosRelacionados")
-        if proRels and proRelCods:
-            relacoes = [proRelCods[i] for i,x in enumerate(proRels) if x==rel]
-            for r in relacoes:
-                fileName = re.search(r'^\d{3}', r).group(0)
-                if fileName not in cache:
-                    with open(f"files/{fileName}.json","r") as f:
-                        cache[fileName] = json.load(f)
-                # Econtrar o processo em questão
-                classeRel = [x for x in cache[fileName] if x["codigo"]==r]
+    #             # FIXME: A classe menciona uma classe que não existe!
+    #             if len(classeRel) == 0:
+    #                 print("-"*15)
+    #                 print(classe["codigo"])
+    #                 print(rel)
+    #                 print(r)
+    #                 print("-"*15)
+    #                 # Por enquanto ignora-se quando não existe
+    #                 continue
 
-                # FIXME: A classe menciona uma classe que não existe!
-                if len(classeRel) == 0:
-                    print("-"*15)
-                    print(classe["codigo"])
-                    print(rel)
-                    print(r)
-                    print("-"*15)
-                    # Por enquanto ignora-se quando não existe
-                    continue
+    #             proRels2 = classeRel[0].get("proRel")
+    #             proRelCods2 = classeRel[0].get("processosRelacionados")
+    #             if proRelCods2 and proRels2 and (len(proRelCods2)==len(proRels2)):
+    #                 relacoes2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x==rel]
+    #                 # Se a `rel` não se verifica de volta então não cumpre com o invariante
+    #                 if classe["codigo"] not in relacoes2:
+    #                     erros.append(classe["codigo"])
+    #                 else:
+    #                     i+=1
+    #             # Se não existe, então também não contém `rel`,
+    #             # e por isso não cumpre com o invariante
+    #             else:
+    #                 erros.append(classe["codigo"])
 
-                proRels2 = classeRel[0].get("proRel")
-                proRelCods2 = classeRel[0].get("processosRelacionados")
-                if proRelCods2 and proRels2 and (len(proRelCods2)==len(proRels2)):
-                    relacoes2 = [proRelCods2[i] for i,x in enumerate(proRels2) if x==rel]
-                    # Se a `rel` não se verifica de volta então não cumpre com o invariante
-                    if classe["codigo"] not in relacoes2:
-                        erros.append(classe["codigo"])
-                    else:
-                        i+=1
-                # Se não existe, então também não contém `rel`,
-                # e por isso não cumpre com o invariante
-                else:
-                    erros.append(classe["codigo"])
-
-    # print(f"Erros:{len(erros)}")
-    # allErros += erros
-    return erros
+    # # print(f"Erros:{len(erros)}")
+    # # allErros += erros
+    # return erros
 
 
-def rel_4_inv_1_1(sheet,sheetName,rep: Report):
+def rel_4_inv_1_1(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -331,10 +324,10 @@ def rel_4_inv_1_1(sheet,sheetName,rep: Report):
     "A relação eCruzadoCom é simétrica."
     """
 
-    return checkSimetrico(sheet,sheetName,"eCruzadoCom",rep,"rel_4_inv_1_1")
+    return checkSimetrico(allClasses,"eCruzadoCom",rep,"rel_4_inv_1_1")
 
 
-def rel_4_inv_1_2(sheet,sheetName,rep: Report):
+def rel_4_inv_1_2(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -342,10 +335,10 @@ def rel_4_inv_1_2(sheet,sheetName,rep: Report):
     "A relação eComplementarDe é simétrica"
     """
 
-    return checkSimetrico(sheet,sheetName,"eComplementarDe",rep,"rel_4_inv_1_2")
+    return checkSimetrico(allClasses,"eComplementarDe",rep,"rel_4_inv_1_2")
 
 
-def rel_4_inv_3(sheet,sheetName,rep: Report):
+def rel_4_inv_3(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -353,10 +346,10 @@ def rel_4_inv_3(sheet,sheetName,rep: Report):
     "A relação eSintetizadoPor é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSintetizadoPor",rep,"rel_4_inv_3")
+    return checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_4_inv_3")
 
 
-def rel_4_inv_4(sheet,sheetName,rep: Report):
+def rel_4_inv_4(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -364,7 +357,7 @@ def rel_4_inv_4(sheet,sheetName,rep: Report):
     "A relação eSucessorDe é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSucessorDe",rep,"rel_4_inv_4")
+    return checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
 
 
 def rel_4_inv_11(sheet,rep: Report):
@@ -411,7 +404,7 @@ def rel_4_inv_13(sheet,rep: Report):
     return checkJustRef(sheet,4,rep,"rel_4_inv_13")
 
 
-def rel_4_inv_5(sheet,sheetName,rep: Report):
+def rel_4_inv_5(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -419,10 +412,10 @@ def rel_4_inv_5(sheet,sheetName,rep: Report):
     "A relação eSuplementoDe é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSuplementoDe",rep,"rel_4_inv_5")
+    return checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_4_inv_5")
 
 
-def rel_4_inv_6(sheet,sheetName,rep: Report):
+def rel_4_inv_6(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -430,10 +423,10 @@ def rel_4_inv_6(sheet,sheetName,rep: Report):
     "A relação eSuplementoPara é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSuplementoPara",rep,"rel_4_inv_6")
+    return checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_4_inv_6")
 
 
-def rel_4_inv_2(sheet,sheetName,rep: Report):
+def rel_4_inv_2(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -441,7 +434,7 @@ def rel_4_inv_2(sheet,sheetName,rep: Report):
     "A relação eSinteseDe é antisimétrica."
     """
 
-    return checkAntissimetrico(sheet,sheetName,"eSinteseDe",rep,"rel_4_inv_2")
+    return checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
 
 
 def rel_3_inv_6(sheet,rep: Report):
