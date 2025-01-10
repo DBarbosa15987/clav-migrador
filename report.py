@@ -3,16 +3,18 @@ import json
 class Report:
 
     def __init__(self):
-        self.struct = {
-            "declaracoes": {}, # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
-            "relsInvalidas": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
-        }
+        self.declaracoes = {} # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
         self.missingRels = {
             "relsSimetricas": [],
             "relsInverseOf": []
         }
-        self.globalErrors = {"struct":{},"erroInv":{}}
-        self.erroInv = {}
+        self.globalErrors = {
+            "struct":{
+                "declsRepetidas": {}, # {"200":["100.ttl","200.ttl"]}
+                "relsInvalidas": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+            },
+            "erroInv":{}
+        }
         self.warnings = {}
 
 
@@ -20,40 +22,36 @@ class Report:
         self.missingRels[tipo].append((proc,rel,cod))
 
 
+    def fixMissingRels():
+        # TODO
+        pass
+
+
     def addDecl(self,cod,fileName):
         # "cod" aparece declarado repetidamente no(s) ficheiro(s) set(declaracoes[cod])
-        declaracoes = self.struct["declaracoes"]
-        if cod in declaracoes:
-            declaracoes[cod].append(fileName+".ttl")
+        if cod in self.declaracoes:
+            self.declaracoes[cod].append(fileName+".ttl")
         else:
-            declaracoes[cod] = [fileName+".ttl"]
+            self.declaracoes[cod] = [fileName+".ttl"]
 
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
         # "cod" é mencionado por relacoes[cod]
-        relacoes = self.struct["relsInvalidas"]
+        relacoes = self.globalErrors["struct"]["relsInvalidas"]
         if proRel in relacoes:
             relacoes[proRel].append((cod,rel,tipoProcRef))
         else:
             relacoes[proRel] = [(cod,rel,tipoProcRef)]
 
 
-    def checkRelsInvalidas(self):
-
+    def checkStruct(self):
         ok = True
-
-        if len(self.struct["relsInvalidas"])>0:
-            # ...
-            ok = False
-        
-        return ok
-
-
-    def checkRepetidos(self):
-        
-        repetidas = [(k,v) for k,v in self.struct["declaracoes"].items() if len(v)>1]
+        repetidas = [(k,v) for k,v in self.declaracoes.items() if len(v)>1]
         if repetidas:
-            self.globalErrors["struct"]["repetidas"] = repetidas
+            self.globalErrors["struct"]["declsRepetidas"] = repetidas
+            ok = False
+
+        if len(self.globalErrors["struct"]["relsInvalidas"])>0:
             ok = False
 
         return ok
@@ -61,15 +59,15 @@ class Report:
 
     def addFalhaInv(self,inv,s,p=None,o=None):
 
-        if inv in self.erroInv:
-            self.erroInv[inv].append((s, p, o))
+        if inv in self.globalErrors["erroInv"]:
+            self.globalErrors["erroInv"][inv].append((s, p, o))
         else:
-            self.erroInv[inv] = [(s, p, o)]
+            self.globalErrors["erroInv"][inv] = [(s, p, o)]
 
 
     def printInv(self):
 
-        for inv,info in self.erroInv.items():
+        for inv,info in self.globalErrors["erroInv"].items():
             print(f"\n{inv}:\n")
             match inv:
                 case "rel_4_inv_0":
@@ -106,4 +104,4 @@ class Report:
 
     def dumpReport(self,dumpFileName="dump.json"):
         with open(f"dump/{dumpFileName}",'w') as f:
-            json.dump(self.erroInv,f,ensure_ascii=False, indent=4)
+            json.dump(self.globalErrors,f,ensure_ascii=False, indent=4)
