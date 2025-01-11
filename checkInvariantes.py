@@ -47,6 +47,9 @@ def processClasses(rep: Report):
             continue
         else:
             allClasses[cod] = classe
+            if classe["nivel"] == 3:
+                filhos = [c for c,_ in data.items() if c.startswith(cod + ".")]
+                classe["filhos"] = filhos
 
         proRels = classe.get("processosRelacionados")
         rels = classe.get("proRel")
@@ -106,9 +109,8 @@ def rel_4_inv_0(sheet,rep: Report):
 
     for cod,classe in sheet.items():
         if classe["nivel"] == 3:
-            filhos = [x for c,x in sheet.items() if c.startswith(cod + ".")]
             # Se não tem filhos tem de ter uma justificação associada ao PCA
-            if len(filhos) == 0:
+            if classe.get("filhos"):
                 if classe.get("pca"):
                     if not classe["pca"].get("justificacao"):
                         rep.addFalhaInv("rel_4_inv_0",cod)
@@ -183,7 +185,6 @@ def checkJustRef(sheet,nivel,rep: Report,invName):
                         # a legislação é mencionada no pai
                         elif nivel == 4:
                             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
-                            # TODO: fazer um search pela lista melhor
                             classePai = sheet.get(pai)
                             if classePai:
                                 # TODO: dar mais detalhe sobre o erro
@@ -449,8 +450,7 @@ def rel_3_inv_6(sheet,rep: Report):
     for cod,classe in sheet.items():
         if classe["nivel"] == 3:
             # Verificar se tem filhos
-            filhos = [c for c in sheet if c.startswith(cod+".") ]
-            if len(filhos) == 0:
+            if classe.get("filhos"):
                 pca = classe.get("pca")
                 df = classe.get("df")
                 # TODO: especificar melhor os erros aqui
@@ -471,8 +471,7 @@ def rel_5_inv_1(sheet):
     erros = []
     for cod,classe in sheet.items():
         if classe["nivel"] == 3: # FIXME fazer isto?
-            filhos = [x for c,x in sheet.items() if c.startswith(cod + ".")]
-            if not filhos: # FIXME porquê?
+            if not classe.get("filhos"): # FIXME porquê?
                 proRel = classe.get("proRel")
                 if proRel and "eSuplementoPara" in proRel:
                     just = classe.get("pca",{}).get("justificacao")
@@ -527,8 +526,7 @@ def rel_3_inv_1(sheet,rep: Report):
     # FIXME notas
     for cod,classe in sheet.items():
         if classe["nivel"] == 3:
-            filhos = [x for c,x in sheet.items() if c.startswith(cod + ".")]
-            if filhos:
+            if classe.get("filhos"):
                 valoresPca = [f["pca"]["valores"] for f in filhos if f.get("pca",{}).get("valores")]
                 valoresDf = [f["df"]["valor"] for f in filhos if f.get("df",{}).get("valor")]
                 # TODO: especificar melhor o erro
@@ -552,8 +550,7 @@ def rel_3_inv_5(sheet,rep: Report):
     # TODO: especificar melhor o erro
     for cod,classe in sheet.items():
         if classe["nivel"] == 3:
-            filhos = [x for c,x in sheet.items() if c.startswith(cod + ".")]
-            if filhos and (classe.get("pca") or classe.get("df")):
+            if classe.get("filhos") and (classe.get("pca") or classe.get("df")):
                 rep.addFalhaInv("rel_3_inv_5",cod)
    
 
