@@ -2,7 +2,7 @@ import json
 import time
 import re
 from report import Report
-import itertools
+from itertools import zip_longest
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
@@ -98,7 +98,7 @@ def processClasses(rep: Report):
     return allClasses
 
 
-def rel_4_inv_0(sheet,rep: Report):
+def rel_4_inv_0(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -107,7 +107,7 @@ def rel_4_inv_0(sheet,rep: Report):
     tem de ter uma justificação associada ao PCA."
     """
 
-    for cod,classe in sheet.items():
+    for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             # Se não tem filhos tem de ter uma justificação associada ao PCA
             if classe.get("filhos"):
@@ -153,7 +153,7 @@ def checkAntissimetrico(allClasses,rel,rep: Report,invName):
                         rep.addFalhaInv(invName,cod,rel,c)
 
 
-def checkJustRef(sheet,nivel,rep: Report,invName):
+def checkJustRef(allClasses,nivel,rep: Report,invName):
     """
     Verifica se as classes do `nível` passado por input (3 ou 4)
     referenciam as legislações mencionadas nas justificações de pca e df.
@@ -164,7 +164,7 @@ def checkJustRef(sheet,nivel,rep: Report,invName):
     Retorna a lista das classes em que isto não se verifica.
     """
 
-    for cod,classe in sheet.items():
+    for cod,classe in allClasses.items():
         if classe["nivel"] == nivel:
             # verificação no pca
             if "pca" in classe:
@@ -185,13 +185,14 @@ def checkJustRef(sheet,nivel,rep: Report,invName):
                         # a legislação é mencionada no pai
                         elif nivel == 4:
                             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
-                            classePai = sheet.get(pai)
+                            classePai = allClasses.get(pai)
                             if classePai:
                                 # TODO: dar mais detalhe sobre o erro
                                 if "legislacao" not in classePai or leg not in classePai["legislacao"]:
                                     rep.addFalhaInv(invName,cod)
                             else:
                                 # FIXME: erro se não houver pai
+                                print(f"{cod} não tem pai ({pai})")
                                 pass
 
             # verificação no df
@@ -213,12 +214,13 @@ def checkJustRef(sheet,nivel,rep: Report,invName):
                         # a legislação é mencionada no pai
                         if nivel == 4:
                             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
-                            classePai = sheet.get(pai)
+                            classePai = allClasses.get(pai)
                             if classePai:
                                 if "legislacao" not in classePai or leg not in classePai["legislacao"]:
                                     rep.addFalhaInv(invName,cod)
                             else:
                                 # FIXME: erro se não houver pai
+                                print(f"{cod} não tem pai ({pai})")
                                 pass
 
 
@@ -361,7 +363,7 @@ def rel_4_inv_4(allClasses,rep: Report):
     return checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
 
 
-def rel_4_inv_11(sheet,rep: Report):
+def rel_4_inv_11(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -370,16 +372,17 @@ def rel_4_inv_11(sheet,rep: Report):
     'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
     """
 
-    for cod,classe in sheet.items():
-        # TODO: saber aqui quais é que "quebram o inv"
-        proRels = classe.get("proRel")
-        # proRelCods = classe.get("processosRelacionados")
-        # Se a classe contém ambas as relações, não cumpre com o invariante
-        if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
-            rep.addFalhaInv("rel_4_inv_11",cod)
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            # TODO: saber aqui quais é que "quebram o inv"
+            proRels = classe.get("proRel")
+            # proRelCods = classe.get("processosRelacionados")
+            # Se a classe contém ambas as relações, não cumpre com o invariante
+            if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
+                rep.addFalhaInv("rel_4_inv_11",cod)
 
 
-def rel_4_inv_12(sheet,rep: Report):
+def rel_4_inv_12(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -389,10 +392,10 @@ def rel_4_inv_12(sheet,rep: Report):
     do processo que tem essa justificação (Classes de nível 3)"
     """
 
-    return checkJustRef(sheet,3,rep,"rel_4_inv_12")
+    return checkJustRef(allClasses,3,rep,"rel_4_inv_12")
 
 
-def rel_4_inv_13(sheet,rep: Report):
+def rel_4_inv_13(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -402,7 +405,7 @@ def rel_4_inv_13(sheet,rep: Report):
     processo que tem essa justificação (Classes de nível 4)"
     """
 
-    return checkJustRef(sheet,4,rep,"rel_4_inv_13")
+    return checkJustRef(allClasses,4,rep,"rel_4_inv_13")
 
 
 def rel_4_inv_5(allClasses,rep: Report):
@@ -438,7 +441,7 @@ def rel_4_inv_2(allClasses,rep: Report):
     return checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
 
 
-def rel_3_inv_6(sheet,rep: Report):
+def rel_3_inv_6(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -447,15 +450,16 @@ def rel_3_inv_6(sheet,rep: Report):
     se esta não tiver filhos"
     """
 
-    for cod,classe in sheet.items():
+    for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             # Verificar se tem filhos
-            if classe.get("filhos"):
+            if not classe.get("filhos"):
                 pca = classe.get("pca")
                 df = classe.get("df")
                 # TODO: especificar melhor os erros aqui
                 if not pca or not df:
                     rep.addFalhaInv("rel_3_inv_6",cod)
+
 
 def rel_5_inv_1(sheet):
     """
@@ -515,7 +519,15 @@ def rel_7_inv_2(sheet):
     return erros
 
 
-def rel_3_inv_1(sheet,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    """
+
+    for cod,classe in sheet.items():
+        if classe["nivel"] == 3:
+def rel_3_inv_1(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -523,22 +535,21 @@ def rel_3_inv_1(sheet,rep: Report):
     "Só existe desdobramento caso o PCA ou DF sejam distintos"
     """
 
-    # FIXME notas
-    for cod,classe in sheet.items():
+    for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            if classe.get("filhos"):
-                valoresPca = [f["pca"]["valores"] for f in filhos if f.get("pca",{}).get("valores")]
-                valoresDf = [f["df"]["valor"] for f in filhos if f.get("df",{}).get("valor")]
-                # TODO: especificar melhor o erro
-                # Se for diferente, então existem valores repetidos
-                # E por isso não cumpre com o invariante
-                if len(valoresPca) != set(valoresPca):
+            codFilhos = classe.get("filhos")
+            if codFilhos:
+                filhos = [allClasses.get(c) for c in codFilhos]
+                valores = [(f["pca"]["valores"],f["df"]["valor"]) for f in filhos if "pca" in f and "df" in f]
+                # Se as combinações de pca e df tiverem valores repetidos,
+                # então não deve haver desdobramento. E por isso o invariante falha
+                if len(valores) != len(set(valores)):
+                    # TODO: especificar melhor o erro
                     rep.addFalhaInv("rel_3_inv_1",cod)
-                if len(valoresDf) != set(valoresDf):
-                    rep.addFalhaInv("rel_3_inv_1",cod)
+               
 
 
-def rel_3_inv_5(sheet,rep: Report):
+def rel_3_inv_5(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -548,7 +559,7 @@ def rel_3_inv_5(sheet,rep: Report):
     """
 
     # TODO: especificar melhor o erro
-    for cod,classe in sheet.items():
+    for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             if classe.get("filhos") and (classe.get("pca") or classe.get("df")):
                 rep.addFalhaInv("rel_3_inv_5",cod)
