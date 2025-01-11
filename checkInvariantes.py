@@ -519,14 +519,24 @@ def rel_7_inv_2(sheet):
     return erros
 
 
+def rel_6_inv_2(sheet,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
 
+    "Quando o PN em causa é síntetizado por outro,
+    o DF deve ter o valor de 'Eliminação'"
     """
 
     for cod,classe in sheet.items():
         if classe["nivel"] == 3:
+            proRel = classe.get("proRel")
+            if proRel and "eSintetizadoPor" in proRel:
+                filhos = classe.get("filhos")
+                if not filhos and  "eSinteseDe" not in proRel and "eComplementarDe" not in proRel:
+                    valor = classe.get("df",{}).get("valor")
+                    if valor != 'E':
+                        rep.addFalhaInv("rel_6_inv_2",cod)
 def rel_9_inv_2(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
