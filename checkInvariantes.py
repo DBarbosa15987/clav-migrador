@@ -527,6 +527,23 @@ def rel_7_inv_2(sheet):
 
     for cod,classe in sheet.items():
         if classe["nivel"] == 3:
+def rel_9_inv_2(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Se um PN é eSinteseDe -> DF é de conservação"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            proRel = classe.get("proRel")
+            if proRel and "eSinteseDe" in proRel:
+                valor = classe.get("df",{}).get("valor")
+                if valor and valor != "C":
+                    rep.addFalhaInv("rel_9_inv_2",cod)
+
+
 def rel_3_inv_1(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
