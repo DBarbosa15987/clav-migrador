@@ -637,6 +637,41 @@ def rel_3_inv_5(allClasses,rep: Report):
                 rep.addFalhaInv("rel_3_inv_5",cod)
    
 
+def rel_3_inv_7(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Se um PN (Classe 3) for complementar de outro que
+    se desdobra ao 4º nível, é necessário, com base no
+    critério de complementaridade informacional,a relação
+    manter-se ao 3º nível. Pelo menos um dos 4ºs níveis
+    deve ser de conservação."
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            proRels = classe.get("proRel")
+            proRelCods = classe.get("processosRelacionados")
+            if proRels and proRelCods and "eComplementarDe" in proRels:
+                compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
+                for compl in compls:
+                    codFilhos = allClasses[compl].get("filhos")
+                    filhos = [allClasses.get(c) for c in codFilhos]
+                    if filhos:
+                        conservacao = False
+                        for filho in filhos:
+                            valor = filho.get("df",{}).get("valor")
+                            if valor == "C":
+                                conservacao = True
+                                break
+                        # Se nenhum processo tiver o valor de "C",
+                        # então o invariante falha
+                        if not conservacao:
+                            # TODO: especificar em que compl falhou
+                            rep.addFalhaInv("rel_3_inv_7",cod)
+
+
 t0 = time.time()
 rep = Report()
 
