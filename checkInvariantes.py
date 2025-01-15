@@ -537,6 +537,51 @@ def rel_6_inv_2(sheet,rep: Report):
                     valor = classe.get("df",{}).get("valor")
                     if valor != 'E':
                         rep.addFalhaInv("rel_6_inv_2",cod)
+
+
+def rel_5_inv_3(allClasses,rep:Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Quando o PN em causa é suplemento de outro, o critério
+    a acrescentar na justificação do PCA é livre, normalmente
+    é o critério legal. Todos os processos relacionados pela 
+    relação suplemento de devem figurar neste critério"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            proRel = classe.get("proRel")
+            if proRel and "eSuplementoDe" in proRel:
+                just = classe.get("pca",{}).get("justificacao",[])
+                supl = [cod for rel,cod in zip(proRel,classe["processosRelacionados"]) if rel=="eSuplementoDe"]
+
+                if just:
+                    allProcRefs = []
+                    for j in just:
+                        procRefs = j.get("procRefs",[])
+                        allProcRefs+=procRefs
+                    
+                    for sup in supl:
+                        if sup not in allProcRefs:
+                            if sup not in allClasses:
+                                # TODO: decidir o que fazer com os em harmonização
+                                print(f"Harmonização: {sup}")
+
+                            # TODO: melhorar o erro
+                            rep.addFalhaInv("rel_5_inv_3",cod)                 
+                else:
+                    # Registar todos processos em faltam caso não haja justificação
+                    for sup in supl:
+                        if sup not in allClasses:
+                            # TODO: decidir o que fazer com os em harmonização
+                            print(f"Harmonização: {sup}")
+
+                        # TODO: melhorar o erro
+                        rep.addFalhaInv("rel_5_inv_3",cod)
+
+
 def rel_9_inv_2(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
