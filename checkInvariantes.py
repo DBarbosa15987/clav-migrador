@@ -452,7 +452,6 @@ def rel_3_inv_6(allClasses,rep: Report):
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            # Verificar se tem filhos
             if not classe.get("filhos"):
                 pca = classe.get("pca")
                 df = classe.get("df")
@@ -672,11 +671,35 @@ def rel_3_inv_7(allClasses,rep: Report):
                             rep.addFalhaInv("rel_3_inv_7",cod)
 
 
+def rel_3_inv_4(allClasses,termosIndice,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Quando há desdobramento em 4ºs níveis, os termos de
+    índice são replicados em cada um desses níveis."
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            if codFilhos:
+                termosPai = [t["termo"] for t in termosIndice if t["codigo"]==cod]
+                for c in codFilhos:
+                    termosFilho = [t["termo"] for t in termosIndice if t["codigo"]==c]
+                    for t in termosPai:
+                        if t not in termosFilho:
+                            # TODO: indicar o TI em falta no erro e em que filho
+                            rep.addFalhaInv("rel_3_inv_4",cod)
+                
+
 t0 = time.time()
 rep = Report()
 
 
 allClasses = processClasses(rep)
+with open("files/ti.json",'r') as f:
+    termosIndice = json.load(f)
 ok = rep.checkStruct()
 if not ok:
     rep.fixMissingRels(allClasses)
