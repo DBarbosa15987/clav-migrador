@@ -110,7 +110,7 @@ def rel_4_inv_0(allClasses,rep: Report):
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             # Se não tem filhos tem de ter uma justificação associada ao PCA
-            if classe.get("filhos"):
+            if not classe.get("filhos"):
                 if classe.get("pca"):
                     if not classe["pca"].get("justificacao"):
                         rep.addFalhaInv("rel_4_inv_0",cod)
