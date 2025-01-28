@@ -691,6 +691,25 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                             rep.addFalhaInv("rel_3_inv_4",cod)
                 
 
+
+
+def rel_9_inv_1(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Se um PN é eComplementarDe -> DF é de conservação"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            if not codFilhos:
+                proRels = classe.get("proRel")
+                if proRels and "eComplementarDe" in proRels:
+                    valor = classe.get("df",{}).get("valor")
+                    if valor != "C":
+                        rep.addFalhaInv("rel_9_inv_1",cod)
 def rel_4_inv_10(termosIndice,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
