@@ -3,6 +3,7 @@ import time
 import re
 from report import Report
 from itertools import zip_longest
+from collections import Counter
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
@@ -16,9 +17,6 @@ relsInverseOf = {
     "eSuplementoPara": "eSuplementoDe",
     "eAntecessorDe": "eSucessorDe"
 }
-
-
-allErros = []
 
 
 def processClasses(rep: Report):
@@ -693,9 +691,37 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                             rep.addFalhaInv("rel_3_inv_4",cod)
                 
 
+def rel_4_inv_10(termosIndice,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Os termos de indice de um PN não existem em mais
+    nenhuma classe 3"
+    """
+
+    n3 = re.compile(r'^\d{3}\.\d{1,3}\.\d{1,3}$')
+    termos = {}
+    for t in termosIndice:
+        cod = t["codigo"]
+        termo = t["termo"]
+        if n3.fullmatch(cod):
+            if termo in termos:
+                termos[termo].add(cod)
+            else:
+                termos[termo] = set([cod]) #{termo:[100,200]}
+    
+    # TODO: organizar melhor o erro aqui
+    for t,cods in termos.items():
+        if len(cods) > 1:
+            print(t)
+            print(cods)
+            for c in cods:
+                rep.addFalhaInv("rel_4_inv_10",c)
+
+
 t0 = time.time()
 rep = Report()
-
 
 allClasses = processClasses(rep)
 with open("files/ti.json",'r') as f:
