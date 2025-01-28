@@ -693,6 +693,25 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
 
 
 
+def rel_9_inv_3(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Se um PN é eSintetizadoPor -> DF é de eliminação"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            if not codFilhos:
+                proRels = classe.get("proRel")
+                if proRels and "eSintetizadoPor" in proRels and "eComplementarDe" not in proRels and "eSinteseDe" not in proRels:
+                    valor = classe.get("df",{}).get("valor")
+                    if valor != "E":
+                        rep.addFalhaInv("rel_9_inv_3",cod)
+
+
 def rel_9_inv_1(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
