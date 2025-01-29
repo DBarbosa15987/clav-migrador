@@ -487,7 +487,7 @@ def rel_5_inv_1(sheet):
     return erros
 
 
-def rel_7_inv_2(sheet):
+def rel_7_inv_2(allClasses,rep:Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -497,9 +497,8 @@ def rel_7_inv_2(sheet):
     de complementaridade informacional"
     """
     # TODO: faltam as coisas dos (?crit :critTemProcRel ?o)?
-    global allErros
-    erros = []
-    for cod,classe in sheet.items():
+
+    for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             proRel = classe.get("proRel")
             if proRel and "eComplementarDe" in proRel:
@@ -508,15 +507,12 @@ def rel_7_inv_2(sheet):
                     justComplementaridade = [x for x in just if x["tipo"]=="complementaridade"]
                     # TODO: faltam erros melhores aqui
                     if not justComplementaridade:
-                        erros.append(cod)
+                        rep.addFalhaInv("rel_7_inv_2",cod)
                 else:
-                    erros.append(cod)
-
-    allErros += erros
-    return erros
+                    rep.addFalhaInv("rel_7_inv_2",cod)
 
 
-def rel_6_inv_2(sheet,rep: Report):
+def rel_6_inv_2(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -525,7 +521,7 @@ def rel_6_inv_2(sheet,rep: Report):
     o DF deve ter o valor de 'Eliminação'"
     """
 
-    for cod,classe in sheet.items():
+    for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             proRel = classe.get("proRel")
             if proRel and "eSintetizadoPor" in proRel:
@@ -615,7 +611,6 @@ def rel_3_inv_1(allClasses,rep: Report):
                 if len(valores) != len(set(valores)):
                     # TODO: especificar melhor o erro
                     rep.addFalhaInv("rel_3_inv_1",cod)
-               
 
 
 def rel_3_inv_5(allClasses,rep: Report):
