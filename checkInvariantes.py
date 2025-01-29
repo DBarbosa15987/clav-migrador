@@ -752,6 +752,41 @@ def rel_9_inv_3(allClasses,rep: Report):
                         rep.addFalhaInv("rel_9_inv_3",cod)
 
 
+def rel_7_inv_3(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Todos os processos relacionados pela relação é complementar
+    de, devem estar relacionados com o critério de complementaridade
+    informacional da respetiva justificação"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            proRelCods = classe.get("processosRelacionados")
+            proRels = classe.get("proRel")
+            if proRels and "eComplementarDe" in proRels:
+                just = classe.get("df",{}).get("justificacao")
+                compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
+                if just:
+                    jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
+                    allProcRefs = []
+                    for crit in jComlpementaridade:
+                        allProcRefs += crit.get("procRefs",[])
+
+                    for c in compls:
+                        if c not in allProcRefs:
+                            # TODO: meter no erro o código em falta
+                            rep.addFalhaInv("rel_7_inv_3",cod)
+                else:
+                    # Aqui já se sabe que não existe justificação,
+                    # por isso estão todos em falta
+                    for c in compls:
+                        # TODO: meter no erro o código em falta
+                        rep.addFalhaInv("rel_7_inv_3",cod)
+
+
 def rel_9_inv_1(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
