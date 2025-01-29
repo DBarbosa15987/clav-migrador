@@ -691,6 +691,29 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                             rep.addFalhaInv("rel_3_inv_4",cod)
                 
 
+def rel_6_inv_3(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Se um PN tem uma relação de síntese, o seu DF deverá
+    ter uma justificação onde consta um critério de
+    densidade informacional"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            if not codFilhos:
+                proRels = classe.get("proRel")
+                if proRels and ("eSinteseDe" in proRels or "eSintetizadoPor" in proRels):
+                    just = classe.get("df",{}).get("justificacao")
+                    if just:
+                        justDensidade = [x for x in just if x["tipo"]=="densidade"]
+                        if not justDensidade:
+                            rep.addFalhaInv("rel_6_inv_3",cod)
+                    else:
+                        rep.addFalhaInv("rel_6_inv_3",cod)
 
 
 def rel_6_inv_4(allClasses,rep: Report):
@@ -804,6 +827,8 @@ def rel_9_inv_1(allClasses,rep: Report):
                     valor = classe.get("df",{}).get("valor")
                     if valor != "C":
                         rep.addFalhaInv("rel_9_inv_1",cod)
+
+
 def rel_4_inv_10(termosIndice,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
