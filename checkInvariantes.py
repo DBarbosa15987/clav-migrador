@@ -693,6 +693,46 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
 
 
 
+def rel_6_inv_4(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Todos os processos relacionados por uma relação de
+    síntese deverão estar relacionados com o critério de
+    densidade informacional da respetiva justificação"
+    """
+
+    # NOTE: tal como está na query...
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            if not codFilhos:
+                proRelCods = classe.get("processosRelacionados")
+                proRels = classe.get("proRel")
+                if proRels and ("eSinteseDe" in proRels or "eSintetizadoPor" in proRels):
+                    valor = classe.get("df",{}).get("valor")
+                    if valor != "C":
+                        just = classe.get("df",{}).get("justificacao")
+                        sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
+                        if just:
+                            jDensidade = [x for x in just if x["tipo"]=="densidade"]
+                            allProcRefs = []
+                            for crit in jDensidade:
+                                allProcRefs += crit.get("procRefs",[])
+
+                            for s in sints:
+                                if s not in allProcRefs:
+                                    # TODO: meter no erro o código em falta
+                                    rep.addFalhaInv("rel_6_inv_4",cod)
+                        else:
+                            # Aqui já se sabe que não existe justificação,
+                            # por isso estão todos em falta
+                            for s in sints:
+                                # TODO: meter no erro o código em falta
+                                rep.addFalhaInv("rel_6_inv_4",cod)
+
+
 def rel_9_inv_3(allClasses,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
