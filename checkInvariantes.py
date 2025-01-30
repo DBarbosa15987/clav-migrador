@@ -843,6 +843,25 @@ def rel_4_inv_8(allClasses,rep: Report):
                     rep.addFalhaInv("rel_4_inv_8",cod,o=dup)
 
 
+def rel_6_inv_1(allClasses,rep: Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "Quando o PN em causa é síntese de outro, o DF deve
+    ter o valor de 'Conservação'"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            if not classe.get("filhos"):
+                proRels = classe.get("proRel")
+                if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" not in proRels:
+                    valor = classe.get("df",{}).get("valor")
+                    if valor != 'C':
+                        rep.addFalhaInv("rel_6_inv_1",cod)
+
+
 def rel_4_inv_10(termosIndice,rep: Report):
     """
     A função devolve a lista de classes que não cumprem
