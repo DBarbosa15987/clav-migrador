@@ -458,7 +458,7 @@ def rel_3_inv_6(allClasses,rep: Report):
                     rep.addFalhaInv("rel_3_inv_6",cod)
 
 
-def rel_5_inv_1(sheet):
+def rel_5_inv_1(allClasses,rep:Report):
     """
     A função devolve a lista de classes que não cumprem
     com este invariante:
@@ -467,24 +467,21 @@ def rel_5_inv_1(sheet):
     deve ser acrescentado um critério de utilidade
     administrativa na justificação do respetivo PCA"
     """
-    # FIXME: ver a coisa dos filhos que estava na query "MINUS {?s :temFilho ?f}"
-    global allErros
-    erros = []
-    for cod,classe in sheet.items():
-        if classe["nivel"] == 3: # FIXME fazer isto?
-            if not classe.get("filhos"): # FIXME porquê?
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            if not classe.get("filhos"):
                 proRel = classe.get("proRel")
                 if proRel and "eSuplementoPara" in proRel:
                     just = classe.get("pca",{}).get("justificacao")
                     if just:
                         justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                        # TODO: faltam erros melhores aqui
                         if not justUtilidade:
-                            erros.append(cod)
+                            rep.addFalhaInv("rel_5_inv_1",cod)
                     else:
-                        erros.append(cod)
+                        rep.addFalhaInv("rel_5_inv_1",cod)
 
-    allErros+=erros
-    return erros
 
 
 def rel_7_inv_2(allClasses,rep:Report):
@@ -496,7 +493,6 @@ def rel_7_inv_2(allClasses,rep:Report):
     a justificação do DF deverá conter o critério 
     de complementaridade informacional"
     """
-    # TODO: faltam as coisas dos (?crit :critTemProcRel ?o)?
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
