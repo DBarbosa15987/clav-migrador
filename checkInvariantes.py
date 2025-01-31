@@ -928,6 +928,27 @@ def rel_4_inv_10(termosIndice,rep: Report):
                 rep.addFalhaInv("rel_4_inv_10",c)
 
 
+def rel_4_inv_7(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Na relação temRelProc um PN não se relaciona
+    com ele próprio."
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            proRelCods = classe.get("processosRelacionados")
+            proRels = classe.get("proRel")
+            if proRelCods:
+                # Identificar os todos os casos em que o processo
+                # se menciona a si próprio
+                selfRels = [(c,r) for c,r in zip(proRelCods,proRels) if cod==c]
+                for r in selfRels:
+                    rep.addFalhaInv("rel_4_inv_7",cod,p=r)
+
+
 t0 = time.time()
 rep = Report()
 
