@@ -949,6 +949,25 @@ def rel_4_inv_7(allClasses,rep: Report):
                     rep.addFalhaInv("rel_4_inv_7",cod,p=r)
 
 
+def rel_8_inv_1(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Um DF, na sua justificação, deverá conter
+    apenas critérios de densidade informacional,
+    complementaridade informacional e legal"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("df",{}).get("justificacao")
+            if just:
+                for j in just:
+                    if j["tipo"] not in ["complementaridade","densidade","legal"]:
+                        # TODO: Especificar melhor o erro
+                        rep.addFalhaInv("rel_8_inv_1",cod)
+
 t0 = time.time()
 rep = Report()
 
