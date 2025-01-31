@@ -483,6 +483,44 @@ def rel_5_inv_1(allClasses,rep:Report):
                         rep.addFalhaInv("rel_5_inv_1",cod)
 
 
+def rel_5_inv_2(allClasses,rep:Report):
+    """
+    A função devolve a lista de classes que não cumprem
+    com este invariante:
+
+    "No critério de utilidade administrativa devem aparecer
+    todos os processos com os quais existe uma relação de
+    suplemento para"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            if not codFilhos:
+                proRel = classe.get("proRel")
+                proRelCods = classe.get("processosRelacionados")
+                if proRel and "eSuplementoPara" in proRel:
+                    supls = [c for r,c in zip(proRel,proRelCods) if r=="eSuplementoPara"]
+                    justificacao = classe.get("pca",{}).get("justificacao")
+                    if justificacao:
+                        jUtilidade = [x for x in justificacao if x["tipo"]=="utilidade"]
+                        if jUtilidade:
+                            allProcRefs = []
+                            for crit in jUtilidade:
+                                allProcRefs += crit.get("procRefs",[])
+        
+                            for s in supls:
+                                if s not in allProcRefs:
+                                    rep.addFalhaInv("rel_5_inv_2",cod,o=s)
+                        else:
+                            # Aqui como não nenhum procRef, todos os supls estão em falta
+                            for s in supls:
+                                rep.addFalhaInv("rel_5_inv_2",cod,o=s)
+                    else:
+                        # Aqui como não nenhum procRef, todos os supls estão em falta
+                        for s in supls:
+                            rep.addFalhaInv("rel_5_inv_2",cod,o=s)
+
 
 def rel_7_inv_2(allClasses,rep:Report):
     """
