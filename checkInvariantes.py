@@ -2,7 +2,6 @@ import json
 import time
 import re
 from report import Report
-from itertools import zip_longest
 from collections import Counter
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
@@ -23,9 +22,13 @@ def processClasses(rep: Report):
     """
     Função que verifica se existem códigos de classe repetidas
     e se todas as classes mencionadas (em relações) existem de facto.
+    A função também regista todas as possíveis inferências tendo em
+    conta algumas propriedades da futura ontologia.
 
-    A função produz um relatório destes erros e retorna `False` se
-    encontrar algo e `True` se não houver inconsistências deste tipo.
+    No final a função produz um relatório em que contam os erros
+    encontrados, warnings e possíveis inferências a aplicar aos dados.
+    A função retorna um dicionário com os dados, apenas excluindo os
+    processos em Harmonização que não serão testados pelos invariantes.
     """
 
     data = {}
@@ -98,8 +101,8 @@ def processClasses(rep: Report):
 
 def rel_4_inv_0(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Um processo sem desdobramento ao 4º nível
     tem de ter uma justificação associada ao PCA."
@@ -319,8 +322,8 @@ def checkSimetrico(allClasses,rel,rep: Report,invName):
 
 def rel_4_inv_1_1(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "A relação eCruzadoCom é simétrica."
     """
@@ -330,8 +333,8 @@ def rel_4_inv_1_1(allClasses,rep: Report):
 
 def rel_4_inv_1_2(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "A relação eComplementarDe é simétrica"
     """
@@ -341,8 +344,8 @@ def rel_4_inv_1_2(allClasses,rep: Report):
 
 def rel_4_inv_3(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "A relação eSintetizadoPor é antisimétrica."
     """
@@ -352,8 +355,8 @@ def rel_4_inv_3(allClasses,rep: Report):
 
 def rel_4_inv_4(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "A relação eSucessorDe é antisimétrica."
     """
@@ -363,8 +366,8 @@ def rel_4_inv_4(allClasses,rep: Report):
 
 def rel_4_inv_11(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Um PN não pode ter em simultâneo relações de 
     'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
@@ -382,8 +385,8 @@ def rel_4_inv_11(allClasses,rep: Report):
 
 def rel_4_inv_12(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Um diploma legislativo referenciado num critério de
     justicação tem de estar associado na zona de contexto
@@ -395,8 +398,8 @@ def rel_4_inv_12(allClasses,rep: Report):
 
 def rel_4_inv_13(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Um diploma legislativo referenciado num critério de
     justicação tem de estar associado na zona de contexto do
@@ -408,8 +411,8 @@ def rel_4_inv_13(allClasses,rep: Report):
 
 def rel_4_inv_5(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
     
     "A relação eSuplementoDe é antisimétrica."
     """
@@ -419,8 +422,8 @@ def rel_4_inv_5(allClasses,rep: Report):
 
 def rel_4_inv_6(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
     
     "A relação eSuplementoPara é antisimétrica."
     """
@@ -430,8 +433,8 @@ def rel_4_inv_6(allClasses,rep: Report):
 
 def rel_4_inv_2(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
     
     "A relação eSinteseDe é antisimétrica."
     """
@@ -441,8 +444,8 @@ def rel_4_inv_2(allClasses,rep: Report):
 
 def rel_3_inv_6(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "As relações temDF e temPCA, existem numa classe 3
     se esta não tiver filhos"
@@ -460,8 +463,8 @@ def rel_3_inv_6(allClasses,rep: Report):
 
 def rel_5_inv_1(allClasses,rep:Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Quando o PN em causa é suplemento para outro,
     deve ser acrescentado um critério de utilidade
@@ -485,8 +488,8 @@ def rel_5_inv_1(allClasses,rep:Report):
 
 def rel_5_inv_2(allClasses,rep:Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "No critério de utilidade administrativa devem aparecer
     todos os processos com os quais existe uma relação de
@@ -524,8 +527,8 @@ def rel_5_inv_2(allClasses,rep:Report):
 
 def rel_7_inv_2(allClasses,rep:Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Quando o PN em causa é complementar de outro,
     a justificação do DF deverá conter o critério 
@@ -548,8 +551,8 @@ def rel_7_inv_2(allClasses,rep:Report):
 
 def rel_6_inv_2(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Quando o PN em causa é síntetizado por outro,
     o DF deve ter o valor de 'Eliminação'"
@@ -568,8 +571,8 @@ def rel_6_inv_2(allClasses,rep: Report):
 
 def rel_5_inv_3(allClasses,rep:Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Quando o PN em causa é suplemento de outro, o critério
     a acrescentar na justificação do PCA é livre, normalmente
@@ -611,8 +614,8 @@ def rel_5_inv_3(allClasses,rep:Report):
 
 def rel_9_inv_2(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Se um PN é eSinteseDe -> DF é de conservação"
     """
@@ -628,8 +631,8 @@ def rel_9_inv_2(allClasses,rep: Report):
 
 def rel_3_inv_1(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Só existe desdobramento caso o PCA ou DF sejam distintos"
     """
@@ -649,8 +652,8 @@ def rel_3_inv_1(allClasses,rep: Report):
 
 def rel_3_inv_5(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "As relações temDF e temPCA, não existem numa
     classe 3 se esta tiver filhos"
@@ -665,8 +668,8 @@ def rel_3_inv_5(allClasses,rep: Report):
 
 def rel_3_inv_7(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Se um PN (Classe 3) for complementar de outro que
     se desdobra ao 4º nível, é necessário, com base no
@@ -700,8 +703,8 @@ def rel_3_inv_7(allClasses,rep: Report):
 
 def rel_3_inv_4(allClasses,termosIndice,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Quando há desdobramento em 4ºs níveis, os termos de
     índice são replicados em cada um desses níveis."
@@ -722,8 +725,8 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
 
 def rel_6_inv_3(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Se um PN tem uma relação de síntese, o seu DF deverá
     ter uma justificação onde consta um critério de
@@ -747,8 +750,8 @@ def rel_6_inv_3(allClasses,rep: Report):
 
 def rel_6_inv_4(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Todos os processos relacionados por uma relação de
     síntese deverão estar relacionados com o critério de
@@ -787,8 +790,8 @@ def rel_6_inv_4(allClasses,rep: Report):
 
 def rel_9_inv_3(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Se um PN é eSintetizadoPor -> DF é de eliminação"
     """
@@ -806,8 +809,8 @@ def rel_9_inv_3(allClasses,rep: Report):
 
 def rel_7_inv_3(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Todos os processos relacionados pela relação é complementar
     de, devem estar relacionados com o critério de complementaridade
@@ -841,8 +844,8 @@ def rel_7_inv_3(allClasses,rep: Report):
 
 def rel_9_inv_1(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Se um PN é eComplementarDe -> DF é de conservação"
     """
@@ -860,8 +863,8 @@ def rel_9_inv_1(allClasses,rep: Report):
 
 def rel_4_inv_8(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Um PN só pode ter uma relação com outro PN."
     """
@@ -879,8 +882,8 @@ def rel_4_inv_8(allClasses,rep: Report):
 
 def rel_6_inv_1(allClasses,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Quando o PN em causa é síntese de outro, o DF deve
     ter o valor de 'Conservação'"
@@ -898,8 +901,8 @@ def rel_6_inv_1(allClasses,rep: Report):
 
 def rel_4_inv_10(termosIndice,rep: Report):
     """
-    A função devolve a lista de classes que não cumprem
-    com este invariante:
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
 
     "Os termos de indice de um PN não existem em mais
     nenhuma classe 3"
@@ -936,45 +939,55 @@ if not ok:
     rep.fixMissingRels(allClasses)
     
 
-# folha a folha
-# for sheetName in sheets:
-#     with open(f"files/{sheetName}.json",'r') as f:
-#         file = json.load(f)
-#     rel_4_inv_0(file,rep)
-#     rel_4_inv_11(file,rep)
-#     rel_4_inv_12(file,rep)
-#     rel_4_inv_13(file,rep)
-#     rel_3_inv_6(file,rep)
+# --------------------------
+# "Com erros"
+# --------------------------
+
+rel_4_inv_2(allClasses,rep)
+rel_4_inv_3(allClasses,rep)
+rel_4_inv_4(allClasses,rep)
+rel_4_inv_5(allClasses,rep)
+rel_4_inv_6(allClasses,rep)
+rel_4_inv_12(allClasses,rep)
+rel_4_inv_13(allClasses,rep)
+rel_5_inv_1(allClasses,rep)
+rel_5_inv_3(allClasses,rep)
+rel_3_inv_4(allClasses,termosIndice,rep)
+rel_7_inv_2(allClasses,rep)
+rel_4_inv_0(allClasses,rep)
+rel_7_inv_3(allClasses,rep)
+rel_6_inv_4(allClasses,rep)
+rel_9_inv_3(allClasses,rep)
+rel_6_inv_3(allClasses,rep)
 
 
+# --------------------------
+# "Sem erros"
+# --------------------------
 
-    # rel_9_inv_2(file,rep)
-
-    # rel_6_inv_2(file,rep)
-    # rel_5_inv_3(file)
-
-    # rel_5_inv_1(file)
-    # rel_7_inv_2(file)
-
-    # --------------------------
-    # "Sem erros"
-    # --------------------------
-
-    # rel_3_inv_1(file,rep)
-    # rel_3_inv_5(file,rep)
+rel_3_inv_1(allClasses,rep)
+rel_3_inv_5(allClasses,rep)
+rel_4_inv_11(allClasses,rep)
+rel_3_inv_6(allClasses,rep)
+rel_9_inv_2(allClasses,rep)
+rel_6_inv_2(allClasses,rep)
+rel_3_inv_7(allClasses,rep)
+rel_4_inv_1_1(allClasses,rep)
+rel_4_inv_1_2(allClasses,rep)
+rel_6_inv_1(allClasses,rep)
 
 
-    # rel_4_inv_1_1(file,sheetName,rep)
-    # rel_4_inv_1_2(file,sheetName,rep)
-    # rel_4_inv_2(file,sheetName,rep)
-    # rel_4_inv_3(file,sheetName,rep)
-    # rel_4_inv_4(file,sheetName,rep)
-    # rel_4_inv_5(file,sheetName,rep)
-    # rel_4_inv_6(file,sheetName,rep)
+# --------------------------
+# "Testes"
+# --------------------------
 
-# tudo de uma vez
+rel_3_inv_3(allClasses,rep)
+rel_5_inv_2(allClasses,rep)
+rel_4_inv_8(allClasses,rep)
+
+rel_4_inv_1_0(allClasses,rep)
+
 checkUniqueInst(rep)
-
 
 rep.printInv()
 rep.dumpReport()
