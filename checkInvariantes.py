@@ -3,6 +3,7 @@ import time
 import re
 from report import Report
 from collections import Counter
+from itertools import zip_longest
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
@@ -27,8 +28,12 @@ def processClasses(rep: Report):
 
     No final a função produz um relatório em que contam os erros
     encontrados, warnings e possíveis inferências a aplicar aos dados.
-    A função retorna um dicionário com os dados, apenas excluindo os
-    processos em Harmonização que não serão testados pelos invariantes.
+    A função retorna dois dicionários: 
+  
+    * um dicionário com os dados, que exclui os processos em
+    Harmonização que não serão testados pelos invariantes.
+    * e outro dicionário com os processos em Harmonização,
+    caso precisem de ser consultados
     """
 
     data = {}
@@ -38,13 +43,16 @@ def processClasses(rep: Report):
             data.update(x)
 
     allClasses = {}
+    harmonizacao = {}
     for cod,classe in data.items():
 
         # Se a classe está em harmonização, ainda pode estar incompleta,
         # por isso não é incluída para verificação de invariantes. Deve
-        # ser marcada como warning.
+        # ser marcada como warning e adicionada a um dicionário diferente,
+        # não para ser testada, mas para ser consultada caso seja referenciada.
         if classe["estado"] == "H":
             rep.addWarning("H",cod)
+            harmonizacao[cod] = classe
             continue
         else:
             allClasses[cod] = classe
@@ -61,10 +69,10 @@ def processClasses(rep: Report):
             for proc,rel in zip(proRels, rels):
                 # Se não existir, é registada como inválida, se existir confirma-se
                 # se as simetrias e anti-simetrias estão corretas
+                # Aqui "inválida" != "harmonização"
                 if proc not in data.keys():
                     rep.addRelInvalida(proc,rel,cod)
                 else:
-                    # TODO: eliminar os checks redundantes??
                     classe2 = data[proc]
                     proRels2 = classe2.get("processosRelacionados",[])
                     rels2 = classe2.get("proRel",[])
@@ -96,7 +104,7 @@ def processClasses(rep: Report):
                             if p not in data.keys():
                                 rep.addRelInvalida(p,"procRef",cod,"pca")
 
-    return allClasses
+    return allClasses,harmonizacao
 
 
 def rel_4_inv_0(allClasses,rep: Report):
@@ -119,14 +127,14 @@ def rel_4_inv_0(allClasses,rep: Report):
                     rep.addFalhaInv("rel_4_inv_0",cod)
 
 
-def checkAntissimetrico(allClasses,rel,rep: Report,invName):
+def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
     """
-    Verifica para uma `sheet` se uma dada relação
-    é antisimétrica.
-
-    Retorna a lista das classes em que isto não se verifica.
+    Verifica para todas as classes se uma dada 
+    relação `rel` é antisimétrica.
+    
+    Os casos em que tal não acontece são guardados
+    em `rep`.
     """
-
 
     for cod,classe in allClasses.items():
         proRels = classe.get("proRel")
@@ -136,19 +144,27 @@ def checkAntissimetrico(allClasses,rel,rep: Report,invName):
             for c in relacoes:
                 relacao = allClasses.get(c)
 
-                # TODO: no futuro assumir que está certo, porque só depois de validado é que se chega a esta função
+                # Caso seja com um processo em harmonização
                 if not relacao:
-                    print("-"*15)
-                    print(cod)
-                    print(rel)
-                    print(c)
-                    print("-"*15)
+                    relacao = harmonizacao.get(c)
+                    # FIXME: caso de quando uma relação é inválida, isto é
+                    # temporário visto que no futuro o migrador não deixa 
+                    # passar relações inválidas
+                    if not relacao:
+                        print("-"*15)
+                        print(cod)
+                        print(rel)
+                        print(c)
+                        print("-"*15)
                     continue
 
-                proRels2 = relacao.get("proRel")
-                proRelCods2 = relacao.get("processosRelacionados")
+                proRels2 = relacao.get("proRel",[])
+                proRelCods2 = relacao.get("processosRelacionados",[])
                 if proRelCods2 and proRels2:
-                    relacoes2 = [c for c,r in zip(proRelCods2,proRels2) if r==rel]
+                    # É preciso acomodar os processos em harmonização com 
+                    # `zip_longest`, visto que não é garantido que proRels2
+                    # e proRelCods2 tenham a mesma cardinalidade
+                    relacoes2 = [c for c,r in zip_longest(proRelCods2,proRels2) if r==rel]
                     # Se existe a relação `rel` aqui também, não cumpre com o invariante
                     if cod in relacoes2:
                         rep.addFalhaInv(invName,cod,rel,c)
@@ -267,7 +283,7 @@ def checkUniqueInst(rep: Report):
                 rep.addFalhaInv(inv,id)
 
 
-def rel_4_inv_3(allClasses,rep: Report):
+def rel_4_inv_3(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -275,10 +291,10 @@ def rel_4_inv_3(allClasses,rep: Report):
     "A relação eSintetizadoPor é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_4_inv_3")
+    return checkAntissimetrico(allClasses,harmonizacao,"eSintetizadoPor",rep,"rel_4_inv_3")
 
 
-def rel_4_inv_4(allClasses,rep: Report):
+def rel_4_inv_4(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -286,7 +302,7 @@ def rel_4_inv_4(allClasses,rep: Report):
     "A relação eSucessorDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
+    return checkAntissimetrico(allClasses,harmonizacao,"eSucessorDe",rep,"rel_4_inv_4")
 
 
 def rel_4_inv_11(allClasses,rep: Report):
@@ -334,7 +350,7 @@ def rel_4_inv_13(allClasses,rep: Report):
     return checkJustRef(allClasses,4,rep,"rel_4_inv_13")
 
 
-def rel_4_inv_5(allClasses,rep: Report):
+def rel_4_inv_5(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -342,10 +358,10 @@ def rel_4_inv_5(allClasses,rep: Report):
     "A relação eSuplementoDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_4_inv_5")
+    return checkAntissimetrico(allClasses,harmonizacao,"eSuplementoDe",rep,"rel_4_inv_5")
 
 
-def rel_4_inv_6(allClasses,rep: Report):
+def rel_4_inv_6(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -353,10 +369,10 @@ def rel_4_inv_6(allClasses,rep: Report):
     "A relação eSuplementoPara é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_4_inv_6")
+    return checkAntissimetrico(allClasses,harmonizacao,"eSuplementoPara",rep,"rel_4_inv_6")
 
 
-def rel_4_inv_2(allClasses,rep: Report):
+def rel_4_inv_2(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -364,7 +380,7 @@ def rel_4_inv_2(allClasses,rep: Report):
     "A relação eSinteseDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
+    return checkAntissimetrico(allClasses,harmonizacao,"eSinteseDe",rep,"rel_4_inv_2")
 
 
 def rel_3_inv_6(allClasses,rep: Report):
@@ -456,7 +472,7 @@ def rel_7_inv_2(allClasses,rep:Report):
     em `rep` os casos em que falha:
 
     "Quando o PN em causa é complementar de outro,
-    a justificação do DF deverá conter o critério 
+    a justificação do DF deverá conter o critério
     de complementaridade informacional"
     """
 
@@ -501,7 +517,7 @@ def rel_5_inv_3(allClasses,rep:Report):
 
     "Quando o PN em causa é suplemento de outro, o critério
     a acrescentar na justificação do PCA é livre, normalmente
-    é o critério legal. Todos os processos relacionados pela 
+    é o critério legal. Todos os processos relacionados pela
     relação suplemento de devem figurar neste critério"
     """
 
@@ -517,7 +533,7 @@ def rel_5_inv_3(allClasses,rep:Report):
                     for j in just:
                         procRefs = j.get("procRefs",[])
                         allProcRefs+=procRefs
-                    
+
                     for sup in supl:
                         if sup not in allProcRefs:
                             if sup not in allClasses:
@@ -525,7 +541,7 @@ def rel_5_inv_3(allClasses,rep:Report):
                                 print(f"Harmonização: {sup}")
 
                             # TODO: melhorar o erro
-                            rep.addFalhaInv("rel_5_inv_3",cod)                 
+                            rep.addFalhaInv("rel_5_inv_3",cod)
                 else:
                     # Registar todos processos em faltam caso não haja justificação
                     for sup in supl:
@@ -896,7 +912,7 @@ def rel_8_inv_1(allClasses,rep: Report):
 t0 = time.time()
 rep = Report()
 
-allClasses = processClasses(rep)
+allClasses,harmonizacao = processClasses(rep)
 with open("files/ti.json",'r') as f:
     termosIndice = json.load(f)
 ok = rep.checkStruct()
@@ -908,11 +924,9 @@ if not ok:
 # "Com erros"
 # --------------------------
 
-rel_4_inv_2(allClasses,rep)
-rel_4_inv_3(allClasses,rep)
-rel_4_inv_4(allClasses,rep)
-rel_4_inv_5(allClasses,rep)
-rel_4_inv_6(allClasses,rep)
+rel_4_inv_2(allClasses,harmonizacao,rep)
+rel_4_inv_3(allClasses,harmonizacao,rep)
+rel_4_inv_4(allClasses,harmonizacao,rep)
 rel_4_inv_12(allClasses,rep)
 rel_4_inv_13(allClasses,rep)
 rel_5_inv_1(allClasses,rep)
@@ -932,14 +946,15 @@ rel_6_inv_3(allClasses,rep)
 
 rel_3_inv_1(allClasses,rep)
 rel_3_inv_5(allClasses,rep)
+rel_4_inv_5(allClasses,harmonizacao,rep)
+rel_4_inv_6(allClasses,harmonizacao,rep)
 rel_4_inv_11(allClasses,rep)
 rel_3_inv_6(allClasses,rep)
 rel_9_inv_2(allClasses,rep)
 rel_6_inv_2(allClasses,rep)
 rel_3_inv_7(allClasses,rep)
-rel_4_inv_1_1(allClasses,rep)
-rel_4_inv_1_2(allClasses,rep)
 rel_6_inv_1(allClasses,rep)
+rel_4_inv_7(allClasses,rep)
 
 
 # --------------------------
@@ -951,6 +966,7 @@ rel_5_inv_2(allClasses,rep)
 rel_4_inv_8(allClasses,rep)
 
 rel_4_inv_1_0(allClasses,rep)
+rel_8_inv_1(allClasses,rep)
 
 checkUniqueInst(rep)
 
