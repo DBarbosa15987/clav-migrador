@@ -28,8 +28,8 @@ def processClasses(rep: Report):
 
     No final a função produz um relatório em que contam os erros
     encontrados, warnings e possíveis inferências a aplicar aos dados.
-    A função retorna dois dicionários: 
-  
+    A função retorna dois dicionários:
+
     * um dicionário com os dados, que exclui os processos em
     Harmonização que não serão testados pelos invariantes.
     * e outro dicionário com os processos em Harmonização,
@@ -129,9 +129,9 @@ def rel_4_inv_0(allClasses,rep: Report):
 
 def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
     """
-    Verifica para todas as classes se uma dada 
+    Verifica para todas as classes se uma dada
     relação `rel` é antisimétrica.
-    
+
     Os casos em que tal não acontece são guardados
     em `rep`.
     """
@@ -161,7 +161,7 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                 proRels2 = relacao.get("proRel",[])
                 proRelCods2 = relacao.get("processosRelacionados",[])
                 if proRelCods2 and proRels2:
-                    # É preciso acomodar os processos em harmonização com 
+                    # É preciso acomodar os processos em harmonização com
                     # `zip_longest`, visto que não é garantido que proRels2
                     # e proRelCods2 tenham a mesma cardinalidade
                     relacoes2 = [c for c,r in zip_longest(proRelCods2,proRels2) if r==rel]
@@ -191,14 +191,14 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                     # Concatenar lista de listas e remover repetidos
                     pcaLegRefs = set(sum(pcaLegRefs,[]))
                     for leg in pcaLegRefs:
-                        # Se a legislação mencionada no pca não se encontra 
+                        # Se a legislação mencionada no pca não se encontra
                         # na lista de legislação associada à classe,
                         # então não cumpre com o invariante
                         if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
                             # TODO: dar mais detalhe sobre o erro
                             rep.addFalhaInv(invName,cod)
 
-                        # Se a classe for de nível 4 verifica-se se 
+                        # Se a classe for de nível 4 verifica-se se
                         # a legislação é mencionada no pai
                         elif nivel == 4:
                             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
@@ -220,14 +220,14 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                     # Concatenar lista de listas e remover repetidos
                     dfLegRefs = set(sum(dfLegRefs,[]))
                     for leg in dfLegRefs:
-                        # Se a legislação mencionada no df não se encontra 
+                        # Se a legislação mencionada no df não se encontra
                         # na lista de legislação associada à classe,
                         # então não cumpre com o invariante
                         if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
                             # TODO: dar mais detalhe sobre o erro
                             rep.addFalhaInv(invName,cod)
 
-                        # Se a classe for de nível 4 verifica-se se 
+                        # Se a classe for de nível 4 verifica-se se
                         # a legislação é mencionada no pai
                         if nivel == 4:
                             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
@@ -310,7 +310,7 @@ def rel_4_inv_11(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Um PN não pode ter em simultâneo relações de 
+    "Um PN não pode ter em simultâneo relações de
     'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
     """
 
@@ -354,7 +354,7 @@ def rel_4_inv_5(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
-    
+
     "A relação eSuplementoDe é antisimétrica."
     """
 
@@ -365,7 +365,7 @@ def rel_4_inv_6(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
-    
+
     "A relação eSuplementoPara é antisimétrica."
     """
 
@@ -376,7 +376,7 @@ def rel_4_inv_2(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
-    
+
     "A relação eSinteseDe é antisimétrica."
     """
 
@@ -400,6 +400,46 @@ def rel_3_inv_6(allClasses,rep: Report):
                 # TODO: especificar melhor os erros aqui
                 if not pca or not df:
                     rep.addFalhaInv("rel_3_inv_6",cod)
+
+
+def rel_3_inv_3(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "DF distinto: Deve haver uma relação de sintese (de ou por)
+    entre as classes 4 filhas."
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            codFilhos = classe.get("filhos")
+            # Assume-se aqui que se tiver filhos, tem 2
+            if codFilhos:
+                codF1 = codFilhos[0]
+                codF2 = codFilhos[1]
+                f1 = allClasses.get(codF1)
+                f2 = allClasses.get(codF2)
+                df1 = f1.get("df",{}).get("valor")
+                df2 = f2.get("df",{}).get("valor")
+
+                # Aqui só interessam os que têm DFs distintos
+                if df1 and df2 and df1 != df2:
+                    # TODO: Especificar melhor o erro, filho a filho
+                    f1Rels = f1.get("proRel")
+                    f1RelCods = f1.get("processosRelacionados")
+
+                    # A relação de "eSinteseDe" é inversa de "eSintetizadoPor",
+                    # e são feitas inferências iniciais que tornam este tipo de
+                    # situações explícitas, por isso basta verificar do processo
+                    # A para B, e verificar B para A torna-se redundante.
+                    if f1Rels and f1RelCods:
+                        relacoesF1 = zip(f1Rels,f1RelCods)
+                        if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
+                            rep.addFalhaInv("rel_3_inv_3",cod)
+                    else:
+                        # Se algum não tem relações então já está mal
+                        rep.addFalhaInv("rel_3_inv_3",cod)
 
 
 def rel_5_inv_1(allClasses,rep:Report):
@@ -452,7 +492,7 @@ def rel_5_inv_2(allClasses,rep:Report):
                             allProcRefs = []
                             for crit in jUtilidade:
                                 allProcRefs += crit.get("procRefs",[])
-        
+
                             for s in supls:
                                 if s not in allProcRefs:
                                     rep.addFalhaInv("rel_5_inv_2",cod,o=s)
@@ -605,7 +645,7 @@ def rel_3_inv_5(allClasses,rep: Report):
         if classe["nivel"] == 3:
             if classe.get("filhos") and (classe.get("pca") or classe.get("df")):
                 rep.addFalhaInv("rel_3_inv_5",cod)
-   
+
 
 def rel_3_inv_7(allClasses,rep: Report):
     """
@@ -662,7 +702,7 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                         if t not in termosFilho:
                             # TODO: indicar o TI em falta no erro e em que filho
                             rep.addFalhaInv("rel_3_inv_4",cod)
-                
+
 
 def rel_6_inv_3(allClasses,rep: Report):
     """
@@ -699,7 +739,6 @@ def rel_6_inv_4(allClasses,rep: Report):
     densidade informacional da respetiva justificação"
     """
 
-    # NOTE: tal como está na query...
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             codFilhos = classe.get("filhos")
@@ -708,6 +747,8 @@ def rel_6_inv_4(allClasses,rep: Report):
                 proRels = classe.get("proRel")
                 if proRels and ("eSinteseDe" in proRels or "eSintetizadoPor" in proRels):
                     valor = classe.get("df",{}).get("valor")
+                    # Só faz sentido fazer esta verificação em processos
+                    # com o DF de "Eliminação"
                     if valor != "C":
                         just = classe.get("df",{}).get("justificacao")
                         sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
@@ -859,7 +900,7 @@ def rel_4_inv_10(termosIndice,rep: Report):
                 termos[termo].add(cod)
             else:
                 termos[termo] = set([cod]) #{termo:[100,200]}
-    
+
     # TODO: organizar melhor o erro aqui
     for t,cods in termos.items():
         if len(cods) > 1:
