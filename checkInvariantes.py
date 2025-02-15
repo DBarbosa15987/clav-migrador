@@ -950,6 +950,23 @@ def rel_8_inv_1(allClasses,rep: Report):
                         # TODO: Especificar melhor o erro
                         rep.addFalhaInv("rel_8_inv_1",cod)
 
+
+
+def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Os PNs em harmonização não podem ter filhos ativos"
+    """
+
+    # Como em `allClasses` apenas existem processos ativos,
+    # a verificação é feita dos filhos para os pais.
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 4:
+            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
+            if pai in harmonizacao:
+                rep.addFalhaInv("rel_3_inv_9",cod)
 t0 = time.time()
 rep = Report()
 
