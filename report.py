@@ -11,7 +11,8 @@ class Report:
         self.globalErrors = {
             "struct":{
                 "declsRepetidas": {}, # {"200":["100.ttl","200.ttl"]}
-                "relsInvalidas": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+                "relsInvalidas": {}, # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+                "outros": {}
             },
             "erroInv":{}
         }
@@ -19,6 +20,7 @@ class Report:
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
+        # O "triplo" proc :rel cod está em falta
         self.missingRels[tipo].append((proc,rel,cod))
 
 
@@ -26,10 +28,6 @@ class Report:
 
         for r in self.missingRels["relsSimetricas"]:
             classe = allClasses.get(r[0])
-            # FIXME: decidir o que fazer com processos em harmonização
-            if not classe:
-                self.addWarning("R",r)
-                continue
             proRel = classe.get("proRel")
             proRelCod = classe.get("processosRelacionados")
             if proRel and proRelCod:
@@ -38,14 +36,10 @@ class Report:
             else:
                 classe["proRel"] = [r[1]]
                 classe["processosRelacionados"] = [r[2]]
-
+            self.addWarning("I",r)
 
         for r in self.missingRels["relsInverseOf"]:
             classe = allClasses.get(r[0])
-            # FIXME: decidir o que fazer com processos em harmonização
-            if not classe:
-                self.addWarning("R",r)
-                continue
             proRel = classe.get("proRel")
             proRelCod = classe.get("processosRelacionados")
             if proRel and proRelCod:
@@ -54,14 +48,15 @@ class Report:
             else:
                 classe["proRel"] = [r[1]]
                 classe["processosRelacionados"] = [r[2]]
+            self.addWarning("I",r)
 
 
     def addDecl(self,cod,fileName):
         # "cod" aparece declarado repetidamente no(s) ficheiro(s) set(declaracoes[cod])
         if cod in self.declaracoes:
-            self.declaracoes[cod].append(fileName+".ttl")
+            self.declaracoes[cod].append(fileName+".json")
         else:
-            self.declaracoes[cod] = [fileName+".ttl"]
+            self.declaracoes[cod] = [fileName+".json"]
 
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
@@ -99,9 +94,9 @@ class Report:
         match tipo:
             case "I":
                 if "inferencias" in self.warnings:
-                    self.warnings["inferencias"].append(" ".join(list(msg)))
+                    self.warnings["inferencias"].append(f"{msg[0]} :{msg[1]} {msg[2]}")
                 else:
-                    self.warnings["inferencias"] = [" ".join(list(msg))]
+                    self.warnings["inferencias"] = [f"{msg[0]} :{msg[1]} {msg[2]}"]
             case "H":
                 if "harmonizacao" in self.warnings:
                     self.warnings["harmonizacao"].append(msg)
@@ -114,13 +109,17 @@ class Report:
                     self.warnings["relHarmonizacao"] = [msg]
 
             case _:
-                pass
+                if "outro" in self.warnings:
+                    self.warnings["outro"].append(msg)
+                else:
+                    self.warnings["outro"] = [msg]
+
 
 
     def printInv(self):
 
         for inv,info in self.globalErrors["erroInv"].items():
-            print(f"\n{inv}:\n")
+            print(f"\n{inv} ({len(info)}):\n")
             match inv:
                 case "rel_4_inv_0":
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")

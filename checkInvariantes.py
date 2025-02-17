@@ -68,15 +68,19 @@ def processClasses(rep: Report):
         if proRels:
             for proc,rel in zip(proRels, rels):
                 # Se não existir, é registada como inválida, se existir confirma-se
-                # se as simetrias e anti-simetrias estão corretas
+                # se as simétrias e anti-simétrias estão corretas
                 # Aqui "inválida" != "harmonização"
                 if proc not in data.keys():
                     rep.addRelInvalida(proc,rel,cod)
+                # Se a relação mencionar um processo em harmonização fica anotado
+                # como warning
+                elif data[proc]['estado'] == 'H':
+                    rep.addWarning("R",(cod,rel,proc))
                 else:
                     classe2 = data[proc]
                     proRels2 = classe2.get("processosRelacionados",[])
                     rels2 = classe2.get("proRel",[])
-                    
+
                     if rel in relsSimetricas:
                         if (cod,rel) not in zip(proRels2,rels2):
                             rep.addMissingRels(proc,rel,cod,"relsSimetricas")
@@ -93,6 +97,10 @@ def processClasses(rep: Report):
                         for p in procRefs:
                             if p not in data.keys():
                                 rep.addRelInvalida(p,"procRef",cod,"df")
+                            # Se a relação mencionar um processo em harmonização fica anotado
+                            # como warning
+                            elif data[p]['estado'] == 'H':
+                                rep.addWarning("R",(cod,rel,p))
 
         if pca:
             justificacao = pca.get("justificacao")
@@ -103,6 +111,10 @@ def processClasses(rep: Report):
                         for p in procRefs:
                             if p not in data.keys():
                                 rep.addRelInvalida(p,"procRef",cod,"pca")
+                            # Se a relação mencionar um processo em harmonização fica anotado
+                            # como warning
+                            elif data[p]['estado'] == 'H':
+                                rep.addWarning("R",(cod,rel,p))
 
     return allClasses,harmonizacao
 
@@ -147,8 +159,8 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                 # Caso seja com um processo em harmonização
                 if not relacao:
                     relacao = harmonizacao.get(c)
-                    # FIXME: caso de quando uma relação é inválida, isto é
-                    # temporário visto que no futuro o migrador não deixa 
+                    # FIXME: caso de quando uma relação é inválida. Isto é
+                    # temporário visto que no futuro o migrador não deixa
                     # passar relações inválidas
                     if not relacao:
                         print("-"*15)
@@ -967,6 +979,7 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
             if pai in harmonizacao:
                 rep.addFalhaInv("rel_3_inv_9",cod)
+
 t0 = time.time()
 rep = Report()
 
@@ -976,7 +989,6 @@ with open("files/ti.json",'r') as f:
 ok = rep.checkStruct()
 if not ok:
     rep.fixMissingRels(allClasses)
-    
 
 # --------------------------
 # "Com erros"
