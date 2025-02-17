@@ -182,7 +182,7 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                         rep.addFalhaInv(invName,cod,rel,c)
 
 
-def checkJustRef(allClasses,nivel,rep: Report,invName):
+def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
     """
     Verifica se as classes do `nível` passado por input (3 ou 4)
     referenciam as legislações mencionadas nas justificações de pca e df.
@@ -190,67 +190,75 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
     No caso da classe ser de nível 4 a legislação é mencionada
     apenas na classe pai.
 
-    Retorna a lista das classes em que isto não se verifica.
+    A função guarda em `rep` todos os casos em que falha.
     """
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == nivel:
             # verificação no pca
-            if "pca" in classe:
-                justificacaoPca = classe["pca"].get("justificacao")
-                if justificacaoPca:
-                    pcaLegRefs = [x["legRefs"] for x in justificacaoPca if x["tipo"]=="legal"]
-                    # Concatenar lista de listas e remover repetidos
-                    pcaLegRefs = set(sum(pcaLegRefs,[]))
-                    for leg in pcaLegRefs:
-                        # Se a legislação mencionada no pca não se encontra
-                        # na lista de legislação associada à classe,
-                        # então não cumpre com o invariante
-                        if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
-                            # TODO: dar mais detalhe sobre o erro
-                            rep.addFalhaInv(invName,cod)
+            justificacaoPca = classe.get("pca",{}).get("justificacao")
+            if justificacaoPca:
+                pcaLegRefs = [x["legRefs"] for x in justificacaoPca if x["tipo"]=="legal"]
+                # Concatenar lista de listas e remover repetidos
+                pcaLegRefs = set(sum(pcaLegRefs,[]))
+                for leg in pcaLegRefs:
+                    # Se a legislação mencionada no pca não se encontra
+                    # na lista de legislação associada à classe,
+                    # então não cumpre com o invariante
+                    if nivel == 3 and (leg not in classe.get("legislacao",[])):
+                        # TODO: dar mais detalhe sobre o erro
+                        rep.addFalhaInv(invName,cod)
 
-                        # Se a classe for de nível 4 verifica-se se
-                        # a legislação é mencionada no pai
-                        elif nivel == 4:
-                            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
-                            classePai = allClasses.get(pai)
-                            if classePai:
-                                # TODO: dar mais detalhe sobre o erro
-                                if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                    rep.addFalhaInv(invName,cod)
-                            else:
-                                # FIXME: erro se não houver pai
-                                print(f"{cod} não tem pai ({pai})")
-                                pass
+                    # Se a classe for de nível 4 verifica-se se
+                    # a legislação é mencionada no pai
+                    elif nivel == 4:
+                        pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
+                        classePai = allClasses.get(pai)
+                        # Tem pai ativo
+                        if classePai:
+                            # TODO: dar mais detalhe sobre o erro
+                            if leg not in classePai.get("legislacao",[]):
+                                rep.addFalhaInv(invName,cod)
+                        # Tem pai em harmonização
+                        elif pai in harmonizacao:
+                            rep.addWarning("",f"o pai de {cod} está em harmonização")
+                        # Não tem pai
+                        else:
+                            # Aqui considera-se que se não tem pai
+                            rep.addWarning("",f"{cod} não tem pai")
+                            rep.addFalhaInv(invName,cod)
 
             # verificação no df
-            if "df" in classe:
-                justificacaoDf = classe["df"].get("justificacao")
-                if justificacaoDf:
-                    dfLegRefs = [x["legRefs"] for x in justificacaoDf if x["tipo"]=="legal"]
-                    # Concatenar lista de listas e remover repetidos
-                    dfLegRefs = set(sum(dfLegRefs,[]))
-                    for leg in dfLegRefs:
-                        # Se a legislação mencionada no df não se encontra
-                        # na lista de legislação associada à classe,
-                        # então não cumpre com o invariante
-                        if nivel == 3 and ("legislacao" not in classe or leg not in classe["legislacao"]):
-                            # TODO: dar mais detalhe sobre o erro
-                            rep.addFalhaInv(invName,cod)
+            justificacaoDf = classe.get("df",{}).get("justificacao")
+            if justificacaoDf:
+                dfLegRefs = [x["legRefs"] for x in justificacaoDf if x["tipo"]=="legal"]
+                # Concatenar lista de listas e remover repetidos
+                dfLegRefs = set(sum(dfLegRefs,[]))
+                for leg in dfLegRefs:
+                    # Se a legislação mencionada no df não se encontra
+                    # na lista de legislação associada à classe,
+                    # então não cumpre com o invariante
+                    if nivel == 3 and (leg not in classe.get("legislacao",[])):
+                        # TODO: dar mais detalhe sobre o erro
+                        rep.addFalhaInv(invName,cod)
 
-                        # Se a classe for de nível 4 verifica-se se
-                        # a legislação é mencionada no pai
-                        if nivel == 4:
-                            pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
-                            classePai = allClasses.get(pai)
-                            if classePai:
-                                if "legislacao" not in classePai or leg not in classePai["legislacao"]:
-                                    rep.addFalhaInv(invName,cod)
-                            else:
-                                # FIXME: erro se não houver pai
-                                print(f"{cod} não tem pai ({pai})")
-                                pass
+                    # Se a classe for de nível 4 verifica-se se
+                    # a legislação é mencionada no pai
+                    if nivel == 4:
+                        pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
+                        classePai = allClasses.get(pai)
+                        # Tem pai ativo
+                        if classePai:
+                            if leg not in classePai.get("legislacao",[]):
+                                rep.addFalhaInv(invName,cod)
+                        # Tem pai em harmonização
+                        elif pai in harmonizacao:
+                            rep.addWarning("",f"o pai de {cod} está em harmonização")
+                        # Não tem pai
+                        else:
+                            # Aqui considera-se que se não tem pai
+                            rep.addWarning("",f"{cod} não tem pai")
+                            rep.addFalhaInv(invName,cod)
 
 
 def checkUniqueInst(rep: Report):
@@ -336,7 +344,7 @@ def rel_4_inv_11(allClasses,rep: Report):
                 rep.addFalhaInv("rel_4_inv_11",cod)
 
 
-def rel_4_inv_12(allClasses,rep: Report):
+def rel_4_inv_12(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -346,10 +354,10 @@ def rel_4_inv_12(allClasses,rep: Report):
     do processo que tem essa justificação (Classes de nível 3)"
     """
 
-    return checkJustRef(allClasses,3,rep,"rel_4_inv_12")
+    return checkJustRef(allClasses,harmonizacao,3,rep,"rel_4_inv_12")
 
 
-def rel_4_inv_13(allClasses,rep: Report):
+def rel_4_inv_13(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -359,7 +367,7 @@ def rel_4_inv_13(allClasses,rep: Report):
     processo que tem essa justificação (Classes de nível 4)"
     """
 
-    return checkJustRef(allClasses,4,rep,"rel_4_inv_13")
+    return checkJustRef(allClasses,harmonizacao,4,rep,"rel_4_inv_13")
 
 
 def rel_4_inv_5(allClasses,harmonizacao,rep: Report):
@@ -588,21 +596,19 @@ def rel_5_inv_3(allClasses,rep:Report):
 
                     for sup in supl:
                         if sup not in allProcRefs:
+                            # Os processos em harmonização são ignorados na verificação de invariantes
                             if sup not in allClasses:
-                                # TODO: decidir o que fazer com os em harmonização
-                                print(f"Harmonização: {sup}")
-
-                            # TODO: melhorar o erro
-                            rep.addFalhaInv("rel_5_inv_3",cod)
+                                rep.addWarning("",f"{sup} está em harmonização")
+                            else:
+                                rep.addFalhaInv("rel_5_inv_3",cod)
                 else:
                     # Registar todos processos em faltam caso não haja justificação
                     for sup in supl:
+                        # Os processos em harmonização são ignorados na verificação de invariantes
                         if sup not in allClasses:
-                            # TODO: decidir o que fazer com os em harmonização
-                            print(f"Harmonização: {sup}")
-
-                        # TODO: melhorar o erro
-                        rep.addFalhaInv("rel_5_inv_3",cod)
+                            rep.addWarning("",f"{sup} está em harmonização")
+                        else:
+                            rep.addFalhaInv("rel_5_inv_3",cod)
 
 
 def rel_9_inv_2(allClasses,rep: Report):
