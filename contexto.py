@@ -56,9 +56,6 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
         for part in myReg['participantes']:
             if (part['id'] not in entCatalog) and (part['id'] not in tipCatalog):
                 ListaErros.append('Erro::' + cod + '::Entidade participante não está no catálogo de entidades ou tipologias::' + part['id'])
-    # ERRO: Um processo transversal tem que ter participantes
-    if classe["Processo transversal (S/N)"] and myReg['estado'] != 'H' and myReg['procTrans'] == 'S' and len(myReg['participantes']) == 0:
-        ListaErros.append('Erro::' + cod + '::Este processo é transversal mas não tem participantes identificados.')   
     # Tipo de intervenção -----
     linterv = []
     if classe["Tipo de intervenção do participante"]:
