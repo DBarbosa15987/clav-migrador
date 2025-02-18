@@ -5,9 +5,9 @@ import tindice as ti
 import entidade as e
 import tipologia as tip
 import leg
-from errorReport import Report
+from report import Report
 
-def excel2json(err:Report):
+def excel2json(rep:Report):
 
     data_file = 'Frecolha-20241007.xlsx'
     sheets = ['100_csv','150_csv','200_csv','250_csv','300_csv','350_csv','400_csv','450_csv','500_csv','550_csv','600_csv',
@@ -24,5 +24,5 @@ def excel2json(err:Report):
     leg.processSheet(wb['leg_csv'], 'leg_csv')
 
     for s in sheets:
-        c.processSheet(wb[s], s, err)
+        c.processSheet(wb[s], s, rep)
 

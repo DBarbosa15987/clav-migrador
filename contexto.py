@@ -1,8 +1,9 @@
 import re
+from report import Report
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog):
+def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog, rep: Report):
     # Tipos de intervenção
     # --------------------------------------------------
     intervCatalog = ['Apreciar','Assessorar','Comunicar','Decidir','Executar','Iniciar']
@@ -85,7 +86,7 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
         # Limpeza e normalização dos ids da legislação
         for l in myReg['legislacao']:
             limpa = re.sub(r'([ \u202F\u00A0]+)|([ \u202F\u00A0]*,[ \u202F\u00A0]*)', '_', brancos.sub('', l))
-            limpa = re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', limpa)  
+            limpa = re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', limpa)
             nova.append(limpa)
         myReg['legislacao'] = nova
         # ERRO: Verificação da existência da legislação no catálogo legislativo
@@ -134,4 +135,3 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
     if classe["Código do processo relacionado"] and classe["Tipo de relação entre processos"]:
         if myReg["estado"]!='H' and len(myReg['processosRelacionados']) != len(myReg['proRel']):
             ListaErros.append('Erro::' + cod + '::Processos relacionados e respetivas relações não têm a mesma cardinalidade')
-            

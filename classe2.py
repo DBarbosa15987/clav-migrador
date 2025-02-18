@@ -6,7 +6,7 @@ import re
 
 import contexto
 import decisao
-from errorReport import Report
+from report import Report
 
 hreg = re.compile(r'[hH][aA][rR][mM][oO]?[nN]?')
 ireg = re.compile(r'[iI][nN][Aa][tT]?[iI]?[vV]?')
@@ -61,7 +61,7 @@ def procNotas(notas, codClasse, chave1=None, chave2=None):
         res.append({
             chave1: chave2 + '_' + codClasse + '_' + generate('1234567890abcdef', 12),
             chave2: na
-        })      
+        })
     return res
 # --------------------------------------------------
 #
@@ -81,8 +81,8 @@ def calcSubdivisoes(df):
                 indN3[pai] = True
     return indN3
 
-def processSheet(sheet, nome,err:Report):
-    # Carregam-se os catálogos 
+def processSheet(sheet, nome,rep:Report):
+    # Carregam-se os catálogos
     # --------------------------------------------------
     ecatalog = open('./files/entCatalog.json')
     tcatalog = open('./files/tipCatalog.json')
@@ -90,7 +90,7 @@ def processSheet(sheet, nome,err:Report):
     entCatalog = json.load(ecatalog)
     tipCatalog = json.load(tcatalog)
     legCatalog = json.load(lcatalog)
-    
+
     # Load one worksheet.
     # --------------------------------------------------
     fnome = nome.split("_")[0]
@@ -139,10 +139,10 @@ def processSheet(sheet, nome,err:Report):
             # Notas de exclusão -----
             if row["Notas de exclusão"]:
                 myReg["notasEx"] = procNotas(row["Notas de exclusão"], cod)
-            
+
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
-                contexto.procContexto(row,cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog)
+                contexto.procContexto(row,cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog,rep)
 
             # Processamento das Decisões
             if (myReg["nivel"] == 3 and not indN3[cod]) or myReg["nivel"] == 4:
@@ -151,11 +151,11 @@ def processSheet(sheet, nome,err:Report):
             if myReg["estado"] == 'H' and cod not in warningsDic:
                 ProcHarmonizacao.append(cod)
 
-            err.addDecl(cod,nome)
+            rep.addDecl(cod,nome)
             myClasse[cod] = myReg
 
     outFile = open("./files/"+fnome+".json", "w", encoding="utf-8")
-    
+
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
     print("Classe extraída: ", nome, " :: ", len(myClasse))
     if len(ListaErros) > 0:
