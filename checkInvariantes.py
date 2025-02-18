@@ -899,6 +899,23 @@ def rel_6_inv_1(allClasses,rep: Report):
                         rep.addFalhaInv("rel_6_inv_1",cod)
 
 
+def rel_4_inv_1_0(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Um processo não transversal não pode ter participantes"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            procTrans = classe.get("procTrans")
+            if procTrans == "N":
+                participantes = classe.get("participantes")
+                if participantes:
+                    rep.addFalhaInv("rel_4_inv_1_0",cod)
+
+
 def rel_4_inv_10(termosIndice,rep: Report):
     """
     A função testa o seguinte invariante e guarda
