@@ -24,7 +24,7 @@ def tiGenTTL():
     g.bind("", ns)
     g.bind("dc", dc)
     g.add((uri_ontologia, dc.date, Literal(dataAtualizacao)))
-    
+
     for ti in termos:
         ticod = "ti_" + ti['codigo'] + '_' + generate('abcdef', 6)
         tiUri = ns[ticod]
@@ -123,13 +123,13 @@ def entidadeGenTTL():
             g.add((eUri,ns.entEstado, Literal("Inativa")))
         else:
             g.add((eUri,ns.entEstado, Literal("Ativa")))
-            
+
         if 'sioe' in e:
             g.add((eUri,ns.entSIOE, Literal(e['sioe'])))
-        
+
         if 'dataCriacao' in e:
             g.add((eUri,ns.entDataCriacao, Literal(e['dataCriacao'])))
-            
+
         if 'dataExtincao' in e:
             g.add((eUri,ns.entDataExtincao, Literal(e['dataExtincao'])))
 
@@ -148,7 +148,7 @@ def classeGenTTL(c):
     fin = open('./files/' + c + '.json')
     classes = json.load(fin)
 
-    # Carregam-se os catálogos 
+    # Carregam-se os catálogos
     # --------------------------------------------------
     ecatalog = open('./files/entCatalog.json')
     tcatalog = open('./files/tipCatalog.json')
@@ -160,30 +160,31 @@ def classeGenTTL(c):
     intervCatalog = {'Apreciar': 'temParticipanteApreciador','Assessorar': 'temParticipanteAssessor',
                     'Comunicar': 'temParticipanteComunicador','Decidir': 'temParticipanteDecisor',
                     'Executar': 'temParticipanteExecutor','Iniciar': 'temParticipanteIniciador'}
-    
+
     g = Graph()
     g.bind("", ns)
 
-    for classe in classes:
-        print(classe['codigo'])
+    for cod,classe in classes.items():
+
+        print(cod)
         # codigo, estado, nível e título
-        codigoUri = ns[f"c{classe['codigo']}"] 
+        codigoUri = ns[f"c{cod}"]
         g.add((codigoUri,RDF.type, OWL.NamedIndividual))
         g.add((codigoUri,ns.classeStatus, Literal(classe['estado'])))
         g.add((codigoUri,RDF.type, ns[f"Classe_N{classe['nivel']}"]))
-        g.add((codigoUri,ns.codigo, Literal(classe['codigo'])))
+        g.add((codigoUri,ns.codigo, Literal(cod)))
         g.add((codigoUri,ns.titulo, Literal(classe['titulo'])))
-        
+
         # Relação hierárquica-------------------------------
         if classe['nivel'] == 1:
             g.add((codigoUri,ns.pertenceLC, ns.lc1))
             g.add((codigoUri,ns.temPai, ns.lc1))
         elif classe['nivel'] in [2,3,4]:
-            partes = classe['codigo'].split('.')
+            partes = cod.split('.')
             pai = '.'.join(partes[0:-1])
             g.add((codigoUri,ns.pertenceLC, ns.lc1))
             g.add((codigoUri,ns.temPai, ns[f"c{pai}"]))
-        
+
         # ------------------------------------------------
         # Descrição
         if classe["descricao"]:
@@ -194,7 +195,7 @@ def classeGenTTL(c):
         if 'notasAp' in classe.keys():
             for n in classe['notasAp']:
 
-                notaUri = ns[n['idNota']] 
+                notaUri = ns[n['idNota']]
                 g.add((notaUri,RDF.type, OWL.NamedIndividual))
                 g.add((notaUri,RDF.type, ns.NotaAplicacao))
                 g.add((notaUri,RDFS.label, Literal("Nota de Aplicação")))
@@ -282,7 +283,7 @@ def classeGenTTL(c):
         # PCA --------------------------------------------------------
         if 'pca' in classe:
 
-            pcaUri = ns[f"pca_c{classe['codigo']}"]
+            pcaUri = ns[f"pca_c{cod}"]
             g.add((codigoUri,ns.temPCA,pcaUri))
             g.add((pcaUri,RDF.type,OWL.NamedIndividual))
             g.add((pcaUri,RDF.type,ns.PCA))
@@ -312,10 +313,10 @@ def classeGenTTL(c):
         # Justificação do PCA ----------------------------------------
             if 'justificacao' in classe['pca']:
 
-                justUri = ns[f"just_pca_c{classe['codigo']}"]
+                justUri = ns[f"just_pca_c{cod}"]
                 g.add((justUri,RDF.type,OWL.NamedIndividual))
                 g.add((justUri,RDF.type,ns.JustificacaoPCA))
-                g.add((ns[f"pca_c{classe['codigo']}"],ns.temJustificacao,justUri))
+                g.add((ns[f"pca_c{cod}"],ns.temJustificacao,justUri))
 
                 for crit in classe['pca']['justificacao']:
 
@@ -344,7 +345,7 @@ def classeGenTTL(c):
         # DF ---------------------------------------------------------
         if 'df' in classe:
 
-            dfUri = ns[f"df_c{classe['codigo']}"]
+            dfUri = ns[f"df_c{cod}"]
 
             g.add((codigoUri,ns.temDF,dfUri))
             g.add((dfUri,RDF.type,OWL.NamedIndividual))
@@ -358,7 +359,7 @@ def classeGenTTL(c):
         # Justificação do DF -----------------------------------------
             if 'justificacao' in classe['df']:
 
-                justDfUri = ns[f"just_df_c{classe['codigo']}"]
+                justDfUri = ns[f"just_df_c{cod}"]
                 g.add((justDfUri,RDF.type,OWL.NamedIndividual))
                 g.add((justDfUri,RDF.type,ns.JustificacaoDF))
                 g.add((dfUri,ns.temJustificacao,justDfUri))
@@ -385,7 +386,7 @@ def classeGenTTL(c):
                     if 'procRefs' in crit:
                         for ref in crit['procRefs']:
                             g.add((critUri,ns.critTemProcRel,ns[f"c{ref}"]))
-    
+
     g.serialize(format="ttl",destination='./ontologia/' + c + '.ttl')
     fin.close()
 
