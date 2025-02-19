@@ -105,8 +105,6 @@ def processSheet(sheet, nome,rep:Report):
     df = pd.DataFrame(data, index=idx, columns=cols)
 
     myClasse = {}
-    warningsDic = {}
-    ProcHarmonizacao = []
     indN3 = calcSubdivisoes(df)
 
     for _, row in df.iterrows():
@@ -142,14 +140,11 @@ def processSheet(sheet, nome,rep:Report):
 
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
-                contexto.procContexto(row,cod, myReg, warningsDic, entCatalog, tipCatalog, legCatalog,rep)
+                contexto.procContexto(row,cod, myReg, entCatalog, tipCatalog, legCatalog,rep)
 
             # Processamento das Decisões
             if (myReg["nivel"] == 3 and not indN3[cod]) or myReg["nivel"] == 4:
                 decisao.procDecisoes(row,cod, myReg, legCatalog,rep)
-
-            if myReg["estado"] == 'H' and cod not in warningsDic:
-                ProcHarmonizacao.append(cod)
 
             rep.addDecl(cod,nome)
             myClasse[cod] = myReg
@@ -158,11 +153,5 @@ def processSheet(sheet, nome,rep:Report):
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
     print("Classe extraída: ", nome, " :: ", len(myClasse))
-    if len(warningsDic) > 0:
-        print("Warnigns: ")
-        print('\n'.join(warningsDic.values()))
-    if len(ProcHarmonizacao) > 0:
-        print("Processos em Harmonização: ")
-        print('\n'.join(ProcHarmonizacao))
     outFile.close()
     print("# FIM: Migração da Classe  " + fnome + "-----------------")
