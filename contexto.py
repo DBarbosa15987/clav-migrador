@@ -3,7 +3,7 @@ from report import Report
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog, rep: Report):
+def procContexto(classe, cod, myReg, warningsDic, entCatalog, tipCatalog, legCatalog, rep: Report):
     # Tipos de intervenção
     # --------------------------------------------------
     intervCatalog = ['Apreciar','Assessorar','Comunicar','Decidir','Executar','Iniciar']
@@ -16,14 +16,14 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
     if classe["Tipo de processo"]:
         myReg['tipoProc'] = brancos.sub('', str(classe["Tipo de processo"]))
         if myReg["estado"]!='H' and myReg['tipoProc'] not in ['PC','PE']:
-            ListaErros.append('Erro::' + cod + '::Tipo de processo desconhecido::' + myReg['tipoProc'])
+            rep.addErro(cod,f"Tipo de processo desconhecido::{myReg['tipoProc']}")
         elif myReg["estado"]!='H' and myReg['tipoProc'] == '':
-            ListaErros.append('Erro::' + cod + '::tipo de processo não preenchido::' + myReg['tipoProc'])
+            rep.addErro(cod,f"Tipo de processo não preenchido::{myReg['tipoProc']}")
     # Transversalidade -----
     if classe["Processo transversal (S/N)"]:
         myReg['procTrans'] = brancos.sub('', classe["Processo transversal (S/N)"])
         if myReg["estado"]!='H' and myReg['procTrans'] not in ['S','N']:
-            ListaErros.append('Erro::' + cod + '::transversalidade desconhecida::' + myReg['procTrans'])
+            rep.addErro(cod,f"Transversalidade desconhecida::{myReg['procTrans']}")
     elif myReg["nivel"] == 3:
         warningsDic[cod] = "Warning::" + cod + "::não tem transversalidade preenchida"
     # Donos -----
@@ -40,10 +40,10 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
         # ERRO: Verificação da existência dos donos no catálogo de entidades e/ou tipologias
         for d in myReg['donos']:
             if (d not in entCatalog) and (d not in tipCatalog):
-                ListaErros.append('Erro::' + cod + '::Entidade dono não está no catálogo de entidades ou tipologias::' + d)
+                rep.addErro(cod,f"Entidade dono não está no catálogo de entidades ou tipologias::{d}")
             # ERRO: Um processo tem que ter sempre donos
         if myReg['estado'] != 'H' and len(myReg['donos']) == 0:
-            ListaErros.append('Erro::' + cod + '::Este processo não tem donos identificados.')
+            rep.addErro(cod,"Este processo não tem donos identificados.")
     # Participantes -----
     if classe["Participante no processo"]:
         participantes = brancos.sub('', classe["Participante no processo"])
@@ -56,7 +56,7 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
         # ERRO: Verificação da existência dos participantes no catálogo de entidades e/ou tipologias
         for part in myReg['participantes']:
             if (part['id'] not in entCatalog) and (part['id'] not in tipCatalog):
-                ListaErros.append('Erro::' + cod + '::Entidade participante não está no catálogo de entidades ou tipologias::' + part['id'])
+                rep.addErro(cod,f"Entidade participante não está no catálogo de entidades ou tipologias::{part['id']}")
     # Tipo de intervenção -----
     linterv = []
     if classe["Tipo de intervenção do participante"]:
@@ -67,16 +67,16 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
         # ERRO: Verificação da existência do tipo de intervenção no catálogo de intervenções
         for i in linterv:
             if i not in intervCatalog:
-                ListaErros.append('Erro::' + cod + '::Tipo de intervenção não está no catálogo de intervenções::' + i)
+                rep.addErro(cod,f"Tipo de intervenção não está no catálogo de intervenções::{i}")
             # ERRO: Participantes e intervenções têm de ter a mesma cardinalidade
         if classe["Participante no processo"] and classe["Tipo de intervenção do participante"]:
             if myReg["estado"]!='H' and len(myReg['participantes']) != len(linterv):
-                ListaErros.append('Erro::' + cod + '::Participantes e intervenções não têm a mesma cardinalidade')
+                rep.addErro(cod,f"Participantes e intervenções não têm a mesma cardinalidade")
             elif len(myReg['participantes']) == len(linterv):
                 for index, i in enumerate(linterv):
                     myReg['participantes'][index]['interv'] = i
             else:
-                ListaErros.append('Erro::' + cod + '::Processo em harmonização e participantes e intervenções não têm a mesma cardinalidade, estas não foram migradas')
+                rep.addErro(cod,"Processo em harmonização e participantes e intervenções não têm a mesma cardinalidade, estas não foram migradas")
     # Legislação -----
     if classe["Diplomas jurídico-administrativos REF"]:
         leg = brancos.sub('', classe["Diplomas jurídico-administrativos REF"])
@@ -92,7 +92,7 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
         # ERRO: Verificação da existência da legislação no catálogo legislativo
         for l in myReg['legislacao']:
             if l not in legCatalog:
-                ListaErros.append('Erro::' + cod + '::Legislação inexistente no catálogo legislativo::' + l)
+                rep.addErro(cod,f"Legislação inexistente no catálogo legislativo::{l}")
     # Processos Relacionados -----
     if classe["Código do processo relacionado"]:
         proc = brancos.sub('', classe["Código do processo relacionado"])
@@ -129,9 +129,10 @@ def procContexto(classe, cod, myReg, ListaErros, warningsDic, entCatalog, tipCat
                 normalizadas.append('eAntecessorDe')
             else:
                 normalizadas.append(rel)
-                ListaErros.append('Erro::' + cod + '::Relação entre processos desconhecida::' + rel)
+                rep.addErro(cod,f"Relação entre processos desconhecida::{rel}")
             myReg['proRel'] = normalizadas
+
     # ERRO: Processos e Relações têm de ter a mesma cardinalidade
     if classe["Código do processo relacionado"] and classe["Tipo de relação entre processos"]:
         if myReg["estado"]!='H' and len(myReg['processosRelacionados']) != len(myReg['proRel']):
-            ListaErros.append('Erro::' + cod + '::Processos relacionados e respetivas relações não têm a mesma cardinalidade')
+            rep.addErro(cod,"Processos relacionados e respetivas relações não têm a mesma cardinalidade")

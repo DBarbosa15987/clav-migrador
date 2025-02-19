@@ -1,9 +1,10 @@
 import pandas as pd
 import re
+from report import Report
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCatalog):
+def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
     # PCA -----
     if classe["Prazo de conservação administrativa"]:
         myReg['pca'] = {}
@@ -14,7 +15,7 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
         # Verifica-se se tem alguma coisa
         if pd.isna(pca):
             myReg['pca']['valores'] = "NE"
-        else: 
+        else:
             if type(classe["Prazo de conservação administrativa"]) not in [int, float]:
                 if re.search(r'\d+', pca):
                     if re.search(r'#', str(pca)):
@@ -33,7 +34,7 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
     # ERRO: um dos dois, PCA ou Nota ao PCA, tem de ter um valor válido
     if myReg["estado"]!='H':
         if classe["Prazo de conservação administrativa"] and (myReg['pca']['valores'] == "NE") and 'notas' not in myReg['pca'].keys():
-            ListaErros.append('Erro::' + cod + '::PCA e Nota ao PCA não podem ser simultaneamente inválidos')
+            rep.addErro(cod,"PCA e Nota ao PCA não podem ser simultaneamente inválidos")
     # Forma de Contagem do PCA -----
     if 'pca' in myReg.keys() and myReg['pca']['valores'] != "NE":
         formaContagem = brancos.sub('', str(classe["Forma de contagem do PCA"]))
@@ -76,10 +77,10 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
             elif re.search(r'9\s+-', formaContagem):
                 myReg['pca']['subFormaContagem'] = 'F01.09'
             else:
-                ListaErros.append('Erro::' + cod + '::Não consegui extrair a subforma de contagem::' + formaContagem)
+                rep.addErro(cod,f"Não consegui extrair a subforma de contagem::{formaContagem}")
         else:
             myReg['pca']['formaContagem'] = "Desconhecida"
-            ListaErros.append('Erro::' + cod + '::Forma de contagem do PCA desconhecida::' + formaContagem)
+            rep.addErro(cod,f"Forma de contagem do PCA desconhecida::{formaContagem}")
     # Justificação do PCA -----
     if 'pca' in myReg and classe["Justificação PCA"]:
         just = brancos.sub('', classe["Justificação PCA"])
@@ -97,14 +98,15 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                 myCrit['legRefs'] = []
                 legRefs = re.finditer(r'(?:\[)([a-zA-Z0-9\-\/ ]+)(?:\])', myCrit['conteudo'])
                 for ref in legRefs:
-                    myCrit['legRefs'].append(re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', ref.group(1)))  
+                    myCrit['legRefs'].append(re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', ref.group(1)))
                 for ref in myCrit['legRefs']:
                     # ERRO: Legislação referenciado no critério não existe no catálogo
                     if ref not in legCatalog:
-                        ListaErros.append('Erro::' + jcodigo + '::Legislação inexistente no catálogo legislativo::' + ref)
+                        rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                            # ListaErros.append('Aviso::' + jcodigo + '::Legislação usado no critério não está incluída no contexto, será incluída::' + ref)
+                            # FIXME: já estava comentada
+                            # rep.addErro(jcodigo,f"Legislação usado no critério não está incluída no contexto, será incluída::{ref}")
                             myReg['legislacao'].append(ref)
             # --- Critério Gestionário ------------------------------------
             if res := re.search(r'(?:Critério gestionário:\s*)(.+)', crit, re.I):
@@ -127,7 +129,7 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                     # ERRO: Todos os processos referenciados têm de estar na zona de contexto
                     for ref in myRefs:
                         if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            ListaErros.append('ERRO::' + jcodigo + '::Processo usado no critério não está incluído no contexto::' + ref)
+                            rep.addErro(jcodigo,f"Processo usado no critério não está incluído no contexto::{ref}")
             # --- Critério de Utilidade Administrativa ------------------------------------
             if res := re.search(r'(?:Critério de utilidade administrativa:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'utilidade'
@@ -149,10 +151,10 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                     # ERRO: Todos os processos referenciados têm de estar na zona de contexto (classes N3)
                     for ref in myRefs:
                         if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            ListaErros.append('ERRO::' + jcodigo + '::Processo usado no critério não está incluído no contexto::' + ref)
+                            rep.addErro(jcodigo,f"Processo usado no critério não está incluído no contexto::{ref}")
 
             myReg['pca']['justificacao'].append(myCrit)
-      
+
     # DF ------------------------------------------------------
     # print("--> ", cod)
     if classe["Destino final"]:
@@ -161,15 +163,15 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
         # Verifica-se se tem alguma coisa
         if re.search(r'C|CP|E|NE', df):
             myReg['df']['valor'] = df
-        else: 
+        else:
             if myReg["estado"]!='H':
-                ListaErros.append('Erro::' + cod + '::Valor inválido para o DF::' + df)
+                rep.addErro(cod,f"Valor inválido para o DF::{df}")
     # Nota ao DF ------------------------------------------------------
     if "Nota ao DF" in classe and classe["Nota ao DF"]:
         myReg['df']['nota'] = brancos.sub('', classe["Nota ao DF"])
     # ERRO: um dos dois, DF ou Nota ao DF, tem de ter um valor válido
     if myReg["estado"]!='H' and classe["Destino final"] and (myReg['df']['valor'] == "NE") and not myReg['df']['nota']:
-        ListaErros.append('Erro::' + cod + '::DF e Nota ao DF não podem ser simultaneamente inválidos')
+        rep.addErro(cod,"DF e Nota ao DF não podem ser simultaneamente inválidos")
     # Justificação do DF ----------------------------------------------
     if 'df' in myReg and classe["Justificação DF"]:
         just = brancos.sub('', classe["Justificação DF"])
@@ -191,10 +193,10 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                 for ref in myCrit['legRefs']:
                     # ERRO: Legislação referenciado no critério não existe no catálogo
                     if ref not in legCatalog:
-                        ListaErros.append('Erro::' + jcodigo + '::Legislação inexistente no catálogo legislativo::' + ref)
+                        rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                            # ListaErros.append('Aviso::' + jcodigo + '::Legislação usado no critério não está incluída no contexto, será incluída::' + ref)
+                            # FIXME: já estava comentada
                             myReg['legislacao'].append(ref)
             # --- Critério de Densidade Informacional ------------------------------------------
             if res := re.search(r'(?:Critério de densidade informacional:\s*)(.+)', crit, re.I):
@@ -210,10 +212,10 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                     for ref in myCrit['legRefs']:
                         # ERRO: Legislação referenciado no critério não existe no catálogo
                         if ref not in legCatalog:
-                            ListaErros.append('Erro::' + jcodigo + '::Legislação inexistente no catálogo legislativo::' + ref)
+                            rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                         else:
                             if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                                # ListaErros.append('Aviso::' + jcodigo + '::Legislação usado no critério não está incluída no contexto, será incluída::' + ref)
+                                # FIXME: já estava comentada
                                 myReg['legislacao'].append(ref)
                 # Referências a processos no texto do critério -----------
                 procRefs = re.finditer(r'\d{3}\.\d{2,3}\.\d{3}', myCrit['conteudo'])
@@ -225,7 +227,7 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                     # ERRO: Todos os processos referenciados têm de estar na zona de contexto
                     for ref in myRefs:
                         if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            ListaErros.append('ERRO::' + jcodigo + '::Processo usado no critério não está incluído no contexto::' + ref)
+                            rep.addErro(jcodigo,f"Processo usado no critério não está incluído no contexto::{ref}")
             # --- Critério de Complementaridade Informacional ------------------------------------------
             if res := re.search(r'(?:Critério de complementaridade informacional:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'complementaridade'
@@ -240,10 +242,10 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                     for ref in myCrit['legRefs']:
                         # ERRO: Legislação referenciado no critério não existe no catálogo
                         if ref not in legCatalog:
-                            ListaErros.append('Erro::' + jcodigo + '::Legislação inexistente no catálogo legislativo::' + ref)
+                            rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                         else:
                             if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                                # ListaErros.append('Aviso::' + jcodigo + '::Legislação usado no critério não está incluída no contexto, será incluída::' + ref)
+                                # FIXME: já estava comentada
                                 myReg['legislacao'].append(ref)
                 # Referências a processos no texto do critério -----------
                 procRefs = re.finditer(r'\d{3}\.\d{2,3}\.\d{3}', myCrit['conteudo'])
@@ -255,10 +257,9 @@ def procDecisoes(classe, cod, myReg, ListaErros, entCatalog, tipCatalog, legCata
                     # ERRO: Todos os processos referenciados têm de estar na zona de contexto
                     for ref in myRefs:
                         if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            ListaErros.append('ERRO::' + jcodigo + '::Processo usado no critério não está incluído no contexto::' + ref)
+                            rep.addErro(jcodigo,f"Processo usado no critério não está incluído no contexto::{ref}")
 
             myReg['df']['justificacao'].append(myCrit)
-            
+
     if classe["Notas"]:
         myReg["Notas"] = classe["Notas"]
-        

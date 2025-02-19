@@ -11,12 +11,20 @@ class Report:
         self.globalErrors = {
             "struct":{
                 "declsRepetidas": {}, # {"200":["100.ttl","200.ttl"]}
-                "relsInvalidas": {}, # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
-                "outros": {}
+                "relsInvalidas": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
             },
+            "outros": {}, # {"200": ["mensagem de erro"]}
             "erroInv":{}
         }
         self.warnings = {}
+
+
+    def addErro(self,cod,msg):
+        # TODO: criar hierarquia de erros
+        if cod in self.globalErrors["outros"]:
+            self.globalErrors["outros"][cod].append(msg)
+        else:
+            self.globalErrors["outros"][cod] = [msg]
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
@@ -113,7 +121,6 @@ class Report:
                     self.warnings["outro"].append(msg)
                 else:
                     self.warnings["outro"] = [msg]
-
 
 
     def printInv(self):

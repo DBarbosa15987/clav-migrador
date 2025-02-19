@@ -22,13 +22,14 @@ sepExtra = re.compile(r'#$|^#')
 # Calcula e normaliza o estado da classe
 def calcEstado(e):
     global hreg, ireg
-    if e.strip() == '': 
+    if e.strip() == '':
         return 'A'
-    elif hreg.search(e): 
+    elif hreg.search(e):
         return 'H'
-    elif ireg.search(e): 
+    elif ireg.search(e):
         return 'I'
-    else: 
+    else:
+        # TODO: criar erro aqui?
         return 'Erro'
 # --------------------------------------------------
 #
@@ -104,7 +105,6 @@ def processSheet(sheet, nome,rep:Report):
     df = pd.DataFrame(data, index=idx, columns=cols)
 
     myClasse = {}
-    ListaErros = []
     warningsDic = {}
     ProcHarmonizacao = []
     indN3 = calcSubdivisoes(df)
@@ -126,7 +126,7 @@ def processSheet(sheet, nome,rep:Report):
                 myReg["titulo"] = brancos.sub('', row["Título"])
             else:
                 if myReg["estado"] != 'H':
-                    ListaErros.append('Erro::' + cod + '::classe sem título')
+                    rep.addErro(cod,"Classe sem título")
 
             # Descrição -----
             myReg["descricao"] = norm_brancos.sub(' ', str(row["Descrição"]))
@@ -142,11 +142,11 @@ def processSheet(sheet, nome,rep:Report):
 
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
-                contexto.procContexto(row,cod, myReg, ListaErros, warningsDic, entCatalog, tipCatalog, legCatalog,rep)
+                contexto.procContexto(row,cod, myReg, warningsDic, entCatalog, tipCatalog, legCatalog,rep)
 
             # Processamento das Decisões
             if (myReg["nivel"] == 3 and not indN3[cod]) or myReg["nivel"] == 4:
-                decisao.procDecisoes(row,cod, myReg, ListaErros, entCatalog, tipCatalog, legCatalog)
+                decisao.procDecisoes(row,cod, myReg, legCatalog,rep)
 
             if myReg["estado"] == 'H' and cod not in warningsDic:
                 ProcHarmonizacao.append(cod)
@@ -158,9 +158,6 @@ def processSheet(sheet, nome,rep:Report):
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
     print("Classe extraída: ", nome, " :: ", len(myClasse))
-    if len(ListaErros) > 0:
-        print("Erros: ")
-        print('\n'.join(ListaErros))
     if len(warningsDic) > 0:
         print("Warnigns: ")
         print('\n'.join(warningsDic.values()))
