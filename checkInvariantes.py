@@ -3,7 +3,6 @@ import time
 import re
 from report import Report
 from collections import Counter
-from itertools import zip_longest
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
@@ -156,7 +155,6 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
             for c in relacoes:
                 relacao = allClasses.get(c)
 
-                # Caso seja com um processo em harmonização
                 if not relacao:
                     relacao = harmonizacao.get(c)
                     # FIXME: caso de quando uma relação é inválida. Isto é
@@ -168,15 +166,17 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                         print(rel)
                         print(c)
                         print("-"*15)
+                    else:
+                        # Caso seja com um processo em harmonização
+                        rep.addWarning("",f"foi consultada a relação {cod} :{rel} {c}, e {c} está em harmonização")
+                    # O invariante não é avaliado sobre uma relação que mencionar
+                    # um processo inexistente ou em hamonização
                     continue
 
                 proRels2 = relacao.get("proRel",[])
                 proRelCods2 = relacao.get("processosRelacionados",[])
                 if proRelCods2 and proRels2:
-                    # É preciso acomodar os processos em harmonização com
-                    # `zip_longest`, visto que não é garantido que proRels2
-                    # e proRelCods2 tenham a mesma cardinalidade
-                    relacoes2 = [c for c,r in zip_longest(proRelCods2,proRels2) if r==rel]
+                    relacoes2 = [c for c,r in zip(proRelCods2,proRels2) if r==rel]
                     # Se existe a relação `rel` aqui também, não cumpre com o invariante
                     if cod in relacoes2:
                         rep.addFalhaInv(invName,cod,rel,c)
