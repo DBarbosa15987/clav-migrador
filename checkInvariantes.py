@@ -179,7 +179,7 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                     relacoes2 = [c for c,r in zip(proRelCods2,proRels2) if r==rel]
                     # Se existe a relação `rel` aqui também, não cumpre com o invariante
                     if cod in relacoes2:
-                        rep.addFalhaInv(invName,cod,rel,c)
+                        rep.addFalhaInv(invName,cod,(rel,c))
 
 
 def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
@@ -515,15 +515,15 @@ def rel_5_inv_2(allClasses,rep:Report):
 
                             for s in supls:
                                 if s not in allProcRefs:
-                                    rep.addFalhaInv("rel_5_inv_2",cod,o=s)
+                                    rep.addFalhaInv("rel_5_inv_2",cod,s)
                         else:
-                            # Aqui como não nenhum procRef, todos os supls estão em falta
+                            # Aqui como não tem nenhum procRef, todos os supls estão em falta
                             for s in supls:
-                                rep.addFalhaInv("rel_5_inv_2",cod,o=s)
+                                rep.addFalhaInv("rel_5_inv_2",cod,s)
                     else:
-                        # Aqui como não nenhum procRef, todos os supls estão em falta
+                        # Aqui como não tem nenhum procRef, todos os supls estão em falta
                         for s in supls:
-                            rep.addFalhaInv("rel_5_inv_2",cod,o=s)
+                            rep.addFalhaInv("rel_5_inv_2",cod,s)
 
 
 def rel_7_inv_2(allClasses,rep:Report):
@@ -877,7 +877,7 @@ def rel_4_inv_8(allClasses,rep: Report):
                 duplicados = [x for x,count in proRelsCount.items() if count > 1]
                 for dup in duplicados:
                     # TODO: especificar melhor o erro
-                    rep.addFalhaInv("rel_4_inv_8",cod,o=dup)
+                    rep.addFalhaInv("rel_4_inv_8",cod,dup)
 
 
 def rel_6_inv_1(allClasses,rep: Report):
@@ -963,7 +963,7 @@ def rel_4_inv_7(allClasses,rep: Report):
                 # se menciona a si próprio
                 selfRels = [(c,r) for c,r in zip(proRelCods,proRels) if cod==c]
                 for r in selfRels:
-                    rep.addFalhaInv("rel_4_inv_7",cod,p=r)
+                    rep.addFalhaInv("rel_4_inv_7",cod,r)
 
 
 def rel_8_inv_1(allClasses,rep: Report):

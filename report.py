@@ -89,12 +89,13 @@ class Report:
         return ok
 
 
-    def addFalhaInv(self,inv,s,p=None,o=None):
-
+    def addFalhaInv(self,inv,cod,msg=""):
+        # Aqui `msg` pode ser uma string, uma lista ou um tuplo,
+        # dependendo do invariante
         if inv in self.globalErrors["erroInv"]:
-            self.globalErrors["erroInv"][inv].append((s, p, o))
+            self.globalErrors["erroInv"][inv].append((cod, msg))
         else:
-            self.globalErrors["erroInv"][inv] = [(s, p, o)]
+            self.globalErrors["erroInv"][inv] = [(cod, msg)]
 
 
     def addWarning(self,tipo,msg):
@@ -128,36 +129,24 @@ class Report:
         for inv,info in self.globalErrors["erroInv"].items():
             print(f"\n{inv} ({len(info)}):\n")
             match inv:
-                case "rel_4_inv_0":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_4_inv_1_1":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_4_inv_1_2":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
                 case "rel_4_inv_2":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_4_inv_3":
-                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1]} {i[2]}" for i in info])}")
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_4_inv_4":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_4_inv_5":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_4_inv_6":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_2_inv_1":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_2_inv_2":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_2_inv_3":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_9_inv_2":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_3_inv_1":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-                case "rel_3_inv_5":
-                    print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
+                case "rel_5_inv_2":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1][1]}" for i in info])}")
+
                 case _:
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
+
+
+
 
 
     def dumpReport(self,dumpFileName="dump.json"):
