@@ -127,8 +127,26 @@ class Report:
     def printInv(self):
 
         for inv,info in self.globalErrors["erroInv"].items():
+            # Em "erroInv" os values() são (cod,msg)
             print(f"\n{inv} ({len(info)}):\n")
             match inv:
+                case "rel_2_inv_1":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_2_inv_2":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_2_inv_3":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_3_inv_1":
+                    # rep.addFalhaInv("rel_3_inv_1",cod,(valor,count))
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1][0]} {i[1][1]}" for i in info])}")
+                case "rel_3_inv_4":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_3_inv_5":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1][0]} {i[1][1]}" for i in info])}")
+                case "rel_3_inv_6":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1][0]} {i[1][1]}" for i in info])}")
+                case "rel_3_inv_7":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
                 case "rel_4_inv_2":
                     print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_4_inv_3":
@@ -139,8 +157,18 @@ class Report:
                     print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_4_inv_6":
                     print(f"\t- {"\n\t- ".join([f"{i[0]} :{i[1][0]} {i[1][1]}" for i in info])}")
+                case "rel_4_inv_8":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_4_inv_11":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
                 case "rel_5_inv_2":
-                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1][1]}" for i in info])}")
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_6_inv_2":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_8_inv_1":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
+                case "rel_9_inv_2":
+                    print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
 
                 case _:
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")

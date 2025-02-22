@@ -206,8 +206,7 @@ def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
                     if nivel == 3 and (leg not in classe.get("legislacao",[])):
-                        # TODO: dar mais detalhe sobre o erro
-                        rep.addFalhaInv(invName,cod)
+                        rep.addFalhaInv(invName,cod,leg)
 
                     # Se a classe for de nível 4 verifica-se se
                     # a legislação é mencionada no pai
@@ -216,17 +215,15 @@ def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
                         classePai = allClasses.get(pai)
                         # Tem pai ativo
                         if classePai:
-                            # TODO: dar mais detalhe sobre o erro
                             if leg not in classePai.get("legislacao",[]):
-                                rep.addFalhaInv(invName,cod)
+                                rep.addFalhaInv(invName,cod,leg)
                         # Tem pai em harmonização
                         elif pai in harmonizacao:
                             rep.addWarning("",f"o pai de {cod} está em harmonização")
                         # Não tem pai
                         else:
-                            # Aqui considera-se que se não tem pai
                             rep.addWarning("",f"{cod} não tem pai")
-                            rep.addFalhaInv(invName,cod)
+                            rep.addFalhaInv(invName,cod,leg)
 
             # verificação no df
             justificacaoDf = classe.get("df",{}).get("justificacao")
@@ -239,8 +236,7 @@ def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
                     if nivel == 3 and (leg not in classe.get("legislacao",[])):
-                        # TODO: dar mais detalhe sobre o erro
-                        rep.addFalhaInv(invName,cod)
+                        rep.addFalhaInv(invName,cod,leg)
 
                     # Se a classe for de nível 4 verifica-se se
                     # a legislação é mencionada no pai
@@ -250,15 +246,14 @@ def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
                         # Tem pai ativo
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
-                                rep.addFalhaInv(invName,cod)
+                                rep.addFalhaInv(invName,cod,leg)
                         # Tem pai em harmonização
                         elif pai in harmonizacao:
                             rep.addWarning("",f"o pai de {cod} está em harmonização")
                         # Não tem pai
                         else:
-                            # Aqui considera-se que se não tem pai
                             rep.addWarning("",f"{cod} não tem pai")
-                            rep.addFalhaInv(invName,cod)
+                            rep.addFalhaInv(invName,cod,leg)
 
 
 def checkUniqueInst(rep: Report):
@@ -298,9 +293,10 @@ def checkUniqueInst(rep: Report):
 
     for inv,nota in notas.items():
         for id,cods in nota.items():
-            # TODO: mais detalhe no erro
+            # Só falha no invariante quando um id tem mais do que um
+            # código associado
             if len(cods) > 1:
-                rep.addFalhaInv(inv,id)
+                rep.addFalhaInv(inv,id,cods)
 
 
 def rel_4_inv_3(allClasses,harmonizacao,rep: Report):
@@ -336,12 +332,13 @@ def rel_4_inv_11(allClasses,rep: Report):
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            # TODO: saber aqui quais é que "quebram o inv"
             proRels = classe.get("proRel")
-            # proRelCods = classe.get("processosRelacionados")
+            proRelCods = classe.get("processosRelacionados")
             # Se a classe contém ambas as relações, não cumpre com o invariante
-            if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
-                rep.addFalhaInv("rel_4_inv_11",cod)
+            if proRels and proRelCods:
+                if "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
+                    sinteses = [(c,r) for (c,r) in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
+                    rep.addFalhaInv("rel_4_inv_11",cod,sinteses)
 
 
 def rel_4_inv_12(allClasses,harmonizacao,rep: Report):
@@ -415,11 +412,12 @@ def rel_3_inv_6(allClasses,rep: Report):
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             if not classe.get("filhos"):
-                pca = classe.get("pca")
-                df = classe.get("df")
-                # TODO: especificar melhor os erros aqui
-                if not pca or not df:
-                    rep.addFalhaInv("rel_3_inv_6",cod)
+                pca = classe.get("pca",[])
+                df = classe.get("df",[])
+                temPca = pca != []
+                temDf = df != []
+                if not temPca or not temDf:
+                    rep.addFalhaInv("rel_3_inv_6",cod,(temPca,temDf))
 
 
 def rel_3_inv_3(allClasses,rep: Report):
@@ -564,10 +562,11 @@ def rel_6_inv_2(allClasses,rep: Report):
             proRel = classe.get("proRel")
             if proRel and "eSintetizadoPor" in proRel:
                 filhos = classe.get("filhos")
-                if not filhos and  "eSinteseDe" not in proRel and "eComplementarDe" not in proRel:
-                    valor = classe.get("df",{}).get("valor")
-                    if valor != 'E':
-                        rep.addFalhaInv("rel_6_inv_2",cod)
+                if not filhos:
+                    if "eSinteseDe" not in proRel and "eComplementarDe" not in proRel:
+                        valor = classe.get("df",{}).get("valor")
+                        if valor != 'E':
+                            rep.addFalhaInv("rel_6_inv_2",cod,valor)
 
 
 def rel_5_inv_3(allClasses,rep:Report):
@@ -625,7 +624,7 @@ def rel_9_inv_2(allClasses,rep: Report):
             if proRel and "eSinteseDe" in proRel:
                 valor = classe.get("df",{}).get("valor")
                 if valor and valor != "C":
-                    rep.addFalhaInv("rel_9_inv_2",cod)
+                    rep.addFalhaInv("rel_9_inv_2",cod,valor)
 
 
 def rel_3_inv_1(allClasses,rep: Report):
@@ -641,12 +640,14 @@ def rel_3_inv_1(allClasses,rep: Report):
             codFilhos = classe.get("filhos")
             if codFilhos:
                 filhos = [allClasses.get(c) for c in codFilhos]
-                valores = [(f["pca"]["valores"],f["df"]["valor"]) for f in filhos if "pca" in f and "df" in f]
+                valores = [(f.get("pca",{}).get("valores"),f.get("df",{}).get("valor")) for f in filhos]
+
                 # Se as combinações de pca e df tiverem valores repetidos,
                 # então não deve haver desdobramento. E por isso o invariante falha
-                if len(valores) != len(set(valores)):
-                    # TODO: especificar melhor o erro
-                    rep.addFalhaInv("rel_3_inv_1",cod)
+                valoresCounter = Counter(valores)
+                for valor,count in valoresCounter.items():
+                    if count > 1:
+                        rep.addFalhaInv("rel_3_inv_1",cod,(valor,count))
 
 
 def rel_3_inv_5(allClasses,rep: Report):
@@ -658,11 +659,15 @@ def rel_3_inv_5(allClasses,rep: Report):
     classe 3 se esta tiver filhos"
     """
 
-    # TODO: especificar melhor o erro
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            if classe.get("filhos") and (classe.get("pca") or classe.get("df")):
-                rep.addFalhaInv("rel_3_inv_5",cod)
+            if classe.get("filhos"):
+                pca = classe.get("pca",{})
+                df = classe.get("df",{})
+                temPca = pca != {}
+                temDf = df != {}
+                if (temDf or temPca):
+                    rep.addFalhaInv("rel_3_inv_5",cod,(temPca,temDf))
 
 
 def rel_3_inv_7(allClasses,rep: Report):
@@ -693,11 +698,10 @@ def rel_3_inv_7(allClasses,rep: Report):
                             if valor == "C":
                                 conservacao = True
                                 break
-                        # Se nenhum processo tiver o valor de "C",
+                        # Se nenhum filho tiver o valor de "C",
                         # então o invariante falha
                         if not conservacao:
-                            # TODO: especificar em que compl falhou
-                            rep.addFalhaInv("rel_3_inv_7",cod)
+                            rep.addFalhaInv("rel_3_inv_7",cod,compl)
 
 
 def rel_3_inv_4(allClasses,termosIndice,rep: Report):
@@ -718,8 +722,7 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                     termosFilho = [t["termo"] for t in termosIndice if t["codigo"]==c]
                     for t in termosPai:
                         if t not in termosFilho:
-                            # TODO: indicar o TI em falta no erro e em que filho
-                            rep.addFalhaInv("rel_3_inv_4",cod)
+                            rep.addFalhaInv("rel_3_inv_4",cod,(t,c))
 
 
 def rel_6_inv_3(allClasses,rep: Report):
@@ -871,13 +874,15 @@ def rel_4_inv_8(allClasses,rep: Report):
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            proRels = classe.get("processosRelacionados")
-            if proRels:
-                proRelsCount = Counter(proRels)
-                duplicados = [x for x,count in proRelsCount.items() if count > 1]
-                for dup in duplicados:
-                    # TODO: especificar melhor o erro
-                    rep.addFalhaInv("rel_4_inv_8",cod,dup)
+            proRelCods = classe.get("processosRelacionados")
+            proRels = classe.get("proRel")
+            if proRelCods and proRels:
+                proRelsCount = Counter(proRelCods)
+                rels = list(zip(proRelCods,proRels))
+                for x,count in proRelsCount.items():
+                    if count > 1:
+                        relsDuplicadas = [(c,r) for c,r in rels if c == x]
+                        rep.addFalhaInv("rel_4_inv_8",cod,(x,relsDuplicadas))
 
 
 def rel_6_inv_1(allClasses,rep: Report):
@@ -926,7 +931,7 @@ def rel_4_inv_10(termosIndice,rep: Report):
     """
 
     n3 = re.compile(r'^\d{3}\.\d{1,3}\.\d{1,3}$')
-    termos = {}
+    termos = {} #{termo:[100,200]}
     for t in termosIndice:
         cod = t["codigo"]
         termo = t["termo"]
@@ -934,15 +939,12 @@ def rel_4_inv_10(termosIndice,rep: Report):
             if termo in termos:
                 termos[termo].add(cod)
             else:
-                termos[termo] = set([cod]) #{termo:[100,200]}
+                termos[termo] = set([cod])
 
-    # TODO: organizar melhor o erro aqui
     for t,cods in termos.items():
         if len(cods) > 1:
-            print(t)
-            print(cods)
             for c in cods:
-                rep.addFalhaInv("rel_4_inv_10",c)
+                rep.addFalhaInv("rel_4_inv_10",c,(t,cods))
 
 
 def rel_4_inv_7(allClasses,rep: Report):
@@ -982,8 +984,7 @@ def rel_8_inv_1(allClasses,rep: Report):
             if just:
                 for j in just:
                     if j["tipo"] not in ["complementaridade","densidade","legal"]:
-                        # TODO: Especificar melhor o erro
-                        rep.addFalhaInv("rel_8_inv_1",cod)
+                        rep.addFalhaInv("rel_8_inv_1",cod,j["tipo"])
 
 
 def rel_4_inv_13(allClasses,rep: Report):
