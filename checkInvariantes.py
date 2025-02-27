@@ -53,11 +53,17 @@ def processClasses(rep: Report):
             rep.addWarning("H",cod)
             harmonizacao[cod] = classe
             continue
-        else:
+        elif classe["estado"] in ['A','I']:
             allClasses[cod] = classe
             if classe["nivel"] == 3:
                 filhos = [c for c,_ in data.items() if c.startswith(cod + ".")]
                 classe["filhos"] = filhos
+        else:
+            # O valor em questão encontra-se fora do domínio estabelecido
+            # Trata-se de um erro que já foi registado préviamente, nestes
+            # casos os invariantes não são verificados
+            continue
+
 
         proRels = classe.get("processosRelacionados")
         rels = classe.get("proRel")

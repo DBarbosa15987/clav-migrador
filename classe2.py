@@ -20,7 +20,7 @@ norm_brancos = re.compile(r'(\r\n|\n|\r|[ \u202F\u00A0])+')
 sepExtra = re.compile(r'#$|^#')
 
 # Calcula e normaliza o estado da classe
-def calcEstado(e):
+def calcEstado(cod,e,rep: Report):
     global hreg, ireg
     if e.strip() == '':
         return 'A'
@@ -29,7 +29,7 @@ def calcEstado(e):
     elif ireg.search(e):
         return 'I'
     else:
-        # TODO: criar erro aqui?
+        rep.addErro(cod,f"Estado da classe inválido ({e})")
         return 'Erro'
 # --------------------------------------------------
 #
@@ -116,7 +116,7 @@ def processSheet(sheet, nome,rep:Report):
             myReg["nivel"] = calcNivel(cod)
             # Estado -----
             if row["Estado"]:
-                myReg["estado"] = calcEstado(row["Estado"])
+                myReg["estado"] = calcEstado(cod,row["Estado"],rep)
             else:
                 myReg["estado"] = 'A'
             # Título -----
