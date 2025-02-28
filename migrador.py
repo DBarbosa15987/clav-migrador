@@ -37,7 +37,7 @@ with open("files/ti.json",'r') as f:
 rel_4_inv_2(allClasses,harmonizacao,rep)
 rel_4_inv_3(allClasses,harmonizacao,rep)
 rel_4_inv_4(allClasses,harmonizacao,rep)
-rel_4_inv_12(allClasses,harmonizacao,rep)
+rel_4_inv_12(allClasses,rep)
 rel_4_inv_13(allClasses,rep)
 rel_5_inv_1(allClasses,rep)
 rel_5_inv_3(allClasses,rep)

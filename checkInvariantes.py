@@ -1,5 +1,4 @@
 import json
-import time
 import re
 from report import Report
 from collections import Counter
@@ -58,6 +57,18 @@ def processClasses(rep: Report):
             if classe["nivel"] == 3:
                 filhos = [c for c,_ in data.items() if c.startswith(cod + ".")]
                 classe["filhos"] = filhos
+            elif classe["nivel"] == 4:
+                # É feita uma verificação sobre as de nível 4 para garantir que
+                # o pai de cada uma é válido e está ativo
+                pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
+                classePai = data.get(pai,{})
+                if not classePai:
+                    # Não tem pai
+                    rep.addWarning("",f"{cod} não tem pai")
+                elif classePai.get("estado") == 'H':
+                    # Tem pai em harmonização
+                    rep.addWarning("",f"o pai de {cod} está em harmonização")
+
         else:
             # O valor em questão encontra-se fora do domínio estabelecido
             # Trata-se de um erro que já foi registado préviamente, nestes
@@ -188,7 +199,7 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                         rep.addFalhaInv(invName,cod,(rel,c))
 
 
-def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
+def checkJustRef(allClasses,nivel,rep: Report,invName):
     """
     Verifica se as classes do `nível` passado por input (3 ou 4)
     referenciam as legislações mencionadas nas justificações de pca e df.
@@ -223,13 +234,6 @@ def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
                                 rep.addFalhaInv(invName,cod,leg)
-                        # Tem pai em harmonização
-                        elif pai in harmonizacao:
-                            rep.addWarning("",f"o pai de {cod} está em harmonização")
-                        # Não tem pai
-                        else:
-                            rep.addWarning("",f"{cod} não tem pai")
-                            rep.addFalhaInv(invName,cod,leg)
 
             # verificação no df
             justificacaoDf = classe.get("df",{}).get("justificacao")
@@ -253,13 +257,6 @@ def checkJustRef(allClasses,harmonizacao,nivel,rep: Report,invName):
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
                                 rep.addFalhaInv(invName,cod,leg)
-                        # Tem pai em harmonização
-                        elif pai in harmonizacao:
-                            rep.addWarning("",f"o pai de {cod} está em harmonização")
-                        # Não tem pai
-                        else:
-                            rep.addWarning("",f"{cod} não tem pai")
-                            rep.addFalhaInv(invName,cod,leg)
 
 
 def checkUniqueInst(rep: Report):
@@ -347,7 +344,7 @@ def rel_4_inv_11(allClasses,rep: Report):
                     rep.addFalhaInv("rel_4_inv_11",cod,sinteses)
 
 
-def rel_4_inv_12(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_12(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -357,10 +354,10 @@ def rel_4_inv_12(allClasses,harmonizacao,rep: Report):
     do processo que tem essa justificação (Classes de nível 3)"
     """
 
-    return checkJustRef(allClasses,harmonizacao,3,rep,"rel_4_inv_12")
+    return checkJustRef(allClasses,3,rep,"rel_4_inv_12")
 
 
-def rel_4_inv_13(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_13(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -370,7 +367,7 @@ def rel_4_inv_13(allClasses,harmonizacao,rep: Report):
     processo que tem essa justificação (Classes de nível 4)"
     """
 
-    return checkJustRef(allClasses,harmonizacao,4,rep,"rel_4_inv_13")
+    return checkJustRef(allClasses,4,rep,"rel_4_inv_13")
 
 
 def rel_4_inv_5(allClasses,harmonizacao,rep: Report):
