@@ -990,7 +990,7 @@ def rel_8_inv_1(allClasses,rep: Report):
                         rep.addFalhaInv("rel_8_inv_1",cod,j["tipo"])
 
 
-def rel_4_inv_13(allClasses,rep: Report):
+def rel_4_inv_14(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1004,7 +1004,7 @@ def rel_4_inv_13(allClasses,rep: Report):
             if procTrans == "S":
                 participantes = classe.get("participantes")
                 if not participantes:
-                    rep.addFalhaInv("rel_4_inv_13",cod)
+                    rep.addFalhaInv("rel_4_inv_14",cod)
 
 
 def rel_3_inv_9(allClasses,harmonizacao,rep: Report):

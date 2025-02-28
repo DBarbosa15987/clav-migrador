@@ -63,7 +63,7 @@ rel_4_inv_7(allClasses,rep)
 rel_5_inv_2(allClasses,rep)
 rel_4_inv_8(allClasses,rep)
 rel_4_inv_1_0(allClasses,rep)
-rel_4_inv_13(allClasses,rep)
+rel_4_inv_14(allClasses,rep)
 rel_8_inv_1(allClasses,rep)
 
 checkUniqueInst(rep)
