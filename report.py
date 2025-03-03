@@ -9,22 +9,29 @@ class Report:
             "relsInverseOf": []
         }
         self.globalErrors = {
-            "struct":{
+            "fatal":{
                 "declsRepetidas": {}, # {"200":["100.ttl","200.ttl"]}
-                "relsInvalidas": {} # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+                "relsInvalidas": {}, # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
+                "outro": {} # {"200": ["mensagem de erro"]}
             },
-            "outros": {}, # {"200": ["mensagem de erro"]}
+            "outro": {}, # {"200": ["mensagem de erro"]}
             "erroInv":{}
         }
         self.warnings = {}
 
 
-    def addErro(self,cod,msg):
-        # TODO: criar hierarquia de erros
-        if cod in self.globalErrors["outros"]:
-            self.globalErrors["outros"][cod].append(msg)
+    def addErro(self,cod,msg,fatal=False):
+        # Adiciona um erro genérico, pode ou não ser marcado como "fatal"
+        if fatal:
+            if cod in self.globalErrors["fatal"]["outro"]:
+                self.globalErrors["fatal"]["outro"][cod].append(msg)
+            else:
+                self.globalErrors["fatal"]["outro"][cod] = [msg]
         else:
-            self.globalErrors["outros"][cod] = [msg]
+            if cod in self.globalErrors["outro"]:
+                self.globalErrors["outro"][cod].append(msg)
+            else:
+                self.globalErrors["outro"][cod] = [msg]
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
@@ -34,6 +41,8 @@ class Report:
 
     def fixMissingRels(self,allClasses):
 
+        # Estas "missingRels" referem-se às inferências que
+        # seriam feitas, baseadas na definição da ontologias
         for r in self.missingRels["relsSimetricas"]:
             classe = allClasses.get(r[0])
             proRel = classe.get("proRel")
@@ -69,7 +78,7 @@ class Report:
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
         # "cod" é mencionado por relacoes[cod]
-        relacoes = self.globalErrors["struct"]["relsInvalidas"]
+        relacoes = self.globalErrors["fatal"]["relsInvalidas"]
         if proRel in relacoes:
             relacoes[proRel].append((cod,rel,tipoProcRef))
         else:
@@ -77,25 +86,29 @@ class Report:
 
 
     def checkStruct(self):
+        # Verifica a existência de erros "fatais" no código.
         ok = True
         repetidas = [(k,v) for k,v in self.declaracoes.items() if len(v)>1]
         if repetidas:
-            self.globalErrors["struct"]["declsRepetidas"] = repetidas
+            self.globalErrors["fatal"]["declsRepetidas"] = repetidas
             ok = False
 
-        if len(self.globalErrors["struct"]["relsInvalidas"])>0:
+        if len(self.globalErrors["fatal"]["relsInvalidas"])>0:
+            ok = False
+
+        if len(self.globalErrors["fatal"]["outro"])>0:
             ok = False
 
         return ok
 
 
-    def addFalhaInv(self,inv,cod,msg=""):
+    def addFalhaInv(self,inv,cod,msg="",sug=""):
         # Aqui `msg` pode ser uma string, uma lista ou um tuplo,
         # dependendo do invariante
         if inv in self.globalErrors["erroInv"]:
-            self.globalErrors["erroInv"][inv].append((cod, msg))
+            self.globalErrors["erroInv"][inv].append((cod, msg,sug))
         else:
-            self.globalErrors["erroInv"][inv] = [(cod, msg)]
+            self.globalErrors["erroInv"][inv] = [(cod, msg,sug)]
 
 
     def addWarning(self,tipo,msg):
@@ -172,9 +185,6 @@ class Report:
 
                 case _:
                     print(f"\t- {"\n\t- ".join([str(i[0]) for i in info])}")
-
-
-
 
 
     def dumpReport(self,dumpFileName="dump.json"):

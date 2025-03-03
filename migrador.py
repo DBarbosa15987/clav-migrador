@@ -20,10 +20,11 @@ excel2json(rep)
 print("\nProcessamento inicial dos dados\n")
 
 allClasses,harmonizacao = processClasses(rep)
+# TODO: Falta decidir exatamente o que fazer de acordo com o output da função
 ok = rep.checkStruct()
 
-if not ok:
-    rep.fixMissingRels(allClasses)
+# TODO: Aqui seriam adicionadas as "queryfix" possíveis
+rep.fixMissingRels(allClasses)
 
 # --------------------------------------------
 # Verificação dos invariantes

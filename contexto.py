@@ -129,10 +129,10 @@ def procContexto(classe, cod, myReg, entCatalog, tipCatalog, legCatalog, rep: Re
                 normalizadas.append('eAntecessorDe')
             else:
                 normalizadas.append(rel)
-                rep.addErro(cod,f"Relação entre processos desconhecida::{rel}")
+                rep.addErro(cod,f"Relação entre processos desconhecida::{rel}",True)
             myReg['proRel'] = normalizadas
 
     # ERRO: Processos e Relações têm de ter a mesma cardinalidade
     if classe["Código do processo relacionado"] and classe["Tipo de relação entre processos"]:
         if myReg["estado"]!='H' and len(myReg['processosRelacionados']) != len(myReg['proRel']):
-            rep.addErro(cod,"Processos relacionados e respetivas relações não têm a mesma cardinalidade")
+            rep.addErro(cod,"Processos relacionados e respetivas relações não têm a mesma cardinalidade",True)
