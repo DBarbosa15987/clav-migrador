@@ -446,7 +446,7 @@ def rel_3_inv_3(allClasses,rep: Report):
 
                 # Aqui só interessam os que têm DFs distintos
                 if df1 and df2 and df1 != df2:
-                    # TODO: Especificar melhor o erro, filho a filho
+                    # TODO: Especificar melhor o erro
                     f1Rels = f1.get("proRel")
                     f1RelCods = f1.get("processosRelacionados")
 
@@ -506,23 +506,20 @@ def rel_5_inv_2(allClasses,rep:Report):
                 proRelCods = classe.get("processosRelacionados")
                 if proRel and "eSuplementoPara" in proRel:
                     supls = [c for r,c in zip(proRel,proRelCods) if r=="eSuplementoPara"]
-                    justificacao = classe.get("pca",{}).get("justificacao")
-                    if justificacao:
-                        jUtilidade = [x for x in justificacao if x["tipo"]=="utilidade"]
-                        if jUtilidade:
-                            allProcRefs = []
-                            for crit in jUtilidade:
-                                allProcRefs += crit.get("procRefs",[])
+                    just = classe.get("pca",{}).get("justificacao")
+                    if just:
+                        jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                        allProcRefs = []
+                        for crit in jUtilidade:
+                            allProcRefs += crit.get("procRefs",[])
 
-                            for s in supls:
-                                if s not in allProcRefs:
-                                    rep.addFalhaInv("rel_5_inv_2",cod,s)
-                        else:
-                            # Aqui como não tem nenhum procRef, todos os supls estão em falta
-                            for s in supls:
+                        for s in supls:
+                            if s not in allProcRefs:
                                 rep.addFalhaInv("rel_5_inv_2",cod,s)
+
                     else:
-                        # Aqui como não tem nenhum procRef, todos os supls estão em falta
+                        # Aqui como nem tem justificação, não tem nenhum procRef,
+                        # por isso todos os supls estão em falta
                         for s in supls:
                             rep.addFalhaInv("rel_5_inv_2",cod,s)
 
@@ -784,14 +781,12 @@ def rel_6_inv_4(allClasses,rep: Report):
 
                             for s in sints:
                                 if s not in allProcRefs:
-                                    # TODO: meter no erro o código em falta
-                                    rep.addFalhaInv("rel_6_inv_4",cod)
+                                    rep.addFalhaInv("rel_6_inv_4",cod,s)
                         else:
-                            # Aqui já se sabe que não existe justificação,
+                            # Aqui como nem tem justificação, não tem nenhum procRef,
                             # por isso estão todos em falta
                             for s in sints:
-                                # TODO: meter no erro o código em falta
-                                rep.addFalhaInv("rel_6_inv_4",cod)
+                                rep.addFalhaInv("rel_6_inv_4",cod,s)
 
 
 def rel_9_inv_3(allClasses,rep: Report):
@@ -838,14 +833,12 @@ def rel_7_inv_3(allClasses,rep: Report):
 
                     for c in compls:
                         if c not in allProcRefs:
-                            # TODO: meter no erro o código em falta
-                            rep.addFalhaInv("rel_7_inv_3",cod)
+                            rep.addFalhaInv("rel_7_inv_3",cod,c)
                 else:
-                    # Aqui já se sabe que não existe justificação,
+                    # Aqui como nem tem justificação, não tem nenhum procRef,
                     # por isso estão todos em falta
                     for c in compls:
-                        # TODO: meter no erro o código em falta
-                        rep.addFalhaInv("rel_7_inv_3",cod)
+                        rep.addFalhaInv("rel_7_inv_3",cod,c)
 
 
 def rel_9_inv_1(allClasses,rep: Report):
