@@ -259,7 +259,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                                 rep.addFalhaInv(invName,cod,leg)
 
 
-def checkUniqueInst(rep: Report):
+def checkUniqueInst(allClasses,rep: Report):
     """
     Função que verifica a unicidade das instâncias
     mencionadas nos seguintes invariantes:
@@ -281,18 +281,15 @@ def checkUniqueInst(rep: Report):
         ("notasEx","idNota","rel_2_inv_3")
     ]
 
-    for sheet in sheets:
-        with open(f"files/{sheet}.json",'r') as f:
-            data = json.load(f)
-            for cod,classe in data.items():
-                if classe["nivel"] in [1,2,3]:
-                    for nota,idNota,invName in corr:
-                        if classe.get(nota):
-                            for n in classe[nota]:
-                                if n[idNota] in notas[invName]:
-                                    notas[invName][n[idNota]].append(cod)
-                                else:
-                                    notas[invName][n[idNota]] = [cod]
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [1,2,3]:
+            for nota,idNota,invName in corr:
+                if classe.get(nota):
+                    for n in classe[nota]:
+                        if n[idNota] in notas[invName]:
+                            notas[invName][n[idNota]].append(cod)
+                        else:
+                            notas[invName][n[idNota]] = [cod]
 
     for inv,nota in notas.items():
         for id,cods in nota.items():
