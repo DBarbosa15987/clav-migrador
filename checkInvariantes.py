@@ -150,9 +150,9 @@ def rel_4_inv_0(allClasses,rep: Report):
             if not classe.get("filhos"):
                 if classe.get("pca"):
                     if not classe["pca"].get("justificacao"):
-                        rep.addFalhaInv("rel_4_inv_0",cod)
+                        rep.addFalhaInv("rel_4_inv_0",cod,extra="Não tem justificação")
                 else:
-                    rep.addFalhaInv("rel_4_inv_0",cod)
+                    rep.addFalhaInv("rel_4_inv_0",cod,extra="Nem tem PCA")
 
 
 def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
@@ -164,6 +164,7 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
     em `rep`.
     """
 
+    # TODO: remover redundâncias no rep (A :x B e B :x A, que apontam o mesmo erro)
     for cod,classe in allClasses.items():
         proRels = classe.get("proRel")
         proRelCods = classe.get("processosRelacionados")
@@ -443,7 +444,6 @@ def rel_3_inv_3(allClasses,rep: Report):
 
                 # Aqui só interessam os que têm DFs distintos
                 if df1 and df2 and df1 != df2:
-                    # TODO: Especificar melhor o erro
                     f1Rels = f1.get("proRel")
                     f1RelCods = f1.get("processosRelacionados")
 
@@ -478,11 +478,10 @@ def rel_5_inv_1(allClasses,rep:Report):
                     just = classe.get("pca",{}).get("justificacao")
                     if just:
                         justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
-                        # TODO: faltam erros melhores aqui
                         if not justUtilidade:
-                            rep.addFalhaInv("rel_5_inv_1",cod)
+                            rep.addFalhaInv("rel_5_inv_1",cod,extra="A justificação não tem Critério de Utilidade Administrativa")
                     else:
-                        rep.addFalhaInv("rel_5_inv_1",cod)
+                        rep.addFalhaInv("rel_5_inv_1",cod,extra="Nem tem PCA")
 
 
 def rel_5_inv_2(allClasses,rep:Report):
@@ -538,11 +537,10 @@ def rel_7_inv_2(allClasses,rep:Report):
                 just = classe.get("df",{}).get("justificacao")
                 if just:
                     justComplementaridade = [x for x in just if x["tipo"]=="complementaridade"]
-                    # TODO: faltam erros melhores aqui
                     if not justComplementaridade:
-                        rep.addFalhaInv("rel_7_inv_2",cod)
+                        rep.addFalhaInv("rel_7_inv_2",cod,extra="A justificação não tem Critério de Complementaridade Informacional")
                 else:
-                    rep.addFalhaInv("rel_7_inv_2",cod)
+                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Nem tem justificação")
 
 
 def rel_6_inv_2(allClasses,rep: Report):
@@ -742,9 +740,9 @@ def rel_6_inv_3(allClasses,rep: Report):
                     if just:
                         justDensidade = [x for x in just if x["tipo"]=="densidade"]
                         if not justDensidade:
-                            rep.addFalhaInv("rel_6_inv_3",cod)
+                            rep.addFalhaInv("rel_6_inv_3",cod,extra="A justificação não tem Critério de Densidade Informacional")
                     else:
-                        rep.addFalhaInv("rel_6_inv_3",cod)
+                        rep.addFalhaInv("rel_6_inv_3",cod,extra="Nem tem PCA")
 
 
 def rel_6_inv_4(allClasses,rep: Report):

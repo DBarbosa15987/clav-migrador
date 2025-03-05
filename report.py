@@ -102,13 +102,13 @@ class Report:
         return ok
 
 
-    def addFalhaInv(self,inv,cod,msg="",sug=""):
+    def addFalhaInv(self,inv,cod,msg="",extra=""):
         # Aqui `msg` pode ser uma string, uma lista ou um tuplo,
         # dependendo do invariante
         if inv in self.globalErrors["erroInv"]:
-            self.globalErrors["erroInv"][inv].append((cod, msg,sug))
+            self.globalErrors["erroInv"][inv].append((cod,msg,extra))
         else:
-            self.globalErrors["erroInv"][inv] = [(cod, msg,sug)]
+            self.globalErrors["erroInv"][inv] = [(cod,msg,extra)]
 
 
     def addWarning(self,tipo,msg):
