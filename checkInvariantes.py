@@ -164,7 +164,7 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
     em `rep`.
     """
 
-    # TODO: remover redundâncias no rep (A :x B e B :x A, que apontam o mesmo erro)
+    erros = []
     for cod,classe in allClasses.items():
         proRels = classe.get("proRel")
         proRelCods = classe.get("processosRelacionados")
@@ -197,7 +197,13 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
                     relacoes2 = [c for c,r in zip(proRelCods2,proRels2) if r==rel]
                     # Se existe a relação `rel` aqui também, não cumpre com o invariante
                     if cod in relacoes2:
-                        rep.addFalhaInv(invName,cod,(rel,c))
+                        # Evita-se guardar 2 erros iguais, por exemplo
+                        # A :x B e B :x A apontam o mesmo erro
+                        if (c,rel,cod) not in erros:
+                            erros.append((cod,rel,c))
+
+    for (cod,rel,c) in erros:
+        rep.addFalhaInv(invName,cod,(rel,c))
 
 
 def checkJustRef(allClasses,nivel,rep: Report,invName):

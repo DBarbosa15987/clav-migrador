@@ -67,7 +67,7 @@ rel_4_inv_1_0(allClasses,rep)
 rel_4_inv_14(allClasses,rep)
 rel_8_inv_1(allClasses,rep)
 
-checkUniqueInst(rep)
+checkUniqueInst(allClasses,rep)
 
 rep.printInv()
 rep.dumpReport()
