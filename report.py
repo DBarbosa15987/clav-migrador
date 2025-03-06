@@ -15,7 +15,7 @@ class Report:
                 "outro": {} # {"200": ["mensagem de erro"]}
             },
             "outro": {}, # {"200": ["mensagem de erro"]}
-            "erroInv":{}
+            "erroInv":{} # {"rel_x_inv_y":[(cod,msg)]}
         }
         self.warnings = {}
 
@@ -102,39 +102,39 @@ class Report:
         return ok
 
 
-    def addFalhaInv(self,inv,cod,msg="",extra=""):
-        # Aqui `msg` pode ser uma string, uma lista ou um tuplo,
+    def addFalhaInv(self,inv,cod,info="",extra=""):
+        # Aqui `info` pode ser uma string, uma lista ou um tuplo,
         # dependendo do invariante
         if inv in self.globalErrors["erroInv"]:
-            self.globalErrors["erroInv"][inv].append((cod,msg,extra))
+            self.globalErrors["erroInv"][inv].append((cod,info,extra))
         else:
-            self.globalErrors["erroInv"][inv] = [(cod,msg,extra)]
+            self.globalErrors["erroInv"][inv] = [(cod,info,extra)]
 
 
-    def addWarning(self,tipo,msg):
+    def addWarning(self,tipo,info):
 
         match tipo:
             case "I":
                 if "inferencias" in self.warnings:
-                    self.warnings["inferencias"].append(f"{msg[0]} :{msg[1]} {msg[2]}")
+                    self.warnings["inferencias"].append(f"{info[0]} :{info[1]} {info[2]}")
                 else:
-                    self.warnings["inferencias"] = [f"{msg[0]} :{msg[1]} {msg[2]}"]
+                    self.warnings["inferencias"] = [f"{info[0]} :{info[1]} {info[2]}"]
             case "H":
                 if "harmonizacao" in self.warnings:
-                    self.warnings["harmonizacao"].append(msg)
+                    self.warnings["harmonizacao"].append(info)
                 else:
-                    self.warnings["harmonizacao"] = [msg]
+                    self.warnings["harmonizacao"] = [info]
             case "R":
                 if "relHarmonizacao" in self.warnings:
-                    self.warnings["relHarmonizacao"].append(msg)
+                    self.warnings["relHarmonizacao"].append(info)
                 else:
-                    self.warnings["relHarmonizacao"] = [msg]
+                    self.warnings["relHarmonizacao"] = [info]
 
             case _:
                 if "outro" in self.warnings:
-                    self.warnings["outro"].append(msg)
+                    self.warnings["outro"].append(info)
                 else:
-                    self.warnings["outro"] = [msg]
+                    self.warnings["outro"] = [info]
 
 
     def printInv(self):
