@@ -1,8 +1,8 @@
 from excel2json import excel2json
-from checkInvariantes import *
+import checkInvariantes as c
 from report import Report
-from genTTL import *
-import sys
+import genTTL as g
+import json
 
 rep = Report()
 
@@ -19,11 +19,10 @@ excel2json(rep)
 
 print("\nProcessamento inicial dos dados\n")
 
-allClasses,harmonizacao = processClasses(rep)
+allClasses,harmonizacao = c.processClasses(rep)
 # TODO: Falta decidir exatamente o que fazer de acordo com o output da função
 ok = rep.checkStruct()
 
-# TODO: Aqui seriam adicionadas as "queryfix" possíveis
 rep.fixMissingRels(allClasses)
 
 # --------------------------------------------
@@ -35,39 +34,41 @@ print("\nVerificação dos invariantes\n")
 with open("files/ti.json",'r') as f:
     termosIndice = json.load(f)
 
-rel_4_inv_2(allClasses,harmonizacao,rep)
-rel_4_inv_3(allClasses,harmonizacao,rep)
-rel_4_inv_4(allClasses,harmonizacao,rep)
-rel_4_inv_12(allClasses,rep)
-rel_4_inv_13(allClasses,rep)
-rel_5_inv_1(allClasses,rep)
-rel_5_inv_3(allClasses,rep)
-rel_3_inv_4(allClasses,termosIndice,rep)
-rel_7_inv_2(allClasses,rep)
-rel_4_inv_0(allClasses,rep)
-rel_7_inv_3(allClasses,rep)
-rel_6_inv_4(allClasses,rep)
-rel_9_inv_3(allClasses,rep)
-rel_6_inv_3(allClasses,rep)
-rel_3_inv_3(allClasses,rep)
-rel_3_inv_1(allClasses,rep)
-rel_3_inv_5(allClasses,rep)
-rel_4_inv_5(allClasses,harmonizacao,rep)
-rel_4_inv_6(allClasses,harmonizacao,rep)
-rel_4_inv_11(allClasses,rep)
-rel_3_inv_6(allClasses,rep)
-rel_9_inv_2(allClasses,rep)
-rel_6_inv_2(allClasses,rep)
-rel_3_inv_7(allClasses,rep)
-rel_6_inv_1(allClasses,rep)
-rel_4_inv_7(allClasses,rep)
-rel_5_inv_2(allClasses,rep)
-rel_4_inv_8(allClasses,rep)
-rel_4_inv_1_0(allClasses,rep)
-rel_4_inv_14(allClasses,rep)
-rel_8_inv_1(allClasses,rep)
+c.rel_4_inv_2(allClasses,harmonizacao,rep)
+c.rel_4_inv_3(allClasses,harmonizacao,rep)
+c.rel_4_inv_4(allClasses,harmonizacao,rep)
+c.rel_4_inv_12(allClasses,rep)
+c.rel_4_inv_13(allClasses,rep)
+c.rel_5_inv_1(allClasses,rep)
+c.rel_5_inv_3(allClasses,rep)
+c.rel_3_inv_4(allClasses,termosIndice,rep)
+c.rel_7_inv_2(allClasses,rep)
+c.rel_4_inv_0(allClasses,rep)
+c.rel_7_inv_3(allClasses,rep)
+c.rel_6_inv_4(allClasses,rep)
+c.rel_9_inv_3(allClasses,rep)
+c.rel_6_inv_3(allClasses,rep)
+c.rel_3_inv_3(allClasses,rep)
+c.rel_3_inv_1(allClasses,rep)
+c.rel_3_inv_5(allClasses,rep)
+c.rel_4_inv_5(allClasses,harmonizacao,rep)
+c.rel_4_inv_6(allClasses,harmonizacao,rep)
+c.rel_4_inv_11(allClasses,rep)
+c.rel_3_inv_6(allClasses,rep)
+c.rel_9_inv_2(allClasses,rep)
+c.rel_6_inv_2(allClasses,rep)
+c.rel_3_inv_7(allClasses,rep)
+c.rel_6_inv_1(allClasses,rep)
+c.rel_4_inv_7(allClasses,rep)
+c.rel_5_inv_2(allClasses,rep)
+c.rel_4_inv_8(allClasses,rep)
+c.rel_4_inv_1_0(allClasses,rep)
+c.rel_4_inv_14(allClasses,rep)
+c.rel_8_inv_1(allClasses,rep)
 
-checkUniqueInst(allClasses,rep)
+c.checkUniqueInst(allClasses,rep)
+
+# TODO: Aqui seriam adicionadas as "queryfix" possíveis
 
 rep.printInv()
 rep.dumpReport()
@@ -78,13 +79,13 @@ rep.dumpReport()
 
 print("\nGeração da ontologia final\n")
 
-tiGenTTL()
-entidadeGenTTL()
-tipologiaGenTTL()
-legGenTTL()
+g.tiGenTTL()
+g.entidadeGenTTL()
+g.tipologiaGenTTL()
+g.legGenTTL()
 
 classes = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
-for c in classes:
-    print('Classe: ', c)
-    classeGenTTL(c)
+for classe in classes:
+    print('Classe: ', classe)
+    g.classeGenTTL(classe)
