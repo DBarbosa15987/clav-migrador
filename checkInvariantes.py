@@ -640,15 +640,22 @@ def rel_3_inv_1(allClasses,rep: Report):
         if classe["nivel"] == 3:
             codFilhos = classe.get("filhos")
             if codFilhos:
-                filhos = [allClasses.get(c) for c in codFilhos]
-                valores = [(f.get("pca",{}).get("valores"),f.get("df",{}).get("valor")) for f in filhos]
+                filhos = [(c,allClasses.get(c)) for c in codFilhos]
+                valoresCounter = {} # {(pca,df):["100","200"]}
+                # FIXME: tratar dos problemas com os "valores" em str/int
+                for c,f in filhos:
+                    valores = (f.get("pca",{}).get("valores"),f.get("df",{}).get("valor"))
+                    if valores in valoresCounter:
+                        valoresCounter[valores].append(c)
+                    else:
+                        valoresCounter[valores] = [c]
 
-                # Se as combinações de pca e df tiverem valores repetidos,
-                # então não deve haver desdobramento. E por isso o invariante falha
-                valoresCounter = Counter(valores)
-                for valor,count in valoresCounter.items():
-                    if count > 1:
-                        rep.addFalhaInv("rel_3_inv_1",cod,(valor,count))
+                for valor,cods in valoresCounter.items():
+                    # Quando uma combinação de valores de pca e df se repete,
+                    # o invariante falha. É registado o valor em questão e
+                    # os sítios onde acontece
+                    if len(cods) > 1:
+                        rep.addFalhaInv("rel_3_inv_1",cod,(valor,cods))
 
 
 def rel_3_inv_5(allClasses,rep: Report):
