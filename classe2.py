@@ -127,7 +127,10 @@ def processSheet(sheet, nome,rep:Report):
                     rep.addErro(cod,"Classe sem título")
 
             # Descrição -----
-            myReg["descricao"] = norm_brancos.sub(' ', str(row["Descrição"]))
+            if row["Descrição"]:
+                myReg["descricao"] = norm_brancos.sub(' ', str(row["Descrição"]))
+            else:
+                myReg["descricao"] = ""
             # Notas de aplicação -----
             if row["Notas de aplicação"]:
                 myReg["notasAp"] = procNotas(row["Notas de aplicação"], cod)
