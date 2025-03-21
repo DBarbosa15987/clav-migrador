@@ -23,11 +23,12 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         valores = pca.split('#')
                         myReg['pca']['valores'] = list(map(int, valores))
                     else:
-                        myReg['pca']['valores'] = pca
+                        myReg['pca']['valores'] = int(pca)
                 else:
                     myReg['pca']['valores'] = "NE"
             else:
                 myReg['pca']['valores'] = pca
+
     # Nota ao PCA ----------------------------
     if classe["Nota ao PCA"]:
         myReg['pca']['notas'] = brancos.sub('', classe["Nota ao PCA"])
