@@ -20,7 +20,7 @@ norm_brancos = re.compile(r'(\r\n|\n|\r|[ \u202F\u00A0])+')
 sepExtra = re.compile(r'#$|^#')
 
 # Calcula e normaliza o estado da classe
-def calcEstado(cod,e,rep: Report):
+def calcEstado(cod,e,rep:Report):
     global hreg, ireg
     if e.strip() == '':
         return 'A'
@@ -29,12 +29,13 @@ def calcEstado(cod,e,rep: Report):
     elif ireg.search(e):
         return 'I'
     else:
-        rep.addErro(cod,f"Estado da classe inválido ({e})")
+        # ERRO: O estado da classe inválido
+        rep.addErro(cod,f"O estado da classe inválido ({e})")
         return 'Erro'
 # --------------------------------------------------
 #
 # Calcula o nível da classe
-def calcNivel(cod):
+def calcNivel(cod,rep:Report):
     res = 0
     if n4.fullmatch(cod):
         res = 4
@@ -44,6 +45,9 @@ def calcNivel(cod):
         res = 2
     elif n1.fullmatch(cod):
         res = 1
+    else:
+        # ERRO: O formato do código é inválido
+        rep.addErro(cod,f"O formato do código \"{cod}\" é inválido")
     return res
 # --------------------------------------------------
 #
@@ -67,14 +71,14 @@ def procNotas(notas, codClasse, chave1=None, chave2=None):
 # --------------------------------------------------
 #
 # Calcula um array de booleanos para as N3 com subdivisão
-def calcSubdivisoes(df):
+def calcSubdivisoes(df,rep:Report):
     indN3 = {}
     for index, row in df.iterrows():
         if row["Código"]:
             # Código -----
             codigo = re.sub(r'(\r\n|\n|\r|[ \u202F\u00A0])','', str(row["Código"]))
             # Nível -----
-            nivel = calcNivel(codigo)
+            nivel = calcNivel(codigo,rep)
             if nivel == 3:
                 indN3[codigo] = False
             elif nivel == 4:
@@ -105,7 +109,7 @@ def processSheet(sheet, nome,rep:Report):
     df = pd.DataFrame(data, index=idx, columns=cols)
 
     myClasse = {}
-    indN3 = calcSubdivisoes(df)
+    indN3 = calcSubdivisoes(df,rep)
 
     for _, row in df.iterrows():
         myReg = {}
@@ -113,7 +117,7 @@ def processSheet(sheet, nome,rep:Report):
             # Código -----
             cod = re.sub(r'(\r\n|\n|\r|[ \u202F\u00A0])','', str(row["Código"]))
             # Nível -----
-            myReg["nivel"] = calcNivel(cod)
+            myReg["nivel"] = calcNivel(cod,rep)
             # Estado -----
             if row["Estado"]:
                 myReg["estado"] = calcEstado(cod,row["Estado"],rep)
