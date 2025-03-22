@@ -71,7 +71,7 @@ def processClasses(rep: Report):
 
         else:
             # O valor em questão encontra-se fora do domínio estabelecido
-            # Trata-se de um erro que já foi registado préviamente, nestes
+            # Trata-se de um erro que já foi registado previamente, nestes
             # casos os invariantes não são verificados
             continue
 
@@ -155,7 +155,7 @@ def rel_4_inv_0(allClasses,rep: Report):
                     rep.addFalhaInv("rel_4_inv_0",cod,extra="Nem tem PCA")
 
 
-def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
+def checkAntissimetrico(allClasses,rel,rep: Report,invName):
     """
     Verifica para todas as classes se uma dada
     relação `rel` é antisimétrica.
@@ -173,22 +173,10 @@ def checkAntissimetrico(allClasses,harmonizacao,rel,rep: Report,invName):
             for c in relacoes:
                 relacao = allClasses.get(c)
 
+                # Caso a relação em questão mencione um processo em harmonização
+                # ou um processo com código inválido, não é feita a verificação
+                # do invariante.
                 if not relacao:
-                    relacao = harmonizacao.get(c)
-                    # FIXME: caso de quando uma relação é inválida. Isto é
-                    # temporário visto que no futuro o migrador não deixa
-                    # passar relações inválidas
-                    if not relacao:
-                        print("-"*15)
-                        print(cod)
-                        print(rel)
-                        print(c)
-                        print("-"*15)
-                    else:
-                        # Caso seja com um processo em harmonização
-                        rep.addWarning("",f"foi consultada a relação {cod} :{rel} {c}, e {c} está em harmonização")
-                    # O invariante não é avaliado sobre uma relação que mencionar
-                    # um processo inexistente ou em hamonização
                     continue
 
                 proRels2 = relacao.get("proRel",[])
@@ -306,7 +294,7 @@ def checkUniqueInst(allClasses,rep: Report):
                 rep.addFalhaInv(inv,id,cods)
 
 
-def rel_4_inv_3(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_3(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -314,10 +302,10 @@ def rel_4_inv_3(allClasses,harmonizacao,rep: Report):
     "A relação eSintetizadoPor é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,harmonizacao,"eSintetizadoPor",rep,"rel_4_inv_3")
+    return checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_4_inv_3")
 
 
-def rel_4_inv_4(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_4(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -325,7 +313,7 @@ def rel_4_inv_4(allClasses,harmonizacao,rep: Report):
     "A relação eSucessorDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,harmonizacao,"eSucessorDe",rep,"rel_4_inv_4")
+    return checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
 
 
 def rel_4_inv_11(allClasses,rep: Report):
@@ -374,7 +362,7 @@ def rel_4_inv_13(allClasses,rep: Report):
     return checkJustRef(allClasses,4,rep,"rel_4_inv_13")
 
 
-def rel_4_inv_5(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_5(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -382,10 +370,10 @@ def rel_4_inv_5(allClasses,harmonizacao,rep: Report):
     "A relação eSuplementoDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,harmonizacao,"eSuplementoDe",rep,"rel_4_inv_5")
+    return checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_4_inv_5")
 
 
-def rel_4_inv_6(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_6(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -393,10 +381,10 @@ def rel_4_inv_6(allClasses,harmonizacao,rep: Report):
     "A relação eSuplementoPara é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,harmonizacao,"eSuplementoPara",rep,"rel_4_inv_6")
+    return checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_4_inv_6")
 
 
-def rel_4_inv_2(allClasses,harmonizacao,rep: Report):
+def rel_4_inv_2(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -404,7 +392,7 @@ def rel_4_inv_2(allClasses,harmonizacao,rep: Report):
     "A relação eSinteseDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,harmonizacao,"eSinteseDe",rep,"rel_4_inv_2")
+    return checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
 
 
 def rel_3_inv_6(allClasses,rep: Report):
