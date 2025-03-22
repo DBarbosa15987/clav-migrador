@@ -572,10 +572,10 @@ def rel_5_inv_3(allClasses,rep:Report):
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             proRel = classe.get("proRel")
-            if proRel and "eSuplementoDe" in proRel:
+            proRelCods = classe.get("processosRelacionados")
+            if proRel and proRelCods and "eSuplementoDe" in proRel:
                 just = classe.get("pca",{}).get("justificacao",[])
-                supl = [cod for rel,cod in zip(proRel,classe["processosRelacionados"]) if rel=="eSuplementoDe"]
-
+                supl = [cod for rel,cod in zip(proRel,proRelCods) if rel=="eSuplementoDe"]
                 if just:
                     allProcRefs = []
                     for j in just:
@@ -584,19 +584,13 @@ def rel_5_inv_3(allClasses,rep:Report):
 
                     for sup in supl:
                         if sup not in allProcRefs:
-                            # Os processos em harmonização são ignorados na verificação de invariantes
-                            if sup not in allClasses:
-                                rep.addWarning("",f"{sup} está em harmonização")
-                            else:
-                                rep.addFalhaInv("rel_5_inv_3",cod)
+                            if sup in allClasses:
+                                rep.addFalhaInv("rel_5_inv_3",cod,sup)
                 else:
                     # Registar todos processos em faltam caso não haja justificação
                     for sup in supl:
-                        # Os processos em harmonização são ignorados na verificação de invariantes
-                        if sup not in allClasses:
-                            rep.addWarning("",f"{sup} está em harmonização")
-                        else:
-                            rep.addFalhaInv("rel_5_inv_3",cod)
+                        if sup in allClasses:
+                            rep.addFalhaInv("rel_5_inv_3",cod,sup)
 
 
 def rel_9_inv_2(allClasses,rep: Report):
