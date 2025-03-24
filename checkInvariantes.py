@@ -426,32 +426,33 @@ def rel_3_inv_3(allClasses,rep: Report):
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            codFilhos = classe.get("filhos")
-            # Assume-se aqui que se tiver filhos, tem 2
-            if codFilhos:
-                codF1 = codFilhos[0]
-                codF2 = codFilhos[1]
-                f1 = allClasses.get(codF1)
-                f2 = allClasses.get(codF2)
-                df1 = f1.get("df",{}).get("valor")
-                df2 = f2.get("df",{}).get("valor")
+            codFilhos = classe.get("filhos",[])
+            filhos = [(c,allClasses[c]) for c in codFilhos if allClasses.get(c)]
+            if len(filhos)>=2:
+                # Assume-se aqui que se tiver filhos, tem pelo menos 2
+                for i in range(0,len(filhos)-1):
+                    f1 = filhos[i][1]
+                    f2 = filhos[i+1][1]
+                    codF2 = filhos[i+1][0]
+                    df1 = f1.get("df",{}).get("valor")
+                    df2 = f2.get("df",{}).get("valor")
 
-                # Aqui só interessam os que têm DFs distintos
-                if df1 and df2 and df1 != df2:
-                    f1Rels = f1.get("proRel")
-                    f1RelCods = f1.get("processosRelacionados")
+                    # Aqui só interessam os que têm DFs distintos
+                    if df1 and df2 and df1 != df2:
+                        f1Rels = f1.get("proRel")
+                        f1RelCods = f1.get("processosRelacionados")
 
-                    # A relação de "eSinteseDe" é inversa de "eSintetizadoPor",
-                    # e são feitas inferências iniciais que tornam este tipo de
-                    # situações explícitas, por isso basta verificar do processo
-                    # A para B, e verificar B para A torna-se redundante.
-                    if f1Rels and f1RelCods:
-                        relacoesF1 = zip(f1Rels,f1RelCods)
-                        if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
+                        # A relação de "eSinteseDe" é inversa de "eSintetizadoPor",
+                        # e são feitas inferências iniciais que tornam este tipo de
+                        # situações explícitas, por isso basta verificar do processo
+                        # A para B, e verificar B para A torna-se redundante.
+                        if f1Rels and f1RelCods:
+                            relacoesF1 = zip(f1Rels,f1RelCods)
+                            if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
+                                rep.addFalhaInv("rel_3_inv_3",cod)
+                        else:
+                            # Se algum não tem relações então já está mal
                             rep.addFalhaInv("rel_3_inv_3",cod)
-                    else:
-                        # Se algum não tem relações então já está mal
-                        rep.addFalhaInv("rel_3_inv_3",cod)
 
 
 def rel_5_inv_1(allClasses,rep:Report):
