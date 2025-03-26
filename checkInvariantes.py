@@ -61,13 +61,13 @@ def processClasses(rep: Report):
                 # É feita uma verificação sobre as de nível 4 para garantir que
                 # o pai de cada uma é válido e está ativo
                 pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
-                classePai = data.get(pai,{})
+                classePai = data.get(pai)
                 if not classePai:
                     # Não tem pai
-                    rep.addWarning("",f"{cod} não tem pai")
+                    rep.addErro(cod,f"{cod} não tem pai")
                 elif classePai.get("estado") == 'H':
                     # Tem pai em harmonização
-                    rep.addWarning("",f"o pai de {cod} está em harmonização")
+                    rep.addWarning("",f"O processo {cod} está ativo/inativo, mas o seu pai {pai} está em harmonização")
 
         else:
             # O valor em questão encontra-se fora do domínio estabelecido
