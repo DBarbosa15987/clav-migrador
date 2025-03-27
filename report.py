@@ -9,29 +9,29 @@ class Report:
             "relsInverseOf": []
         }
         self.globalErrors = {
-            "fatal":{
+            "grave":{
                 "declsRepetidas": {}, # {"200":["100.ttl","200.ttl"]}
                 "relsInvalidas": {}, # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
                 "outro": {} # {"200": ["mensagem de erro"]}
             },
-            "outro": {}, # {"200": ["mensagem de erro"]}
+            "normal": {}, # {"200": ["mensagem de erro"]}
             "erroInv":{} # {"rel_x_inv_y":[(cod,msg)]}
         }
         self.warnings = {}
 
 
-    def addErro(self,cod,msg,fatal=False):
-        # Adiciona um erro genérico, pode ou não ser marcado como "fatal"
-        if fatal:
-            if cod in self.globalErrors["fatal"]["outro"]:
-                self.globalErrors["fatal"]["outro"][cod].append(msg)
+    def addErro(self,cod,msg,grave=False):
+        # Adiciona um erro genérico, pode ou não ser marcado como "grave"
+        if grave:
+            if cod in self.globalErrors["grave"]["outro"]:
+                self.globalErrors["grave"]["outro"][cod].append(msg)
             else:
-                self.globalErrors["fatal"]["outro"][cod] = [msg]
+                self.globalErrors["grave"]["outro"][cod] = [msg]
         else:
-            if cod in self.globalErrors["outro"]:
-                self.globalErrors["outro"][cod].append(msg)
+            if cod in self.globalErrors["normal"]:
+                self.globalErrors["normal"][cod].append(msg)
             else:
-                self.globalErrors["outro"][cod] = [msg]
+                self.globalErrors["normal"][cod] = [msg]
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
@@ -78,7 +78,7 @@ class Report:
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
         # "cod" é mencionado por relacoes[cod]
-        relacoes = self.globalErrors["fatal"]["relsInvalidas"]
+        relacoes = self.globalErrors["grave"]["relsInvalidas"]
         if proRel in relacoes:
             relacoes[proRel].append((cod,rel,tipoProcRef))
         else:
@@ -86,17 +86,17 @@ class Report:
 
 
     def checkStruct(self):
-        # Verifica a existência de erros "fatais" no código.
+        # Verifica a existência de erros "graves" no código.
         ok = True
         repetidas = [(k,v) for k,v in self.declaracoes.items() if len(v)>1]
         if repetidas:
-            self.globalErrors["fatal"]["declsRepetidas"] = repetidas
+            self.globalErrors["grave"]["declsRepetidas"] = repetidas
             ok = False
 
-        if len(self.globalErrors["fatal"]["relsInvalidas"])>0:
+        if len(self.globalErrors["grave"]["relsInvalidas"])>0:
             ok = False
 
-        if len(self.globalErrors["fatal"]["outro"])>0:
+        if len(self.globalErrors["grave"]["outro"])>0:
             ok = False
 
         return ok
@@ -131,16 +131,16 @@ class Report:
                     self.warnings["relHarmonizacao"] = [info]
 
             case _:
-                if "outro" in self.warnings:
-                    self.warnings["outro"].append(info)
+                if "normal" in self.warnings:
+                    self.warnings["normal"].append(info)
                 else:
-                    self.warnings["outro"] = [info]
+                    self.warnings["normal"] = [info]
 
 
     def printInv(self):
 
         for inv,info in self.globalErrors["erroInv"].items():
-            # Em "erroInv" os values() são (cod,msg)
+            # Em "erroInv" os values() são (cod,msg,extra)
             print(f"\n{inv} ({len(info)}):\n")
             match inv:
                 case "rel_2_inv_1":
@@ -150,7 +150,6 @@ class Report:
                 case "rel_2_inv_3":
                     print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
                 case "rel_3_inv_1":
-                    # rep.addFalhaInv("rel_3_inv_1",cod,(valor,count))
                     print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1][0]} {i[1][1]}" for i in info])}")
                 case "rel_3_inv_4":
                     print(f"\t- {"\n\t- ".join([f"{i[0]} {i[1]}" for i in info])}")
