@@ -148,11 +148,12 @@ def rel_4_inv_0(allClasses,rep: Report):
         if classe["nivel"] == 3:
             # Se não tem filhos tem de ter uma justificação associada ao PCA
             if not classe.get("filhos"):
-                if classe.get("pca"):
-                    if not classe["pca"].get("justificacao"):
-                        rep.addFalhaInv("rel_4_inv_0",cod,extra="Não tem justificação")
-                else:
-                    rep.addFalhaInv("rel_4_inv_0",cod,extra="Nem tem PCA")
+                pca = classe.get("pca")
+                just = pca.get("justificacao")
+                if not just:
+                        rep.addFalhaInv("rel_4_inv_0",cod)
+                elif not pca:
+                    rep.addFalhaInv("rel_4_inv_0",cod,extra="Neste caso nem tem PCA")
 
 
 def checkAntissimetrico(allClasses,rel,rep: Report,invName):
@@ -470,13 +471,16 @@ def rel_5_inv_1(allClasses,rep:Report):
             if not classe.get("filhos"):
                 proRel = classe.get("proRel")
                 if proRel and "eSuplementoPara" in proRel:
-                    just = classe.get("pca",{}).get("justificacao")
+                    pca = classe.get("pca",{})
+                    just = pca.get("justificacao")
                     if just:
                         justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
                         if not justUtilidade:
-                            rep.addFalhaInv("rel_5_inv_1",cod,extra="A justificação não tem Critério de Utilidade Administrativa")
+                            rep.addFalhaInv("rel_5_inv_1",cod)
+                    elif pca:
+                        rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem justificação do PCA")
                     else:
-                        rep.addFalhaInv("rel_5_inv_1",cod,extra="Nem tem PCA")
+                        rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem PCA")
 
 
 def rel_5_inv_2(allClasses,rep:Report):
@@ -497,7 +501,8 @@ def rel_5_inv_2(allClasses,rep:Report):
                 proRelCods = classe.get("processosRelacionados")
                 if proRel and "eSuplementoPara" in proRel:
                     supls = [c for r,c in zip(proRel,proRelCods) if r=="eSuplementoPara"]
-                    just = classe.get("pca",{}).get("justificacao")
+                    pca = classe.get("pca",{})
+                    just = pca.get("justificacao")
                     if just:
                         jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
                         allProcRefs = []
@@ -507,12 +512,17 @@ def rel_5_inv_2(allClasses,rep:Report):
                         for s in supls:
                             if s not in allProcRefs:
                                 rep.addFalhaInv("rel_5_inv_2",cod,s)
-
                     else:
-                        # Aqui como nem tem justificação, não tem nenhum procRef,
+                        extra = ""
+                        if pca:
+                            extra = "Neste caso nem tem justificação do PCA"
+                        else:
+                            extra = "Neste caso nem tem PCA"
+
+                        # Aqui como nem tem justificação/pca, não tem nenhum procRef,
                         # por isso todos os supls estão em falta
                         for s in supls:
-                            rep.addFalhaInv("rel_5_inv_2",cod,s)
+                            rep.addFalhaInv("rel_5_inv_2",cod,s,extra=extra)
 
 
 def rel_7_inv_2(allClasses,rep:Report):
@@ -529,13 +539,16 @@ def rel_7_inv_2(allClasses,rep:Report):
         if classe["nivel"] == 3:
             proRel = classe.get("proRel")
             if proRel and "eComplementarDe" in proRel:
-                just = classe.get("df",{}).get("justificacao")
+                df = classe.get("df",{})
+                just = df.get("justificacao")
                 if just:
                     justComplementaridade = [x for x in just if x["tipo"]=="complementaridade"]
                     if not justComplementaridade:
-                        rep.addFalhaInv("rel_7_inv_2",cod,extra="A justificação não tem Critério de Complementaridade Informacional")
+                        rep.addFalhaInv("rel_7_inv_2",cod)
+                elif df:
+                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem justificação no DF")
                 else:
-                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Nem tem justificação")
+                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem DF")
 
 
 def rel_6_inv_2(allClasses,rep: Report):
@@ -554,8 +567,11 @@ def rel_6_inv_2(allClasses,rep: Report):
                 filhos = classe.get("filhos")
                 if not filhos:
                     if "eSinteseDe" not in proRel and "eComplementarDe" not in proRel:
-                        valor = classe.get("df",{}).get("valor")
-                        if valor != 'E':
+                        df = classe.get("df",{})
+                        valor = df.get("valor")
+                        if not df:
+                            rep.addFalhaInv("rel_6_inv_2",cod,valor,extra="Neste caso nem tem DF")
+                        elif valor != 'E':
                             rep.addFalhaInv("rel_6_inv_2",cod,valor)
 
 
@@ -575,7 +591,8 @@ def rel_5_inv_3(allClasses,rep:Report):
             proRel = classe.get("proRel")
             proRelCods = classe.get("processosRelacionados")
             if proRel and proRelCods and "eSuplementoDe" in proRel:
-                just = classe.get("pca",{}).get("justificacao",[])
+                pca = classe.get("pca",{})
+                just = pca.get("justificacao",[])
                 supl = [cod for rel,cod in zip(proRel,proRelCods) if rel=="eSuplementoDe"]
                 if just:
                     allProcRefs = []
@@ -588,10 +605,17 @@ def rel_5_inv_3(allClasses,rep:Report):
                             if sup in allClasses:
                                 rep.addFalhaInv("rel_5_inv_3",cod,sup)
                 else:
-                    # Registar todos processos em faltam caso não haja justificação
+                    extra = ""
+                    if pca:
+                        extra = "Neste caso nem tem justificação do PCA"
+                    else:
+                        extra = "Neste caso nem tem PCA"
+
+                    # Aqui como nem tem justificação/pca, não tem nenhum procRef,
+                    # por isso todos os sups estão em falta
                     for sup in supl:
                         if sup in allClasses:
-                            rep.addFalhaInv("rel_5_inv_3",cod,sup)
+                            rep.addFalhaInv("rel_5_inv_3",cod,sup,extra=extra)
 
 
 def rel_9_inv_2(allClasses,rep: Report):
@@ -606,8 +630,11 @@ def rel_9_inv_2(allClasses,rep: Report):
         if classe["nivel"] == 3:
             proRel = classe.get("proRel")
             if proRel and "eSinteseDe" in proRel:
-                valor = classe.get("df",{}).get("valor")
-                if valor and valor != "C":
+                df = classe.get("df",{})
+                valor = df.get("valor")
+                if not df:
+                    rep.addFalhaInv("rel_9_inv_2",cod,valor,extra="Neste caso nem tem DF")
+                elif valor != "C":
                     rep.addFalhaInv("rel_9_inv_2",cod,valor)
 
 
@@ -625,7 +652,7 @@ def rel_3_inv_1(allClasses,rep: Report):
             if codFilhos:
                 filhos = [(c,allClasses.get(c)) for c in codFilhos]
                 valoresCounter = {} # {(pca,df):["100","200"]}
-                # FIXME: tratar dos problemas com os "valores" em str/int
+                # FIXME: tratar dos erros com mais rigor
                 for c,f in filhos:
                     valores = (f.get("pca",{}).get("valores"),f.get("df",{}).get("valor"))
                     if valores in valoresCounter:
@@ -653,10 +680,8 @@ def rel_3_inv_5(allClasses,rep: Report):
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             if classe.get("filhos"):
-                pca = classe.get("pca",{})
-                df = classe.get("df",{})
-                temPca = pca != {}
-                temDf = df != {}
+                temPca = bool(classe.get("pca"))
+                temDf = bool(classe.get("df"))
                 if (temDf or temPca):
                     rep.addFalhaInv("rel_3_inv_5",cod,(temPca,temDf))
 
@@ -732,13 +757,16 @@ def rel_6_inv_3(allClasses,rep: Report):
             if not codFilhos:
                 proRels = classe.get("proRel")
                 if proRels and ("eSinteseDe" in proRels or "eSintetizadoPor" in proRels):
-                    just = classe.get("df",{}).get("justificacao")
+                    df = classe.get("df",{})
+                    just = df.get("justificacao")
                     if just:
                         justDensidade = [x for x in just if x["tipo"]=="densidade"]
                         if not justDensidade:
-                            rep.addFalhaInv("rel_6_inv_3",cod,extra="A justificação não tem Critério de Densidade Informacional")
+                            rep.addFalhaInv("rel_6_inv_3",cod)
+                    elif df:
+                        rep.addFalhaInv("rel_6_inv_3",cod,extra="Neste caso nem tem justificação do DF")
                     else:
-                        rep.addFalhaInv("rel_6_inv_3",cod,extra="Nem tem PCA")
+                        rep.addFalhaInv("rel_6_inv_3",cod,extra="Neste caso nem tem DF")
 
 
 def rel_6_inv_4(allClasses,rep: Report):
@@ -762,7 +790,8 @@ def rel_6_inv_4(allClasses,rep: Report):
                     # Só faz sentido fazer esta verificação em processos
                     # com o DF de "Eliminação"
                     if valor != "C":
-                        just = classe.get("df",{}).get("justificacao")
+                        df = classe.get("df",{})
+                        just = df.get("justificacao")
                         sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
                         if just:
                             jDensidade = [x for x in just if x["tipo"]=="densidade"]
@@ -774,10 +803,16 @@ def rel_6_inv_4(allClasses,rep: Report):
                                 if s not in allProcRefs:
                                     rep.addFalhaInv("rel_6_inv_4",cod,s)
                         else:
+                            extra = ""
+                            if df:
+                                extra = "Neste caso nem tem justificação do DF"
+                            else:
+                                extra = "Neste caso nem tem DF"
+
                             # Aqui como nem tem justificação, não tem nenhum procRef,
                             # por isso estão todos em falta
                             for s in sints:
-                                rep.addFalhaInv("rel_6_inv_4",cod,s)
+                                rep.addFalhaInv("rel_6_inv_4",cod,s,extra=extra)
 
 
 def rel_9_inv_3(allClasses,rep: Report):
@@ -794,7 +829,10 @@ def rel_9_inv_3(allClasses,rep: Report):
             if not codFilhos:
                 proRels = classe.get("proRel")
                 if proRels and "eSintetizadoPor" in proRels and "eComplementarDe" not in proRels and "eSinteseDe" not in proRels:
-                    valor = classe.get("df",{}).get("valor")
+                    df = classe.get("df",{})
+                    valor = df.get("valor")
+                    if not df:
+                        rep.addFalhaInv("rel_9_inv_3",cod,extra="Neste caso nem tem DF")
                     if valor != "E":
                         rep.addFalhaInv("rel_9_inv_3",cod)
 
@@ -814,7 +852,8 @@ def rel_7_inv_3(allClasses,rep: Report):
             proRelCods = classe.get("processosRelacionados")
             proRels = classe.get("proRel")
             if proRels and "eComplementarDe" in proRels:
-                just = classe.get("df",{}).get("justificacao")
+                df = classe.get("df",{})
+                just = df.get("justificacao")
                 compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
                 if just:
                     jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
@@ -826,10 +865,16 @@ def rel_7_inv_3(allClasses,rep: Report):
                         if c not in allProcRefs:
                             rep.addFalhaInv("rel_7_inv_3",cod,c)
                 else:
+                    extra = ""
+                    if df:
+                        extra = "Neste caso nem tem justificação do DF"
+                    else:
+                        extra = "Neste caso nem tem DF"
+
                     # Aqui como nem tem justificação, não tem nenhum procRef,
                     # por isso estão todos em falta
                     for c in compls:
-                        rep.addFalhaInv("rel_7_inv_3",cod,c)
+                        rep.addFalhaInv("rel_7_inv_3",cod,c,extra=extra)
 
 
 def rel_9_inv_1(allClasses,rep: Report):
@@ -846,9 +891,12 @@ def rel_9_inv_1(allClasses,rep: Report):
             if not codFilhos:
                 proRels = classe.get("proRel")
                 if proRels and "eComplementarDe" in proRels:
-                    valor = classe.get("df",{}).get("valor")
+                    df = classe.get("df",{})
+                    valor = df.get("valor")
+                    if not df:
+                        rep.addFalhaInv("rel_9_inv_1",cod,valor,extra="Neste caso nem tem DF")
                     if valor != "C":
-                        rep.addFalhaInv("rel_9_inv_1",cod)
+                        rep.addFalhaInv("rel_9_inv_1",cod,valor)
 
 
 def rel_4_inv_8(allClasses,rep: Report):
@@ -886,9 +934,13 @@ def rel_6_inv_1(allClasses,rep: Report):
             if not classe.get("filhos"):
                 proRels = classe.get("proRel")
                 if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" not in proRels:
-                    valor = classe.get("df",{}).get("valor")
+                    df = classe.get("df",{})
+                    valor = df.get("valor")
+                    if not df:
+                        rep.addFalhaInv("rel_6_inv_1",cod,valor,extra="Neste caso nem tem DF")
                     if valor != 'C':
-                        rep.addFalhaInv("rel_6_inv_1",cod)
+                        # TODO: falta especificar o valor
+                        rep.addFalhaInv("rel_6_inv_1",cod,valor)
 
 
 def rel_4_inv_1_0(allClasses,rep: Report):
