@@ -15,7 +15,7 @@ class Report:
                 "outro": {} # {"200": ["mensagem de erro"]}
             },
             "normal": {}, # {"200": ["mensagem de erro"]}
-            "erroInv":{} # {"rel_x_inv_y":[(cod,msg)]}
+            "erroInv": {} # {"rel_x_inv_y": [erroInv:ErroInv]}
         }
         self.warnings = {}
 
@@ -106,9 +106,9 @@ class Report:
         # Aqui `info` pode ser uma string, uma lista ou um tuplo,
         # dependendo do invariante
         if inv in self.globalErrors["erroInv"]:
-            self.globalErrors["erroInv"][inv].append((cod,info,extra))
+            self.globalErrors["erroInv"][inv].append(ErroInv(inv,cod,info,extra))
         else:
-            self.globalErrors["erroInv"][inv] = [(cod,info,extra)]
+            self.globalErrors["erroInv"][inv] = [ErroInv(inv,cod,info,extra)]
 
 
     def addWarning(self,tipo,info):
@@ -192,4 +192,26 @@ class Report:
         report["warnings"] = self.warnings
 
         with open(f"dump/{dumpFileName}",'w') as f:
-            json.dump(report,f,ensure_ascii=False, indent=4)
+            json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
+
+class ErroInv:
+
+    def __init__(self,inv,cod,info,extra):
+        self.inv = inv
+        self.cod = cod
+        self.info = info
+        self.extra = extra
+        self.fixed = False
+        self.fixedMsg = ""
+        self.msg = self.errorMsg()
+
+    def fix(self,fixedMsg):
+        self.fixed = True
+        self.fixedMsg = fixedMsg
+
+    def errorMsg(self):
+        return ""
+
+class CustomEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return obj.__dict__
