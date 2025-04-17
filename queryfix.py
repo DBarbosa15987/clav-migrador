@@ -1,5 +1,5 @@
 import re
-from report import Report,ErroInv
+from report import ErroInv
 
 def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
     """
@@ -14,8 +14,7 @@ def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
             # Aqui evitam-se adicionar legislações repetidas
             elif err.info not in classe["legislacao"]:
                 classe["legislacao"].append(err.info)
-            # TODO: fazer a mensagem de "fix"
-            err.fix(classe["legislacao"])
+            err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {err.cod}")
 
 
 def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
@@ -34,5 +33,5 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
             # Aqui evitam-se adicionar legislações repetidas
             elif err.info not in classePai["legislacao"]:
                 classePai["legislacao"].append(err.info)
-            # TODO: fazer a mensagem de "fix"
-            err.fix(classePai["legislacao"])
+            err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+
