@@ -192,7 +192,7 @@ def checkAntissimetrico(allClasses,rel,rep: Report,invName):
                             erros.append((cod,rel,c))
 
     for (cod,rel,c) in erros:
-        rep.addFalhaInv(invName,cod,(rel,c))
+        rep.addFalhaInv(invName,cod,{"rel": rel,"c": c})
 
 
 def checkJustRef(allClasses,nivel,rep: Report,invName):
@@ -219,7 +219,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
                     if nivel == 3 and (leg not in classe.get("legislacao",[])):
-                        rep.addFalhaInv(invName,cod,leg)
+                        rep.addFalhaInv(invName,cod,leg,extra={"tipo": "PCA"})
 
                     # Se a classe for de nível 4 verifica-se se
                     # a legislação é mencionada no pai
@@ -229,7 +229,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                         # Tem pai ativo
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
-                                rep.addFalhaInv(invName,cod,leg)
+                                rep.addFalhaInv(invName,cod,leg,extra={"tipo": "PCA", "pai": pai})
 
             # verificação no df
             justificacaoDf = classe.get("df",{}).get("justificacao")
@@ -242,7 +242,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
                     if nivel == 3 and (leg not in classe.get("legislacao",[])):
-                        rep.addFalhaInv(invName,cod,leg)
+                        rep.addFalhaInv(invName,cod,leg,extra={"tipo": "DF"})
 
                     # Se a classe for de nível 4 verifica-se se
                     # a legislação é mencionada no pai
@@ -252,7 +252,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                         # Tem pai ativo
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
-                                rep.addFalhaInv(invName,cod,leg)
+                                rep.addFalhaInv(invName,cod,leg,extra={"tipo": "DF", "pai": pai})
 
 
 def checkUniqueInst(allClasses,rep: Report):
@@ -408,12 +408,10 @@ def rel_3_inv_6(allClasses,rep: Report):
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             if not classe.get("filhos"):
-                pca = classe.get("pca",[])
-                df = classe.get("df",[])
-                temPca = pca != []
-                temDf = df != []
+                temPca = bool(classe.get("pca"))
+                temDf = bool(classe.get("df"))
                 if not temPca or not temDf:
-                    rep.addFalhaInv("rel_3_inv_6",cod,(temPca,temDf))
+                    rep.addFalhaInv("rel_3_inv_6",cod,{"temPca":temPca,"temDf":temDf})
 
 
 def rel_3_inv_3(allClasses,rep: Report):
@@ -452,10 +450,10 @@ def rel_3_inv_3(allClasses,rep: Report):
                             if f1Rels and f1RelCods:
                                 relacoesF1 = zip(f1Rels,f1RelCods)
                                 if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
-                                    rep.addFalhaInv("rel_3_inv_3",cod)
+                                    rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
                             else:
                                 # Se algum não tem relações então já está mal
-                                rep.addFalhaInv("rel_3_inv_3",cod)
+                                rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
 
 
 def rel_5_inv_1(allClasses,rep:Report):
@@ -571,9 +569,7 @@ def rel_6_inv_2(allClasses,rep: Report):
                     if "eSinteseDe" not in proRel and "eComplementarDe" not in proRel:
                         df = classe.get("df",{})
                         valor = df.get("valor")
-                        if not df:
-                            rep.addFalhaInv("rel_6_inv_2",cod,valor,extra="Neste caso nem tem DF")
-                        elif valor != 'E':
+                        if valor != 'E':
                             rep.addFalhaInv("rel_6_inv_2",cod,valor)
 
 
@@ -634,9 +630,7 @@ def rel_9_inv_2(allClasses,rep: Report):
             if proRel and "eSinteseDe" in proRel:
                 df = classe.get("df",{})
                 valor = df.get("valor")
-                if not df:
-                    rep.addFalhaInv("rel_9_inv_2",cod,valor,extra="Neste caso nem tem DF")
-                elif valor != "C":
+                if valor != "C":
                     rep.addFalhaInv("rel_9_inv_2",cod,valor)
 
 
@@ -740,7 +734,7 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                     termosFilho = [t["termo"] for t in termosIndice if t["codigo"]==c]
                     for t in termosPai:
                         if t not in termosFilho:
-                            rep.addFalhaInv("rel_3_inv_4",cod,(t,c))
+                            rep.addFalhaInv("rel_3_inv_4",cod,{"termo":t,"filho" :c})
 
 
 def rel_6_inv_3(allClasses,rep: Report):
@@ -833,10 +827,8 @@ def rel_9_inv_3(allClasses,rep: Report):
                 if proRels and "eSintetizadoPor" in proRels and "eComplementarDe" not in proRels and "eSinteseDe" not in proRels:
                     df = classe.get("df",{})
                     valor = df.get("valor")
-                    if not df:
-                        rep.addFalhaInv("rel_9_inv_3",cod,extra="Neste caso nem tem DF")
                     if valor != "E":
-                        rep.addFalhaInv("rel_9_inv_3",cod)
+                        rep.addFalhaInv("rel_9_inv_3",cod,valor)
 
 
 def rel_7_inv_3(allClasses,rep: Report):
@@ -895,8 +887,6 @@ def rel_9_inv_1(allClasses,rep: Report):
                 if proRels and "eComplementarDe" in proRels:
                     df = classe.get("df",{})
                     valor = df.get("valor")
-                    if not df:
-                        rep.addFalhaInv("rel_9_inv_1",cod,valor,extra="Neste caso nem tem DF")
                     if valor != "C":
                         rep.addFalhaInv("rel_9_inv_1",cod,valor)
 
@@ -919,7 +909,7 @@ def rel_4_inv_8(allClasses,rep: Report):
                 for x,count in proRelsCount.items():
                     if count > 1:
                         relsDuplicadas = [(c,r) for c,r in rels if c == x]
-                        rep.addFalhaInv("rel_4_inv_8",cod,(x,relsDuplicadas))
+                        rep.addFalhaInv("rel_4_inv_8",cod,{"proc":x,"rels":relsDuplicadas})
 
 
 def rel_6_inv_1(allClasses,rep: Report):
@@ -938,10 +928,7 @@ def rel_6_inv_1(allClasses,rep: Report):
                 if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" not in proRels:
                     df = classe.get("df",{})
                     valor = df.get("valor")
-                    if not df:
-                        rep.addFalhaInv("rel_6_inv_1",cod,valor,extra="Neste caso nem tem DF")
                     if valor != 'C':
-                        # TODO: falta especificar o valor
                         rep.addFalhaInv("rel_6_inv_1",cod,valor)
 
 
@@ -972,7 +959,7 @@ def rel_4_inv_10(termosIndice,rep: Report):
     """
 
     n3 = re.compile(r'^\d{3}\.\d{1,3}\.\d{1,3}$')
-    termos = {} #{termo:[100,200]}
+    termos = {} # {termo:[100,200]}
     for t in termosIndice:
         cod = t["codigo"]
         termo = t["termo"]
@@ -985,7 +972,9 @@ def rel_4_inv_10(termosIndice,rep: Report):
     for t,cods in termos.items():
         if len(cods) > 1:
             for c in cods:
-                rep.addFalhaInv("rel_4_inv_10",c,(t,cods))
+                # TODO: excluir os repetidos? (A :x B e B :x A) ou o próprio código estar pressente em `cods`
+                # TODO: indexar por termos? somehow
+                rep.addFalhaInv("rel_4_inv_10",c,{"t":t,cods: "cods"})
 
 
 def rel_4_inv_7(allClasses,rep: Report):
@@ -1059,4 +1048,4 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
         if classe["nivel"] == 4:
             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
             if pai in harmonizacao:
-                rep.addFalhaInv("rel_3_inv_9",cod)
+                rep.addFalhaInv("rel_3_inv_9",cod,pai)
