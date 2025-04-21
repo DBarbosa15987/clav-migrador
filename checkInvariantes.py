@@ -661,7 +661,7 @@ def rel_3_inv_1(allClasses,rep: Report):
                     # o invariante falha. É registado o valor em questão e
                     # os sítios onde acontece
                     if len(cods) > 1:
-                        rep.addFalhaInv("rel_3_inv_1",cod,(valor,cods))
+                        rep.addFalhaInv("rel_3_inv_1",cod,{"valor": valor, "filhos": cods})
 
 
 def rel_3_inv_5(allClasses,rep: Report):
@@ -689,7 +689,7 @@ def rel_3_inv_7(allClasses,rep: Report):
 
     "Se um PN (Classe 3) for complementar de outro que
     se desdobra ao 4º nível, é necessário, com base no
-    critério de complementaridade informacional,a relação
+    critério de complementaridade informacional, a relação
     manter-se ao 3º nível. Pelo menos um dos 4ºs níveis
     deve ser de conservação."
     """
@@ -954,7 +954,7 @@ def rel_4_inv_10(termosIndice,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Os termos de indice de um PN não existem em mais
+    "Os termos de índice de um PN não existem em mais
     nenhuma classe 3"
     """
 
