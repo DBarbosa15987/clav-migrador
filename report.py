@@ -191,7 +191,7 @@ class ErroInv:
                     x = "DF"
                 elif not temPca:
                     x = "PCA"
-                msg = f"O processo {self.cod} não tem filhos e não tem {x}"
+                msg = f"O processo {self.cod} não tem desdobramento ao nível 4 e não tem {x}"
             case "rel_3_inv_3":
                 msg = f"Os filhos ({self.info[0]} e {self.info[1]}) do processo {self.cod} tem DFs diferentes, mas não têm uma relação de síntese entre eles"
             case "rel_5_inv_1":
@@ -237,9 +237,9 @@ class ErroInv:
                     x = "DF"
                 elif not temPca:
                     x = "PCA"
-                msg = f"O processo {self.cod} tem filhos e mesmo assim tem {x}."
+                msg = f"O processo {self.cod} tem desdobramento ao nível 4 e mesmo assim tem {x}."
             case "rel_3_inv_7":
-                msg = f"O processo {self.cod} tem uma relação de \"complementar de\" com o processo {self.info} e nenhum dos filhos de {self.info} tem um valor de DF de \"Conservação\""
+                msg = f"O processo {self.cod} tem uma relação de \"complementar de\" com o processo {self.info["proc"]} e nenhum dos filhos ({self.info["filhos"]}) tem um valor de DF de \"Conservação\""
             case "rel_3_inv_4":
                 msg = f"Os termo {self.info["termo"]} do processo {self.cod} não foi replicado para o seu filho {self.info["filho"]}"
             case "rel_6_inv_3":
