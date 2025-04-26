@@ -84,7 +84,7 @@ def processClasses(rep: Report):
         if proRels:
             for proc,rel in zip(proRels, rels):
                 # Se não existir, é registada como inválida, se existir confirma-se
-                # se as simétrias e anti-simétrias estão corretas
+                # se as simetricas e anti-simetrias estão corretas
                 # Aqui "inválida" != "harmonização"
                 if proc not in data.keys():
                     rep.addRelInvalida(proc,rel,cod)
@@ -546,9 +546,9 @@ def rel_7_inv_2(allClasses,rep:Report):
                     if not justComplementaridade:
                         rep.addFalhaInv("rel_7_inv_2",cod)
                 elif df:
-                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem justificação no DF")
+                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem tem justificação no DF")
                 else:
-                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem DF")
+                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem tem DF")
 
 
 def rel_6_inv_2(allClasses,rep: Report):
@@ -713,7 +713,7 @@ def rel_3_inv_7(allClasses,rep: Report):
                         # Se nenhum filho tiver o valor de "C",
                         # então o invariante falha
                         if not conservacao:
-                            rep.addFalhaInv("rel_3_inv_7",cod,compl)
+                            rep.addFalhaInv("rel_3_inv_7",cod,{"proc": compl,"filhos": filhos})
 
 
 def rel_3_inv_4(allClasses,termosIndice,rep: Report):
