@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrador CLAV</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-gradient-to-r from-purple-600 to-indigo-800 text-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold tracking-tight">Migrador CLAV</h1>
+            <p class="text-purple-100 mt-2">Descrição descrição descrição descrição descrição descrição descrição
+                descrição</p>
+        </div>
+    </header>
+
+
+    <main class="container mx-auto px-4 py-10">
+        <div class="max-w-2xl mx-auto">
+            <!-- Upload Card -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all hover:shadow-xl">
+                <!-- <h3 class="text-2xl font-semibold text-gray-800 mb-3">Selecione o ficheiro para efetuar a migração, depois de completa vai poder descarregar a ontologia final</h3> -->
+                <p class="text-gray-800 mb-6">Selecione o ficheiro para efetuar a migração, depois de completa vai poder
+                    descarregar a ontologia final</p>
+
+                <form id="upload-form" enctype="multipart/form-data" class="space-y-6">
+                    <!-- Custom File Input -->
+                    <div class="relative">
+                        <div
+                            class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-purple-500 transition-colors">
+                            <input type="file" id="file" name="file"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div id="file-preview" class="flex flex-col items-center gap-2">
+                                <i class="fas fa-cloud-upload-alt text-5xl text-gray-400"></i>
+                                <span class="text-gray-500 font-medium">Selecione o ficheiro</span>
+                                <!-- <span class="text-sm text-gray-400">Max file size: 10MB</span> -->
+                            </div>
+                        </div>
+                        <p id="selected-file" class="mt-2 text-sm text-gray-500 hidden">No file selected</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center">
+                        <span id="button-text">Carregar Ficheiro</span>
+                        <span id="loading-indicator" class="hidden ml-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Report Container -->
+            <div id="report-container" class="bg-white rounded-xl shadow-lg p-8 hidden transition-all">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Relatório de Erros</h2>
+                <div id="report-content" class="prose max-w-none"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+
+</html>
