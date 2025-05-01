@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify
-import magic
+from migrador.migrador import migra
+from path_utils import UPLOAD_FOLDER
+import os
 
 app = Flask(__name__)
 
@@ -17,7 +19,15 @@ def process_file():
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
 
-    file_content = file.read()
+    fileContent = file.read()
+    mimetype = file.mimetype
+    print(mimetype)
+    # TODO: mudar o filename para um "timestamp"?
+    filePath = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(filePath,"wb") as f:
+        f.write(fileContent)
+
+    rep = migra(filePath)
 
     return jsonify({'html': "<h1>Hey there</h1>"})
 

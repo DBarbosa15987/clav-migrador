@@ -4,6 +4,8 @@ from nanoid import generate
 from datetime import date
 from rdflib import Graph, Namespace, Literal, RDF, RDFS, OWL, URIRef
 from rdflib.namespace import RDF,OWL
+import os
+from path_utils import FILES_DIR, ONTOLOGY_DIR
 
 ns = Namespace("http://jcr.di.uminho.pt/m51-clav#")
 dc = Namespace("http://purl.org/dc/elements/1.1/")
@@ -17,7 +19,7 @@ dataAtualizacao = agora.strftime("%Y-%m-%d")
 # --- Migra os termos de índice ------------------------
 # ------------------------------------------------------
 def tiGenTTL():
-    fin = open('./files/ti.json')
+    fin = open(os.path.join(FILES_DIR,"ti.json"))
     termos = json.load(fin)
 
     g = Graph()
@@ -36,13 +38,13 @@ def tiGenTTL():
         g.add((tiUri, ns.termo, Literal(ti['termo'])))
 
     fin.close()
-    g.serialize(format="ttl",destination="./ontologia/ti.ttl")
+    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"ti.ttl"))
 
 
 # --- Migra a legislação -------------------------------
 # ------------------------------------------------------
 def legGenTTL():
-    fin = open('./files/leg.json')
+    fin = open(os.path.join(FILES_DIR,"leg.json"))
     leg = json.load(fin)
 
     g = Graph()
@@ -72,13 +74,13 @@ def legGenTTL():
         g.add((lUri,ns.diplomaLink,Literal(l['link'])))
 
     fin.close()
-    g.serialize(format="ttl",destination="./ontologia/leg.ttl")
+    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"leg.ttl"))
 
 
 # --- Migra as tipologias ------------------------------
 # ------------------------------------------------------
 def tipologiaGenTTL():
-    fin = open('./files/tip.json')
+    fin = open(os.path.join(FILES_DIR,"tip.json"))
     tipologias = json.load(fin)
 
     g = Graph()
@@ -98,13 +100,13 @@ def tipologiaGenTTL():
             print("AVISO: a tipologia " + sigla + " não tem designação definida.")
 
     fin.close()
-    g.serialize(format="ttl",destination="./ontologia/tip.ttl")
+    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"tip.ttl"))
 
 
 # --- Migra as entidades -------------------------------
 # ------------------------------------------------------
 def entidadeGenTTL():
-    fin = open('./files/ent.json')
+    fin = open(os.path.join(FILES_DIR,"ent.json"))
     entidades = json.load(fin)
 
     g = Graph()
@@ -139,20 +141,20 @@ def entidadeGenTTL():
                 g.add((ns[f"ent_{sigla}"],ns.pertenceTipologiaEnt,ns[f"tip_{tip}"]))
 
     fin.close()
-    g.serialize(format="ttl",destination="./ontologia/ent.ttl")
+    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"ent.ttl"))
 
 
 # --- Migra uma classe ---------------------------------
 # ------------------------------------------------------
 def classeGenTTL(c):
-    fin = open('./files/' + c + '.json')
+    fin = open(os.path.join(FILES_DIR,f"{c}.json"))
     classes = json.load(fin)
 
     # Carregam-se os catálogos
     # --------------------------------------------------
-    ecatalog = open('./files/entCatalog.json')
-    tcatalog = open('./files/tipCatalog.json')
-    lcatalog = open('./files/legCatalog.json')
+    ecatalog = open(os.path.join(FILES_DIR,"entCatalog.json"))
+    tcatalog = open(os.path.join(FILES_DIR,"tipCatalog.json"))
+    lcatalog = open(os.path.join(FILES_DIR,"legCatalog.json"))
     entCatalog = json.load(ecatalog)
     tipCatalog = json.load(tcatalog)
     legCatalog = json.load(lcatalog)
@@ -387,5 +389,5 @@ def classeGenTTL(c):
                         for ref in crit['procRefs']:
                             g.add((critUri,ns.critTemProcRel,ns[f"c{ref}"]))
 
-    g.serialize(format="ttl",destination='./ontologia/' + c + '.ttl')
+    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,f"{c}.ttl"))
     fin.close()

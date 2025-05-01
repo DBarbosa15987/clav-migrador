@@ -1,5 +1,5 @@
 import re
-from report import ErroInv
+from .report import ErroInv
 
 def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
     """
@@ -34,4 +34,5 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
             elif err.info not in classePai["legislacao"]:
                 classePai["legislacao"].append(err.info)
             err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+
 

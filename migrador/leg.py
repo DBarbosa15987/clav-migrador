@@ -2,8 +2,10 @@ from itertools import islice
 import pandas as pd
 import json
 from datetime import datetime
-
 import re
+import os
+from path_utils import FILES_DIR
+
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
@@ -11,8 +13,8 @@ def processSheet(sheet, nome):
     print("# Migração do Catálogo Legislativo ---------------------------")
     # Carregam-se os catálogos de entidades e tipologias
     # --------------------------------------------------
-    ecatalog = open('./files/entCatalog.json')
-    tcatalog = open('./files/tipCatalog.json')
+    ecatalog = open(os.path.join(FILES_DIR, "entCatalog.json"))
+    tcatalog = open(os.path.join(FILES_DIR, "tipCatalog.json"))
     entCatalog = json.load(ecatalog)
     tipCatalog = json.load(tcatalog)
     # Load one worksheet.
@@ -80,8 +82,8 @@ def processSheet(sheet, nome):
                 if isinstance(row["Data"], str):
                     dataISO = datetime.strptime(row["Data"], '%d/%m/%Y')
                     myReg["data"] = dataISO.isoformat()[:10]
-                else: 
-                    myReg["data"] = row["Data"].isoformat()[:10] 
+                else:
+                    myReg["data"] = row["Data"].isoformat()[:10]
             # Sumário:----------------------------------------------------
             if row["Sumário"]:
                 mySum = brancos.sub('', str(row["Sumário"]))
@@ -92,15 +94,18 @@ def processSheet(sheet, nome):
             # Link:-------------------------------------------------------
             if row["Link"]:
                 myReg["link"] = brancos.sub('', str(row["Link"])).strip()
-            
+
             myLeg.append(myReg)
 
-    outFile = open("./files/"+fnome+".json", "w", encoding="utf-8")
-    
+    outFilePath = os.path.join(FILES_DIR, f"{fnome}.json")
+    outFile = open(outFilePath, "w", encoding="utf-8")
+
     json.dump(myLeg, outFile, indent = 4, ensure_ascii=False)
     print("Documentos legislativos extraídos: ", len(myLeg))
     outFile.close()
-    catalog = open("./files/legCatalog.json", "w", encoding="utf-8")
+
+    catalogPath = os.path.join(FILES_DIR, "legCatalog.json")
+    catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(legCatalog, catalog, indent = 4, ensure_ascii=False)
     print("Catálogo de legislação criado.")
     if len(ListaErros) > 0:

@@ -3,10 +3,11 @@ from nanoid import generate
 import pandas as pd
 import json
 import re
-
-import contexto
-import decisao
-from report import Report
+from . import contexto
+from . import decisao
+from .report import Report
+import os
+from path_utils import FILES_DIR
 
 hreg = re.compile(r'[hH][aA][rR][mM][oO]?[nN]?')
 ireg = re.compile(r'[iI][nN][Aa][tT]?[iI]?[vV]?')
@@ -89,9 +90,9 @@ def calcSubdivisoes(df,rep:Report):
 def processSheet(sheet, nome,rep:Report):
     # Carregam-se os catálogos
     # --------------------------------------------------
-    ecatalog = open('./files/entCatalog.json')
-    tcatalog = open('./files/tipCatalog.json')
-    lcatalog = open('./files/legCatalog.json')
+    ecatalog = open(os.path.join(FILES_DIR,'entCatalog.json'))
+    tcatalog = open(os.path.join(FILES_DIR,'tipCatalog.json'))
+    lcatalog = open(os.path.join(FILES_DIR,'legCatalog.json'))
     entCatalog = json.load(ecatalog)
     tipCatalog = json.load(tcatalog)
     legCatalog = json.load(lcatalog)
@@ -156,7 +157,8 @@ def processSheet(sheet, nome,rep:Report):
             rep.addDecl(cod,nome)
             myClasse[cod] = myReg
 
-    outFile = open("./files/"+fnome+".json", "w", encoding="utf-8")
+    outFilePath = os.path.join(FILES_DIR,f"{fnome}.json")
+    outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
     print("Classe extraída: ", nome, " :: ", len(myClasse))

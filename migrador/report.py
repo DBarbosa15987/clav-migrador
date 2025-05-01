@@ -1,4 +1,6 @@
 import json
+import os
+from path_utils import DUMP_DIR
 
 class Report:
 
@@ -137,12 +139,8 @@ class Report:
                     self.warnings["normal"] = [info]
 
 
-    def printInv(self):
-
-        for inv,info in self.globalErrors["erroInv"].items():
-            # Em "erroInv" os values() são (cod,msg,extra)
-            print(f"\n{inv} ({len(info)}):\n")
-            pass
+    def groupByCod(self):
+        pass
 
 
     def dumpReport(self,dumpFileName="dump.json"):
@@ -150,7 +148,7 @@ class Report:
         report["globalErrors"] = self.globalErrors
         report["warnings"] = self.warnings
 
-        with open(f"dump/{dumpFileName}",'w') as f:
+        with open(os.path.join(DUMP_DIR, dumpFileName),'w') as f:
             json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
 
 class ErroInv:

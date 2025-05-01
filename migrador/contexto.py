@@ -1,5 +1,5 @@
 import re
-from report import Report
+from .report import Report
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 

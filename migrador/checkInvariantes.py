@@ -1,7 +1,9 @@
 import json
 import re
-from report import Report
+from .report import Report
 from collections import Counter
+import os
+from path_utils import FILES_DIR
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
@@ -36,7 +38,7 @@ def processClasses(rep: Report):
 
     data = {}
     for sheet in sheets:
-        with open(f"files/{sheet}.json",'r') as f:
+        with open(os.path.join(FILES_DIR,f"{sheet}.json"),'r') as f:
             x = json.load(f)
             data.update(x)
 

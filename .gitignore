@@ -1,8 +1,10 @@
 files/*.json
 dump/*.json
 ontologia/*.ttl
+uploads/*
+!uploads/.gitkeep
 !ontologia/clav-base-v5.ttl
-__pycache__
+**/__pycache__
 Makefile
 testing
 invariantesSPARQL.py

@@ -2,6 +2,8 @@ from itertools import islice
 import pandas as pd
 import json
 import re
+import os
+from path_utils import FILES_DIR
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 
@@ -24,8 +26,9 @@ def processSheet(sheet, nome):
             myReg["termo"] = brancos.sub('', str(row["Termo"]))
             myClasse.append(myReg)
 
-    outFile = open("./files/"+fnome+".json", "w", encoding="utf-8")
-    
+    outFilePath = os.path.join(FILES_DIR, f"{fnome}.json")
+    outFile = open(outFilePath, "w", encoding="utf-8")
+
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
     print("Termos de índice extraídos: ", len(myClasse))
     outFile.close()

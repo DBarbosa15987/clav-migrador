@@ -1,8 +1,10 @@
 from itertools import islice
 import pandas as pd
 import json
-
 import re
+import os
+from path_utils import FILES_DIR
+
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
@@ -28,17 +30,19 @@ def processSheet(sheet, nome):
                 tipCatalog.append(myReg["sigla"])
             else:
                 print("ERRO: Tipologia duplicada --> ", myReg["sigla"])
-            
+
             if row["Designação"]:
                 myReg["designacao"] = brancos.sub('', row["Designação"])
             myTipologia.append(myReg)
 
-    outFile = open("./files/tip.json", "w", encoding="utf-8")
-    
+    outFilePath = os.path.join(FILES_DIR, "tip.json")
+    outFile = open(outFilePath, "w", encoding="utf-8")
+
     json.dump(myTipologia, outFile, indent = 4, ensure_ascii=False)
     print("Tipologias extraídas: ", len(myTipologia))
     outFile.close()
-    catalog = open("./files/tipCatalog.json", "w", encoding="utf-8")
+    catalogPath = os.path.join(FILES_DIR, "tipCatalog.json")
+    catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(tipCatalog, catalog, indent = 4, ensure_ascii=False)
     print("Catálogo de tipologias criado.")
     print("# FIM: Migração do Catálogo de Tipologias -----------------")

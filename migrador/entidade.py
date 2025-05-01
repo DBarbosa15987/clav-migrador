@@ -1,8 +1,10 @@
 from itertools import islice
 import pandas as pd
 import json
-
 import re
+import os
+from path_utils import FILES_DIR
+
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
@@ -17,7 +19,7 @@ def processSheet(sheet, nome):
     idx = list(range(len(data)))
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
-    
+
     entCatalog = []
     myEntidade = []
     for index, row in df.iterrows():
@@ -50,15 +52,17 @@ def processSheet(sheet, nome):
                 myReg["dataCriacao"] = str(row["Data de criação"].isoformat())[:10]
             if row["Data de extinção"] and (not pd.isnull(row["Data de extinção"])):
                 myReg["dataExtincao"] = str(row["Data de extinção"].isoformat())[:10]
-            
+
             myEntidade.append(myReg)
 
-    outFile = open("./files/ent.json", "w", encoding="utf-8")
-    
+    outFilePath = os.path.join(FILES_DIR, "ent.json")
+    outFile = open(outFilePath, "w", encoding="utf-8")
+
     json.dump(myEntidade, outFile, indent = 4, ensure_ascii=False)
     print("Entidades extraídas: ", len(myEntidade))
     outFile.close()
-    catalog = open("./files/entCatalog.json", "w", encoding="utf-8")
+    catalogPath = os.path.join(FILES_DIR, "entCatalog.json")
+    catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(entCatalog, catalog, indent = 4, ensure_ascii=False)
     print("Catálogo de entidades criado.")
     print("# FIM: Migração do Catálogo de Entidades -----------------")
