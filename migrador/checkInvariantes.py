@@ -650,7 +650,6 @@ def rel_3_inv_1(allClasses,rep: Report):
             if codFilhos:
                 filhos = [(c,allClasses.get(c)) for c in codFilhos]
                 valoresCounter = {} # {(pca,df):["100","200"]}
-                # FIXME: tratar dos erros com mais rigor
                 for c,f in filhos:
                     valores = (f.get("pca",{}).get("valores"),f.get("df",{}).get("valor"))
                     if valores in valoresCounter:

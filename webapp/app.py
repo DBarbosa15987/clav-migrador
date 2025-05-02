@@ -18,18 +18,21 @@ def process_file():
 
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
-
     fileContent = file.read()
     mimetype = file.mimetype
     print(mimetype)
+    if mimetype != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        return jsonify({'error': 'Ficheiro não suportado'})
     # TODO: mudar o filename para um "timestamp"?
-    filePath = os.path.join(UPLOAD_FOLDER, file.filename)
-    with open(filePath,"wb") as f:
-        f.write(fileContent)
+    try:
+        filePath = os.path.join(UPLOAD_FOLDER, file.filename)
+        with open(filePath,"wb") as f:
+            f.write(fileContent)
+        rep = migra(filePath)
+    except Exception as e:
+        return jsonify({'error': "Erro na migração"})
 
-    rep = migra(filePath)
-
-    return jsonify({'html': "<h1>Hey there</h1>"})
+    return jsonify({'html': "<h1>Hey There!</h1>"})
 
 if __name__ == '__main__':
     app.run(debug=True,port=5001)
