@@ -4,14 +4,14 @@ import json
 import re
 import os
 from path_utils import FILES_DIR
+from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def processSheet(sheet, nome):
+def processSheet(sheet, nome,rep: Report):
     print("# Migração do Catálogo de Tipologias -------------------")
     # Load one worksheet.
-    fnome = nome.split("_")[0]
     ws = sheet
     data = ws.values
     cols = next(data)[0:]
@@ -29,10 +29,12 @@ def processSheet(sheet, nome):
             if myReg["sigla"] not in tipCatalog:
                 tipCatalog.append(myReg["sigla"])
             else:
-                print("ERRO: Tipologia duplicada --> ", myReg["sigla"])
+                rep.addErro("",f"Tipologia duplicada --> {myReg["sigla"]}")
 
             if row["Designação"]:
                 myReg["designacao"] = brancos.sub('', row["Designação"])
+            else:
+                rep.addWarning("",f"A tipologia {myReg["sigla"]} não tem designação definida.")
             myTipologia.append(myReg)
 
     outFilePath = os.path.join(FILES_DIR, "tip.json")

@@ -106,8 +106,6 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                            # FIXME: já estava comentada
-                            # rep.addErro(jcodigo,f"Legislação usado no critério não está incluída no contexto, será incluída::{ref}")
                             myReg['legislacao'].append(ref)
             # --- Critério Gestionário ------------------------------------
             if res := re.search(r'(?:Critério gestionário:\s*)(.+)', crit, re.I):
@@ -197,7 +195,6 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                            # FIXME: já estava comentada
                             myReg['legislacao'].append(ref)
             # --- Critério de Densidade Informacional ------------------------------------------
             if res := re.search(r'(?:Critério de densidade informacional:\s*)(.+)', crit, re.I):
@@ -216,7 +213,6 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                             rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                         else:
                             if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                                # FIXME: já estava comentada
                                 myReg['legislacao'].append(ref)
                 # Referências a processos no texto do critério -----------
                 procRefs = re.finditer(r'\d{3}\.\d{2,3}\.\d{3}', myCrit['conteudo'])
@@ -246,7 +242,6 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                             rep.addErro(jcodigo,f"Legislação inexistente no catálogo legislativo::{ref}")
                         else:
                             if 'legislacao' in myReg and ref not in myReg['legislacao']:
-                                # FIXME: já estava comentada
                                 myReg['legislacao'].append(ref)
                 # Referências a processos no texto do critério -----------
                 procRefs = re.finditer(r'\d{3}\.\d{2,3}\.\d{3}', myCrit['conteudo'])

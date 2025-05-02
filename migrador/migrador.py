@@ -78,7 +78,6 @@ def migra(filename):
     # Correções
     # --------------------------------------------
 
-    # TODO: Aqui seriam adicionadas as "queryfix" possíveis
     rep.dumpReport()
     fix.rel_4_inv_12_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_12"])
     fix.rel_4_inv_13_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_13"])

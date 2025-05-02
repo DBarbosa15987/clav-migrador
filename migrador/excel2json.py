@@ -17,7 +17,7 @@ def excel2json(rep: Report,filename):
 
     ti.processSheet(wb['ti_csv'], 'ti_csv')
     e.processSheet(wb['ent_sioe_csv'], 'ent_sioe_csv')
-    tip.processSheet(wb['tip_ent_csv'], 'tip_ent_csv')
+    tip.processSheet(wb['tip_ent_csv'], 'tip_ent_csv',rep)
     leg.processSheet(wb['leg_csv'], 'leg_csv')
 
     for s in sheets:

@@ -96,8 +96,6 @@ def tipologiaGenTTL():
         g.add((tUri,ns.tipSigla, Literal(sigla)))
         if 'designacao' in t.keys():
             g.add((tUri,ns.tipDesignacao, Literal(t['designacao'])))
-        else:
-            print("AVISO: a tipologia " + sigla + " não tem designação definida.")
 
     fin.close()
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"tip.ttl"))
