@@ -87,7 +87,7 @@ def calcSubdivisoes(df,rep:Report):
                 indN3[pai] = True
     return indN3
 
-def processSheet(sheet, nome,rep:Report):
+def processSheet(sheet, nome, rep:Report):
     # Carregam-se os catálogos
     # --------------------------------------------------
     ecatalog = open(os.path.join(FILES_DIR,'entCatalog.json'))

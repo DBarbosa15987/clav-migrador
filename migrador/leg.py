@@ -5,11 +5,12 @@ from datetime import datetime
 import re
 import os
 from path_utils import FILES_DIR
+from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def processSheet(sheet, nome):
+def processSheet(sheet, nome, rep: Report):
     print("# Migração do Catálogo Legislativo ---------------------------")
     # Carregam-se os catálogos de entidades e tipologias
     # --------------------------------------------------
@@ -27,7 +28,6 @@ def processSheet(sheet, nome):
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
 
-    ListaErros = []
     legCatalog = []
     myLeg = []
     for index, row in df.iterrows():
@@ -42,12 +42,12 @@ def processSheet(sheet, nome):
                 myReg["numero"] = re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', myReg["numero"])
 
             else:
-                ListaErros.append('Aviso::legindex ' + str(index+2) + '::Legislação sem número')
+                rep.addWarning("",f"legindex {str(index+2)}::Legislação sem número")
                 myReg["numero"] = 'NE'
             # Entidades:--------------------------------------------------
             filtradas = []
             if row["Entidade"]:
-                entidades = brancos.sub('', str(row["Entidade"])).split(',') 
+                entidades = brancos.sub('', str(row["Entidade"])).split(',')
                 filtradas = list(filter(lambda e: e != '' and e != 'NaT', entidades))
                 if len(filtradas)> 0:
                     myReg["entidade"] = []
@@ -61,7 +61,7 @@ def processSheet(sheet, nome):
             # ERRO: Verificação da existência das entidades no catálogo de entidades e/ou tipologias
                 for e in myReg['entidade']:
                     if (e not in entCatalog) and (e not in tipCatalog):
-                        ListaErros.append('Erro::' + legCod + '::Entidade não está no catálogo de entidades ou tipologias::' + e)
+                        rep.addErro("",f"{legCod}::Entidade não está no catálogo de entidades ou tipologias::{e}")
             else:
                 legCod = re.sub(r'[ \u202F\u00A0]+', '_', myReg["tipo"])
             if myReg["numero"] != 'NE':
@@ -71,7 +71,7 @@ def processSheet(sheet, nome):
             if legCod not in legCatalog:
                 legCatalog.append(legCod)
             else:
-                ListaErros.append('Erro::' + legCod + '::Legislação duplicada::' + str(index) + '.')
+                rep.addErro("",f"{legCod}::Legislação duplicada::{str(index)}.")
             # Estado: ----------------------------------------------------
             if row['Estado'] and str(row['Estado']).strip() != "":
                 myReg["estado"] = 'Revogado'
@@ -108,7 +108,4 @@ def processSheet(sheet, nome):
     catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(legCatalog, catalog, indent = 4, ensure_ascii=False)
     print("Catálogo de legislação criado.")
-    if len(ListaErros) > 0:
-        print("Erros: ")
-        print('\n'.join(ListaErros))
     print("# FIM: Migração do Catálogo Legislativo ----------------------")

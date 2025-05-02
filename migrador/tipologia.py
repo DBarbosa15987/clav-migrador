@@ -9,7 +9,7 @@ from .report import Report
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def processSheet(sheet, nome,rep: Report):
+def processSheet(sheet, rep: Report):
     print("# Migração do Catálogo de Tipologias -------------------")
     # Load one worksheet.
     ws = sheet

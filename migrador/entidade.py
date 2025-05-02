@@ -4,14 +4,14 @@ import json
 import re
 import os
 from path_utils import FILES_DIR
+from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
-def processSheet(sheet, nome):
+def processSheet(sheet, rep: Report):
     print("# Migração do Catálogo de Entidades ----------------------")
     # Load one worksheet.
-    fnome = nome.split("_")[0]
     ws = sheet
     data = ws.values
     cols = next(data)[0:]
@@ -30,7 +30,7 @@ def processSheet(sheet, nome):
             if myReg["sigla"] not in entCatalog:
                 entCatalog.append(myReg["sigla"])
             else:
-                print(f"ERRO (linha {index}): Entidade duplicada --> ", myReg["sigla"])
+                rep.addErro("",f"Linha {index}: Entidade duplicada --> {myReg["sigla"]}")
             if row["Estado"]:
                myReg["estado"] = brancos.sub('', str(row["Estado"]))
             if row["ID SIOE"]:
