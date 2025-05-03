@@ -32,7 +32,7 @@ def process_file():
     except Exception as e:
         return jsonify({'error': "Erro na migração"})
 
-    return jsonify({'html': "<h1>Hey There!</h1>"})
+    return jsonify({'html': rep.generate_error_table()})
 
 if __name__ == '__main__':
     app.run(debug=True,port=5001)

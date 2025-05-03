@@ -1,6 +1,6 @@
 import json
 import os
-from path_utils import DUMP_DIR
+from path_utils import DUMP_DIR, PROJECT_ROOT
 
 class Report:
 
@@ -150,6 +150,51 @@ class Report:
 
         with open(os.path.join(DUMP_DIR, dumpFileName),'w') as f:
             json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
+
+    def generate_error_table(self):
+
+        with open(os.path.join(PROJECT_ROOT,"invariantes.json")) as f:
+            invs = json.load(f)
+
+        html = """
+        <style>
+            .error-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif; }
+            .error-table th, .error-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+            .error-table th { background-color: #f2f2f2; font-weight: bold; }
+            .error-section { background-color: #e0e0e0; font-size: 1.1em; font-weight: bold; padding: 10px; }
+            .msg { color: #444; font-style: italic; }
+        </style>
+        <div>
+        """
+
+        for inv, erros in self.globalErrors["erroInv"].items():
+            invariante = invs[inv]
+            errTitle = f"{inv} ({len(erros)}): {invariante["desc"]}"
+            if invariante["clarificacao"]:
+                errTitle += f"({invariante["clarificacao"]})"
+
+            html += f'<div class="error-section">{errTitle}</div>\n'
+            html += """
+            <table class="error-table">
+                <tr>
+                    <th>Code</th>
+                    <th>Message</th>
+                </tr>
+            """
+            for err in erros:
+                cod = err.cod
+                msg = err.msg
+                html += f"""
+                <tr>
+                    <td>{cod}</td>
+                    <td class="msg">{msg}</td>
+                </tr>
+                """
+            html += "</table>\n"
+
+        html += "</div>"
+        return html
+
 
 class ErroInv:
 
