@@ -1,0 +1,142 @@
+{
+    "rel_3_inv_1": {
+        "desc": "Os PNs só podem ter desbobramento ao nível 4 quando os descendentes de nível 4 têm valores de PCA ou DF distintos entre eles.",
+        "clarificacao": ""
+    },
+    "rel_3_inv_3": {
+        "desc": "Quando os filhos resultantes de um desdobramento de um PN têm o DF distinto, deve haver uma relação de sintese (de ou por) entre eles.",
+        "clarificacao": ""
+    },
+    "rel_3_inv_4": {
+        "desc": "Quando há desdobramento em 4ºs níveis, os termos de índice são replicados em cada um desses níveis.",
+        "clarificacao": ""
+    },
+    "rel_3_inv_5": {
+        "desc": "Uma classe de nível 3 não pode ter valores de DF e PCA se esta tiver desdobramento no nível 4.",
+        "clarificacao": ""
+    },
+    "rel_3_inv_6": {
+        "desc": "Uma classe de nível 3 tem que ter valores de DF e PCA se esta não tiver desdobramento.",
+        "clarificacao": ""
+    },
+    "rel_3_inv_7": {
+        "desc": "Se um PN (Classe 3) for complementar de outro que se desdobra ao 4º nível, é necessário, com base no critério de complementaridade informacional, a relação manter-se ao 3º nível. Pelo menos um dos 4ºs níveis deve ser de conservação.",
+        "clarificacao": "Se um PN for complementar de um PN com filhos, pelo menos um deles precisa de ter o valor de 'C' (Conservação) no DF."
+    },
+    "rel_3_inv_9": {
+        "desc": "Os PNs em harmonização não podem ter filhos ativos",
+        "clarificacao": ""
+    },
+    "rel_4_inv_0": {
+        "desc": "Um processo sem desdobramento ao 4º nível tem de ter uma justificação associada ao PCA",
+        "clarificacao": ""
+    },
+    "rel_4_inv_1_0": {
+        "desc": "Um processo não transversal não pode ter participantes",
+        "clarificacao": ""
+    },
+    "rel_4_inv_1_1": {
+        "desc": "A relação eCruzadoCom é simétrica",
+        "clarificacao": "Se A é Cruzado com B, então B tem que ser Cruzado com A"
+    },
+    "rel_4_inv_1_2": {
+        "desc": "A relação eComplementarDe é simétrica",
+        "clarificacao": "Se A é Complementar de B, então B tem que ser Complementar de A"
+    },
+    "rel_4_inv_2": {
+        "desc": "A relação eSinteseDe é antisimétrica.",
+        "clarificacao": "Se A é Síntese de B, então B não pode ser Síntese de A"
+    },
+    "rel_4_inv_3": {
+        "desc": "A relação eSintetizadoPor é antisimétrica.",
+        "clarificacao": "Se A é Sintetizado por B, então B não pode ser Sintetizado por A"
+    },
+    "rel_4_inv_4": {
+        "desc": "A relação eSucessorDe é antisimétrica.",
+        "clarificacao": "Se A é Sucessor de B, então B não pode ser Sucessor de A"
+    },
+    "rel_4_inv_5": {
+        "desc": "A relação eSuplementoDe é antisimétrica.",
+        "clarificacao": "Se A é Suplemento de B, então B não pode ser Suplemento de A"
+    },
+    "rel_4_inv_6": {
+        "desc": "A relação eSuplementoPara é antisimétrica.",
+        "clarificacao": "Se A é Suplemento para B, então B não pode ser Suplemento para A"
+    },
+    "rel_4_inv_7": {
+        "desc": "Um PN não se pode relacionar com ele próprio.",
+        "clarificacao": ""
+    },
+    "rel_4_inv_8": {
+        "desc": "Um PN só pode ter uma relação com outro PN.",
+        "clarificacao": "Independentemente da relação. Não está limitado a relações repetidas"
+    },
+    "rel_4_inv_10": {
+        "desc": "Os termos de indice de um PN não existem em mais nenhuma classe 3",
+        "clarificacao": ""
+    },
+    "rel_4_inv_11": {
+        "desc": "Um PN não pode ter em simultâneo relações de 'éSínteseDe' e 'éSintetizadoPor' com outros PNs",
+        "clarificacao": ""
+    },
+    "rel_4_inv_12": {
+        "desc": "Um diploma legislativo referenciado num critério de justicação tem de estar associado na zona de contexto do processo.",
+        "clarificacao": ""
+    },
+    "rel_4_inv_13": {
+        "desc": "Um diploma legislativo referenciado num critério de justicação de nível 4 tem de estar associado na zona de contexto do processo pai.",
+        "clarificacao": "Como se tratam de classes de nível 4 esta verificação é feita no pai, onde está presente a justificação."
+    },
+    "rel_5_inv_1": {
+        "desc": "Quando o PN em causa é suplemento para outro, deve ser acrescentado um critério de utilidade administrativa na justificação do respetivo PCA",
+        "clarificacao": ""
+    },
+    "rel_5_inv_2": {
+        "desc": "No critério de utilidade administrativa devem aparecer todos os processos com os quais existe uma relação de suplemento para",
+        "clarificacao": ""
+    },
+    "rel_5_inv_3": {
+        "desc": "Quando o PN em causa é suplemento de outro, todos os processos relacionados pela relação suplemento de devem constar na justificação do PCA.",
+        "clarificacao": ""
+    },
+    "rel_6_inv_1": {
+        "desc": "Quando o PN em causa é síntese de outro, o DF deve ter o valor de \"Conservação\"",
+        "clarificacao": ""
+    },
+    "rel_6_inv_2": {
+        "desc": "Quando o PN em causa é síntetizado por outro, o DF deve ter o valor de \"Eliminação\"",
+        "clarificacao": ""
+    },
+    "rel_6_inv_3": {
+        "desc": "Se um PN tem uma relação de síntese, o seu DF deverá ter uma justificação onde consta um critério de densidade informacional",
+        "clarificacao": ""
+    },
+    "rel_6_inv_4": {
+        "desc": "Todos os processos relacionados por uma relação de síntese deverão estar relacionados com o critério de densidade informacional da respetiva justificação",
+        "clarificacao": ""
+    },
+    "rel_7_inv_2": {
+        "desc": "Quando o PN em causa é <b>complementar de</b> outro, a justificação do DF deverá conter o <b>critério de complementaridade informacional</b>",
+        "clarificacao": ""
+    },
+    "rel_7_inv_3": {
+        "desc": "Todos os processos relacionados pela <b>relação é complementar de</b>, devem <b>estar relacionados</b> com o <b>critério de complementaridade informacional</b> da respetiva justificação",
+        "clarificacao": ""
+    },
+    "rel_8_inv_1": {
+        "desc": "Um DF, na sua justificação, deverá conter apenas critérios de densidade informacional, complementaridade informacional e legal",
+        "clarificacao": ""
+    },
+    "rel_9_inv_1": {
+        "desc": "Se um PN é eComplementarDe -> DF é de conservação",
+        "clarificacao": ""
+    },
+    "rel_9_inv_2": {
+        "desc": "Se um PN é eSinteseDe -> DF é de conservação",
+        "clarificacao": ""
+    },
+    "rel_9_inv_3": {
+        "desc": "Se um PN é eSintetizadoPor -> DF é de eliminação",
+        "clarificacao": ""
+    }
+}
