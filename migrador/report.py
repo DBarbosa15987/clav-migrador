@@ -1,4 +1,5 @@
 import json
+import html
 import os
 from path_utils import DUMP_DIR, PROJECT_ROOT
 
@@ -152,49 +153,84 @@ class Report:
             json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
 
     def generate_error_table(self):
-
-        with open(os.path.join(PROJECT_ROOT,"invariantes.json")) as f:
+        """
+        Função que gera a tabela HTML que faz o display dos
+        erros ocorridos durante a migração
+        """
+        with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
             invs = json.load(f)
 
-        html = """
+        html_content = """
         <style>
             .error-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif; }
             .error-table th, .error-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
             .error-table th { background-color: #f2f2f2; font-weight: bold; }
-            .error-section { background-color: #e0e0e0; font-size: 1.1em; font-weight: bold; padding: 10px; }
+            .error-section { background-color: #e0e0e0; font-size: 1.1em; font-weight: bold; padding: 10px; margin-top: 20px; }
             .msg { color: #444; font-style: italic; }
         </style>
         <div>
         """
 
-        for inv, erros in self.globalErrors["erroInv"].items():
-            invariante = invs[inv]
-            errTitle = f"{inv} ({len(erros)}): {invariante["desc"]}"
-            if invariante["clarificacao"]:
-                errTitle += f"({invariante["clarificacao"]})"
+        html_content += f'<div class="error-section">🟥 Erros Graves</div>\n'
 
-            html += f'<div class="error-section">{errTitle}</div>\n'
-            html += """
-            <table class="error-table">
-                <tr>
-                    <th>Code</th>
-                    <th>Message</th>
-                </tr>
-            """
-            for err in erros:
-                cod = err.cod
-                msg = err.msg
-                html += f"""
-                <tr>
-                    <td>{cod}</td>
-                    <td class="msg">{msg}</td>
-                </tr>
+        # Decls Repetidas (Grave)
+        if self.globalErrors["grave"]["declsRepetidas"]:
+            html_content += '<div class="error-section">Declarações Repetidas</div>\n'
+            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Ficheiros</th></tr>'
+            for cod, files in self.globalErrors["grave"]["declsRepetidas"].items():
+                html_content += f"<tr><td>{cod}</td><td>{', '.join(files)}</td></tr>"
+            html_content += '</table>'
+
+        # Rels Invalidas (Grave)
+        if self.globalErrors["grave"]["relsInvalidas"]:
+            html_content += '<div class="error-section">Relações Inválidas</div>\n'
+            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Relações</th></tr>'
+            for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
+                html_content += f"<tr><td>{cod}</td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
+                for rel in rels:
+                    html_content += f"<li style='display: list-item;'>{cod} {rel[1]} {rel[0]}</li>"
+                html_content += "</ul></td></tr>"
+            html_content += '</table>'
+
+        # Outros (Grave)
+        if self.globalErrors["grave"]["outro"]:
+            html_content += '<div class="error-section">Outros Erros Graves</div>\n'
+            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Mensagem</th></tr>'
+            for cod, msgs in self.globalErrors["grave"]["outro"].items():
+                for msg in msgs:
+                    html_content += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+            html_content += '</table>'
+
+        # Normal
+        if self.globalErrors["normal"]:
+            html_content += f'<div class="error-section">🟨 Erros Genéricos</div>\n'
+            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Mensagem</th></tr>'
+            for cod, msgs in self.globalErrors["normal"].items():
+                for msg in msgs:
+                    html_content += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+            html_content += '</table>'
+
+        # Invariantes
+        if self.globalErrors["erroInv"]:
+            html_content += f'<div class="error-section">🟦 Erros de Invariantes</div>\n'
+            for inv, erros in self.globalErrors["erroInv"].items():
+                invariante = invs.get(inv, {"desc": "Sem descrição", "clarificacao": ""})
+                errTitle = f"{inv} ({len(erros)}): {invariante['desc']}"
+                if invariante["clarificacao"]:
+                    errTitle += f" ({invariante['clarificacao']})"
+                html_content += f'<div class="error-section">{errTitle}</div>\n'
+                html_content += """
+                <table class="error-table">
+                    <tr><th>Código</th><th>Mensagem de Erro</th></tr>
                 """
-            html += "</table>\n"
+                for err in erros:
+                    cod = err.cod
+                    msg = html.escape(err.msg)
+                    html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
+                html_content += "</table>\n"
 
-        html += "</div>"
-        return html
-
+        html_content += "</div>"
+        return html_content
 
 class ErroInv:
 
@@ -223,7 +259,7 @@ class ErroInv:
             case "rel_4_inv_12": # OK
                 msg = f"A legislação {self.info} é referenciada na justificação do {self.extra["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada."
             case "rel_4_inv_13": # OK
-                msg = f"A legislação {self.info} é referenciada na justificação do {self.extra["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada (devia estar declarada na coluna \"Diplomas jurídico-administrativos REF\" do seu processo pai: {self.extra["pai"]})"
+                msg = f"A legislação {self.info} é referenciada na justificação do {self.extra["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada (devia estar declarada na coluna \"Diplomas jurídico-administrativos REF\" do seu processo pai: {self.extra["pai"]})."
             case "rel_3_inv_6": # TODO: TEST
                 temPca = self.info["temPca"]
                 temDf = self.info["temDf"]

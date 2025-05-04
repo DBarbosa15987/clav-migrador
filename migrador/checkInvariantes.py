@@ -1040,7 +1040,7 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Os PNs em harmonização não podem ter filhos ativos"
+    "Os PNs em harmonização não podem ter filhos ativos."
     """
 
     # Como em `allClasses` apenas existem processos ativos,
