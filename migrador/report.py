@@ -24,7 +24,10 @@ class Report:
 
 
     def addErro(self,cod,msg,grave=False):
-        # Adiciona um erro genérico, pode ou não ser marcado como "grave"
+        """
+        Adiciona a `rep` um erro genérico, pode
+        ou não ser marcado como "grave".
+        """
         if grave:
             if cod in self.globalErrors["grave"]["outro"]:
                 self.globalErrors["grave"]["outro"][cod].append(msg)
@@ -38,14 +41,21 @@ class Report:
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
-        # O "triplo" proc :rel cod está em falta
+        """Regista e guarda em `rep.missingRels` uma relação
+        (`proc` `rel` `cod`) que está em falta, isto é, que
+        não está declarada explicitamente.
+        Uma "missingRel" pode ser de `tipo` **relsSimetricas**
+        ou **relsInverseOf**.
+        """
         self.missingRels[tipo].append((proc,rel,cod))
 
 
     def fixMissingRels(self,allClasses):
-
-        # Estas "missingRels" referem-se às inferências que
-        # seriam feitas, baseadas na definição da ontologias
+        """
+        Função que infere e adiciona em `allClasses` as relações
+        simétricas e inversas que estão declaradas implicitamente,
+        tornando-as explícitas.
+        """
         for r in self.missingRels["relsSimetricas"]:
             classe = allClasses.get(r[0])
             proRel = classe.get("proRel")
@@ -80,7 +90,15 @@ class Report:
 
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
-        # "cod" é mencionado por relacoes[cod]
+        """
+        Adiciona a `rep` uma relação inválida, ou seja, o processo
+        `proRel` relaciona-se com um processo `cod` que não existe.
+
+        O `tipoProcRef` indica o tipo de relação em questão, pode ter
+        os valores de `None` (referente aos "processosRelacionados" de
+        cada um processo), PCA ou DF.
+        """
+        # O dicionário representa: `cod` (inválido) é mencionado por relacoes[cod]
         relacoes = self.globalErrors["grave"]["relsInvalidas"]
         if proRel in relacoes:
             relacoes[proRel].append((cod,rel,tipoProcRef))
@@ -106,8 +124,15 @@ class Report:
 
 
     def addFalhaInv(self,inv,cod,info="",extra=""):
-        # Aqui `info` pode ser uma string, uma lista ou um tuplo,
-        # dependendo do invariante
+        """
+        Regista em `rep` a falha de um invariante `inv`
+        no processo `cod`. O info e extra server para a
+        criação de mensagens de erro mais específicas.
+
+        O `info` não é necessariamente uma `str`, também
+        pode ser um `dict`, uma `list` ou um `tuple`,
+        varia de acordo com erro.
+        """
         if inv in self.globalErrors["erroInv"]:
             self.globalErrors["erroInv"][inv].append(ErroInv(inv,cod,info,extra))
         else:
@@ -155,8 +180,9 @@ class Report:
     def generate_error_table(self):
         """
         Função que gera a tabela HTML que faz o display dos
-        erros ocorridos durante a migração
+        erros ocorridos durante a migração.
         """
+
         with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
             invs = json.load(f)
 

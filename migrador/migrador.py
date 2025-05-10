@@ -28,6 +28,7 @@ def migra(filename):
     # TODO: Falta decidir exatamente o que fazer de acordo com o output da função
     ok = rep.checkStruct()
 
+    # Inferências de relações
     rep.fixMissingRels(allClasses)
 
     # --------------------------------------------
