@@ -20,6 +20,7 @@ def process_file():
         return jsonify({'error': 'No selected file'})
     fileContent = file.read()
     mimetype = file.mimetype
+    # allowedMimetypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.ms-excel"]
     print(mimetype)
     if mimetype != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         return jsonify({'error': 'Ficheiro não suportado'})
@@ -30,9 +31,13 @@ def process_file():
             f.write(fileContent)
         rep = migra(filePath)
     except Exception as e:
-        return jsonify({'error': "Erro na migração"})
+        return jsonify({'error': f"Erro na migração: {e}"})
 
-    return jsonify({'html': rep.generate_error_table()})
+    return jsonify({
+        "table_by_entity": rep.generate_entity_table_dict(),
+        "table_by_invariant": rep.generate_error_table()
+    })
+
 
 if __name__ == '__main__':
     app.run(debug=True,port=5001)

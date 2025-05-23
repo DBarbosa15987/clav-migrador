@@ -65,10 +65,30 @@
             </div>
 
             <!-- Report Container -->
-            <div id="report-container" class="bg-white rounded-xl shadow-lg p-8 hidden transition-all">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Relatório de Erros</h2>
-                <div id="report-content" class="prose max-w-none overflow-x-auto"></div>
+            <div id="report-container" class="hidden">
+                <div class="mb-4">
+                    <label for="view-selector">Ver por:</label>
+                    <select id="view-selector" class="border px-2 py-1 rounded">
+                        <option value="by-invariant">Invariante</option>
+                        <option value="by-entity">Entidade</option>
+                    </select>
+                </div>
+
+                <div id="report-views">
+
+                    <div id="by-invariant" class="report-view hidden"></div>
+
+                    <div id="by-entity" class="report-view hidden">
+                        <div class="mb-4">
+                            <label for="entity-selector">Escolher entidade:</label>
+                            <select id="entity-selector" class="border px-2 py-1 rounded"></select>
+                        </div>
+                        <div id="entity-report-content"></div>
+                    </div>
+                </div>
             </div>
+
+        </div>
         </div>
     </main>
 

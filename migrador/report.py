@@ -1,7 +1,7 @@
 import json
 import html
 import os
-from path_utils import DUMP_DIR, PROJECT_ROOT
+from path_utils import DUMP_DIR, PROJECT_ROOT,FILES_DIR
 
 class Report:
 
@@ -18,7 +18,8 @@ class Report:
                 "outro": {} # {"200": ["mensagem de erro"]}
             },
             "normal": {}, # {"200": ["mensagem de erro"]}
-            "erroInv": {} # {"rel_x_inv_y": [erroInv:ErroInv]}
+            "erroInv": {}, # {"rel_x_inv_y": [erroInv:ErroInv]}
+            "erroInvByCod": {} # {"200": [erroInv:ErroInv]}
         }
         self.warnings = {}
 
@@ -165,8 +166,24 @@ class Report:
                     self.warnings["normal"] = [info]
 
 
-    def groupByCod(self):
-        pass
+    def errorsByCod(self):
+        """
+        Função que agrupa os erros por código,
+        para ser mostrado no HTML.
+        """
+
+        errosInv = {}
+        with open(os.path.join(FILES_DIR, "classesN1.json")) as f:
+            classesN1 = json.load(f)
+        for cod in classesN1:
+            errosInv[cod] = []
+
+        for errors in self.globalErrors["erroInv"].values():
+            for err in errors:
+                classeN1 = err.cod[:3]
+                errosInv[classeN1].append(err)
+
+        self.globalErrors["erroInvByCod"] = errosInv
 
 
     def dumpReport(self,dumpFileName="dump.json"):
@@ -181,8 +198,10 @@ class Report:
         """
         Função que gera a tabela HTML que faz o display dos
         erros ocorridos durante a migração.
-        """
 
+        Os erros são agrupados por tipo.
+        """
+        self.errorsByCod()
         with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
             invs = json.load(f)
 
@@ -202,7 +221,7 @@ class Report:
         # Decls Repetidas (Grave)
         if self.globalErrors["grave"]["declsRepetidas"]:
             html_content += '<div class="error-section">Declarações Repetidas</div>\n'
-            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Ficheiros</th></tr>'
+            html_content += '<table class="error-table"><tr><th>Código</th><th>Ficheiros</th></tr>'
             for cod, files in self.globalErrors["grave"]["declsRepetidas"].items():
                 html_content += f"<tr><td>{cod}</td><td>{', '.join(files)}</td></tr>"
             html_content += '</table>'
@@ -210,7 +229,7 @@ class Report:
         # Rels Invalidas (Grave)
         if self.globalErrors["grave"]["relsInvalidas"]:
             html_content += '<div class="error-section">Relações Inválidas</div>\n'
-            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Relações</th></tr>'
+            html_content += '<table class="error-table"><tr><th>Código</th><th>Relações</th></tr>'
             for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
                 html_content += f"<tr><td>{cod}</td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
                 for rel in rels:
@@ -221,7 +240,7 @@ class Report:
         # Outros (Grave)
         if self.globalErrors["grave"]["outro"]:
             html_content += '<div class="error-section">Outros Erros Graves</div>\n'
-            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Mensagem</th></tr>'
+            html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
             for cod, msgs in self.globalErrors["grave"]["outro"].items():
                 for msg in msgs:
                     html_content += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
@@ -230,7 +249,7 @@ class Report:
         # Normal
         if self.globalErrors["normal"]:
             html_content += f'<div class="error-section">🟨 Erros Genéricos</div>\n'
-            html_content += '<table class="error-table"><tr><th>Entidade</th><th>Mensagem</th></tr>'
+            html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
             for cod, msgs in self.globalErrors["normal"].items():
                 for msg in msgs:
                     html_content += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
@@ -257,6 +276,85 @@ class Report:
 
         html_content += "</div>"
         return html_content
+
+
+    def generate_entity_table_dict(self):
+        """
+        Gera um dicionário indexado por entidade da AP
+        em que o seu valor é a tabela HTML correspondente.
+        """
+        self.errorsByCod()
+        with open(os.path.join(FILES_DIR, "classesN1.json")) as f:
+            classesN1 = json.load(f)
+
+        entity_tables = {}
+
+        def addRow(entity_dict, ent, content):
+            if ent not in entity_dict:
+                entity_dict[ent] = ''
+            entity_dict[ent] += content
+
+        def getEnt(cod):
+            ent = cod
+            try:
+                ent = cod[:3]
+            except Exception:
+                pass
+            return ent
+
+        # Declarações Repetidas
+        for cod, files in self.globalErrors["grave"]["declsRepetidas"].items():
+            html_part = f'<div class="error-section">Declarações Repetidas</div>\n'
+            html_part += '<table class="error-table"><tr><th>Código</th><th>Ficheiros</th></tr>'
+            html_part += f"<tr><td>{cod}</td><td>{', '.join(files)}</td></tr></table>"
+            ent = getEnt(cod)
+            addRow(entity_tables, ent, html_part)
+
+        # Relações Inválidas
+        for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
+            html_part = f'<div class="error-section">Relações Inválidas</div>\n'
+            html_part += '<table class="error-table"><tr><th>Código</th><th>Relações</th></tr>'
+            html_part += f"<tr><td>{cod}</td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
+            for rel in rels:
+                html_part += f"<li style='display: list-item;'>{cod} {rel[1]} {rel[0]}</li>"
+            html_part += "</ul></td></tr></table>"
+            ent = getEnt(cod)
+            addRow(entity_tables, ent, html_part)
+
+        # Outros Erros Graves
+        for cod, msgs in self.globalErrors["grave"]["outro"].items():
+            html_part = f'<div class="error-section">Outros Erros Graves</div>\n'
+            html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
+            for msg in msgs:
+                html_part += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+            html_part += "</table>"
+            ent = getEnt(cod)
+            addRow(entity_tables, ent, html_part)
+
+        # Erros Normais
+        for cod, msgs in self.globalErrors["normal"].items():
+            html_part = f'<div class="error-section">Erros Genéricos</div>\n'
+            html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
+            for msg in msgs:
+                html_part += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+            html_part += "</table>"
+            ent = getEnt(cod)
+            addRow(entity_tables, ent, html_part)
+
+        # Erros de Invariantes por entidade
+        for cod, erros in self.globalErrors["erroInvByCod"].items():
+            invariante = classesN1.get(cod, {"titulo": "Sem descrição", "clarificacao": ""})
+            errTitle = f"{cod} ({len(erros)}): {invariante['titulo']}"
+            html_part = f'<div class="error-section">Erros de Invariantes</div>\n'
+            html_part += f'<div class="error-section">{errTitle}</div>\n'
+            html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
+            for err in erros:
+                html_part += f"<tr><td>{err.cod}</td><td class='msg'>{html.escape(err.msg)}</td></tr>"
+            html_part += "</table>"
+            addRow(entity_tables, cod, html_part)
+
+        return entity_tables
+
 
 class ErroInv:
 

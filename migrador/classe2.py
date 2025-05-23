@@ -87,7 +87,7 @@ def calcSubdivisoes(df,rep:Report):
                 indN3[pai] = True
     return indN3
 
-def processSheet(sheet, nome, rep:Report):
+def processSheet(sheet, nome, rep:Report, classesN1):
     # Carregam-se os catálogos
     # --------------------------------------------------
     ecatalog = open(os.path.join(FILES_DIR,'entCatalog.json'))
@@ -146,6 +146,12 @@ def processSheet(sheet, nome, rep:Report):
             if row["Notas de exclusão"]:
                 myReg["notasEx"] = procNotas(row["Notas de exclusão"], cod)
 
+            # Registo das classes de nível 1
+            if myReg["nivel"] == 1:
+                classesN1[cod] = {
+                    "titulo": myReg.get("titulo",""),
+                    "descricao": myReg["descricao"]
+                }
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
                 contexto.procContexto(row,cod, myReg, entCatalog, tipCatalog, legCatalog,rep)
