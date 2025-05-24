@@ -272,6 +272,8 @@ class Report:
                 for err in erros:
                     cod = err.cod
                     msg = html.escape(err.msg)
+                    if err.fixed:
+                        msg = f"<span style='color: green;'>✅ {msg} (corrigido automaticamente)</span>"
                     html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
                 html_content += "</table>\n"
 
@@ -404,7 +406,10 @@ class Report:
                 html_part += f'<div class="error-section">{errTitle}</div>\n'
                 html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
                 for err in erros:
-                    html_part += f"<tr><td>{err.cod}</td><td class='msg'>{html.escape(err.msg)}</td></tr>"
+                    msg = html.escape(err.msg)
+                    if err.fixed:
+                        msg = f"<span style='color: green;'>✅ {msg} (corrigido automaticamente)</span>"
+                    html_part += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
                 html_part += "</table>"
                 addRow(entity_tables, cod, html_part)
 
