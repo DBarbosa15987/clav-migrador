@@ -194,6 +194,7 @@ class Report:
         with open(os.path.join(DUMP_DIR, dumpFileName),'w') as f:
             json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
 
+
     def generate_error_table(self):
         """
         Função que gera a tabela HTML que faz o display dos

@@ -45,8 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 entitySelector.innerHTML = '';
                 Object.keys(entityTables).forEach(entity => {
-                    console.log("aqui vai");
-                    console.log(entity);
                     const option = document.createElement('option');
                     option.value = entity;
                     option.textContent = entity;
