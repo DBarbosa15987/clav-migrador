@@ -812,26 +812,6 @@ def rel_6_inv_4(allClasses,rep: Report):
                                 rep.addFalhaInv("rel_6_inv_4",cod,s,extra=extra)
 
 
-def rel_9_inv_3(allClasses,rep: Report):
-    """
-    A função testa o seguinte invariante e guarda
-    em `rep` os casos em que falha:
-
-    "Se um PN é eSintetizadoPor -> DF é de eliminação"
-    """
-
-    for cod,classe in allClasses.items():
-        if classe["nivel"] == 3:
-            codFilhos = classe.get("filhos")
-            if not codFilhos:
-                proRels = classe.get("proRel")
-                if proRels and "eSintetizadoPor" in proRels and "eComplementarDe" not in proRels and "eSinteseDe" not in proRels:
-                    df = classe.get("df",{})
-                    valor = df.get("valor")
-                    if valor != "E":
-                        rep.addFalhaInv("rel_9_inv_3",cod,valor)
-
-
 def rel_7_inv_3(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda

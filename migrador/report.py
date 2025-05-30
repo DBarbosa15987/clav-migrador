@@ -473,7 +473,6 @@ class ErroInv:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_6_inv_2": # OK parcial
-                # FIXME: falta ver se isto não é redundante (rel_9_inv_3)
                 if self.info:
                     msg = f"O processo {self.cod} é sintetizado por outro, mas o seu DF tem o valor de \"{self.info}\", em vez de \"Eliminação\""
                 else:
@@ -517,13 +516,6 @@ class ErroInv:
                 msg = f"O processo {self.info} está em falta na justificação do DF do processo {self.cod}, sob o critério de densidade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
-                msg += "."
-            case "rel_9_inv_3": # OK parcial
-                # FIXME: falta ver se isto não é redundante (rel_6_inv_2)
-                if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSintetizadoPor\", mas tem o valor de DF de \"{self.info}\""
-                else:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSintetizadoPor\" e o valor do seu DF devia ser \"Eliminação\", mas neste caso o processo nem tem DF"
                 msg += "."
             case "rel_7_inv_3": # OK
                 msg = f"O processo {self.info} está em falta na justificação do DF do processo {self.cod}, sob o critério de complementaridade informacional"

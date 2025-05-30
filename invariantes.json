@@ -134,9 +134,5 @@
     "rel_9_inv_2": {
         "desc": "Se um PN é eSinteseDe -> DF é de conservação",
         "clarificacao": ""
-    },
-    "rel_9_inv_3": {
-        "desc": "Se um PN é eSintetizadoPor -> DF é de eliminação",
-        "clarificacao": ""
     }
 }

@@ -53,7 +53,6 @@ def migra(filename):
     c.rel_4_inv_0(allClasses,rep)
     c.rel_7_inv_3(allClasses,rep)
     c.rel_6_inv_4(allClasses,rep)
-    c.rel_9_inv_3(allClasses,rep)
     c.rel_6_inv_3(allClasses,rep)
     c.rel_3_inv_3(allClasses,rep)
     c.rel_3_inv_1(allClasses,rep)
