@@ -432,10 +432,21 @@ class ErroInv:
         self.fixedMsg = fixedMsg
 
     def errorMsg(self):
+
+        def getValue(abrev):
+
+            abrevDic = {
+                "C": "Conservação",
+                "CP": "Conservação Parcial",
+                "E": "Eliminação"
+            }
+
+            return abrevDic.get(abrev,abrev)
+
         msg = ""
         match self.inv:
             case "rel_4_inv_0": # OK
-                msg = f"O processo {self.cod} não desdobramento ao nível 4, mas não contém justificação associada ao PCA."
+                msg = f"O processo {self.cod} não tem desdobramento ao nível 4, mas não contém justificação associada ao PCA."
             case "rel_4_inv_11": # OK
                 msg = f"No processo {self.cod} foram encontradas relações de \"eSinteseDe\" e \"eSintetizadoPor\" em simultâneo:\n"
                 for rel in self.info:
@@ -474,7 +485,7 @@ class ErroInv:
                 msg += "."
             case "rel_6_inv_2": # OK parcial
                 if self.info:
-                    msg = f"O processo {self.cod} é sintetizado por outro, mas o seu DF tem o valor de \"{self.info}\", em vez de \"Eliminação\""
+                    msg = f"O processo {self.cod} é sintetizado por outro, mas o seu DF tem o valor de \"{getValue(self.info)}\", em vez de \"Eliminação\""
                 else:
                     msg = f"O processo {self.cod} é sintetizado por outro e o valor do seu DF devia ser \"Eliminação\", mas neste caso o processo nem tem DF"
                 msg += "."
@@ -485,7 +496,7 @@ class ErroInv:
                 msg += "."
             case "rel_9_inv_2": # OK
                 if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de \"{self.info}\", em vez de \"Conservação\""
+                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de \"{getValue(self.info)}\", em vez de \"Conservação\""
                 else:
                     msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
                 msg += "."
@@ -497,7 +508,7 @@ class ErroInv:
                 temDf = self.info["temDf"]
                 x = ""
                 if not temPca and not temDf:
-                    x = "PCA nem DF"
+                    x = "PCA e DF"
                 elif not temDf:
                     x = "DF"
                 elif not temPca:
@@ -524,7 +535,7 @@ class ErroInv:
                 msg += "."
             case "rel_9_inv_1": # TODO: TEST
                 if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\", mas tem o valor de DF de {self.info}"
+                    msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\", mas tem o valor de DF de {getValue(self.info)}"
                 else:
                     msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
             case "rel_4_inv_8": # OK
@@ -537,7 +548,7 @@ class ErroInv:
                 msg = f"O processo {self.cod} tem mais do que uma relação com o processo {self.info["proc"]} ({relacoes})."
             case "rel_6_inv_1": # TODO: TEST
                 if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de {self.info}, em vez de \"Conservação\""
+                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de {getValue(self.info)}, em vez de \"Conservação\""
                 else:
                     msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
                 msg += "."
