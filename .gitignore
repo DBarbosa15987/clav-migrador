@@ -3,6 +3,8 @@ dump/*.json
 ontologia/*.ttl
 uploads/*
 !uploads/.gitkeep
+output/*
+!output/.gitkeep
 !ontologia/clav-base-v5.ttl
 **/__pycache__
 Makefile

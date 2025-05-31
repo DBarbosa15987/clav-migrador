@@ -103,11 +103,3 @@ def migra(filename):
 
     return rep
 
-
-def zip_output_files(ontologyPath, outputPath):
-    with zipfile.ZipFile(outputPath, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, _, files in os.walk(ontologyPath):
-            for file in files:
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, ontologyPath)
-                zipf.write(full_path, arcname=rel_path)

@@ -1,11 +1,13 @@
+import glob
 import json
 import re
+import subprocess
 from nanoid import generate
-from datetime import date
+from datetime import date, datetime
 from rdflib import Graph, Namespace, Literal, RDF, RDFS, OWL, URIRef
 from rdflib.namespace import RDF,OWL
 import os
-from path_utils import FILES_DIR, ONTOLOGY_DIR
+from path_utils import FILES_DIR, ONTOLOGY_DIR, OUTPUT_DIR
 
 ns = Namespace("http://jcr.di.uminho.pt/m51-clav#")
 dc = Namespace("http://purl.org/dc/elements/1.1/")
@@ -389,3 +391,27 @@ def classeGenTTL(c):
 
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,f"{c}.ttl"))
     fin.close()
+
+
+# --- Geração da ontologia final -----------------------
+# ------------------------------------------------------
+def genFinalOntology():
+
+    now = datetime.now()
+    timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
+    outputFile = os.path.join(OUTPUT_DIR, f"CLAV_{timestamp}.ttl")
+
+    # Concatenação dos ficheiros intermédios num só
+    ontFiles = sorted(glob.glob(os.path.join(ONTOLOGY_DIR, "*.ttl")))
+    with open(outputFile, 'w', encoding='utf-8') as outfile:
+        for file_path in ontFiles:
+            with open(file_path, 'r', encoding='utf-8') as infile:
+                outfile.write(infile.read())
+                outfile.write('\n')
+
+    # Validação da ontologia final
+    result = subprocess.run(["rapper", "-c", "-i", "turtle", outputFile], capture_output=True, text=True)
+    print(result.returncode)
+    print(result.stdout)
+    if result.stderr:
+        print("Errors/Warnings:", result.stderr)
