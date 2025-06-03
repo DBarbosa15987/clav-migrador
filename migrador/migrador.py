@@ -82,6 +82,9 @@ def migra(filename):
     rep.dumpReport()
     fix.rel_4_inv_12_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_12"])
     fix.rel_4_inv_13_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_13"])
+    fix.rel_5_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_5_inv_2"])
+    fix.rel_6_inv_4_fix(allClasses,rep.globalErrors["erroInv"]["rel_6_inv_4"])
+    fix.rel_7_inv_3_fix(allClasses,rep.globalErrors["erroInv"]["rel_7_inv_3"])
     rep.dumpReport(dumpFileName="dump2.json")
 
     # --------------------------------------------

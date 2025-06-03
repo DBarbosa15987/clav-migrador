@@ -789,16 +789,16 @@ def rel_6_inv_4(allClasses,rep: Report):
                     if valor != "C":
                         df = classe.get("df",{})
                         just = df.get("justificacao")
-                        sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
+                        sints = [(c,r) for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
                         if just:
                             jDensidade = [x for x in just if x["tipo"]=="densidade"]
                             allProcRefs = []
                             for crit in jDensidade:
                                 allProcRefs += crit.get("procRefs",[])
 
-                            for s in sints:
-                                if s not in allProcRefs:
-                                    rep.addFalhaInv("rel_6_inv_4",cod,s)
+                            for c,r in sints:
+                                if c not in allProcRefs:
+                                    rep.addFalhaInv("rel_6_inv_4",cod,{"proc": c, "rel": r})
                         else:
                             extra = ""
                             if df:
@@ -808,8 +808,8 @@ def rel_6_inv_4(allClasses,rep: Report):
 
                             # Aqui como nem tem justificação, não tem nenhum procRef,
                             # por isso estão todos em falta
-                            for s in sints:
-                                rep.addFalhaInv("rel_6_inv_4",cod,s,extra=extra)
+                            for c,r in sints:
+                                rep.addFalhaInv("rel_6_inv_4",cod,{"proc": c, "rel": r},extra=extra)
 
 
 def rel_7_inv_3(allClasses,rep: Report):

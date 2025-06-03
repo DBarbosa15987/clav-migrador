@@ -524,7 +524,7 @@ class ErroInv:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_6_inv_4": # TODO: TEST extra
-                msg = f"O processo {self.info} está em falta na justificação do DF do processo {self.cod}, sob o critério de densidade informacional"
+                msg = f"O processo {self.info["proc"]} está em falta na justificação do DF do processo {self.cod}, sob o critério de densidade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
