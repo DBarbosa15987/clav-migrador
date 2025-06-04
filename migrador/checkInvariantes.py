@@ -1032,6 +1032,28 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
                 rep.addFalhaInv("rel_3_inv_9",cod,pai)
 
 
+def rel_9_inv_4(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Todos os processos referenciados no critério de
+    utilidade administrativa devem estar devidamente
+    declarados com a relação "Suplemento Para""
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("pca",{}).get("justificacao")
+            if just:
+                proRelCods = classe.get("processosRelacionados",[])
+                for crit in just:
+                    procRefs = crit.get("procRefs",[])
+                    for p in procRefs:
+                        if p not in proRelCods:
+                            rep.addFalhaInv("rel_9_inv_4",cod,p)
+
+
 def rel_9_inv_5(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
