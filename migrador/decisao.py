@@ -155,7 +155,6 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
             myReg['pca']['justificacao'].append(myCrit)
 
     # DF ------------------------------------------------------
-    # print("--> ", cod)
     if classe["Destino final"]:
         myReg['df'] = {}
         df = brancos.sub('', classe["Destino final"]).upper()

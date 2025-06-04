@@ -1030,3 +1030,80 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
             if pai in harmonizacao:
                 rep.addFalhaInv("rel_3_inv_9",cod,pai)
+
+
+def rel_9_inv_5(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Todos os processos referenciados no critério de
+    utilidade administrativa devem estar devidamente
+    declarados com a relação "Suplemento Para""
+    """
+
+    # FIXME: verificar as notas
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("pca",{}).get("justificacao")
+            if just:
+                jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                proRels = classe.get("proRel",[])
+                proRelCods = classe.get("processosRelacionados",[])
+                supls = [c for r,c in zip(proRels,proRelCods) if r=="eSuplementoPara"]
+                for crit in jUtilidade:
+                    procRefs = crit.get("procRefs",[])
+                    for p in procRefs:
+                        if p not in supls:
+                            rep.addFalhaInv("rel_9_inv_5",cod,p)
+
+def rel_9_inv_6(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Todos os processos referenciados no critério de
+    densidade informacional devem estar devidamente
+    declarados com a relação "Síntese de" ou "Sintetizado por""
+    """
+
+    # FIXME: verificar as notas
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("df",{}).get("justificacao")
+            if just:
+                jDensidade = [x for x in just if x["tipo"]=="densidade"]
+                proRels = classe.get("proRel",[])
+                proRelCods = classe.get("processosRelacionados",[])
+                sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
+                for crit in jDensidade:
+                    procRefs = crit.get("procRefs",[])
+                    for p in procRefs:
+                        if p not in sints:
+                            rep.addFalhaInv("rel_9_inv_6",cod,p)
+
+
+def rel_9_inv_7(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Todos os processos referenciados no critério de
+    complementaridade informacional devem estar devidamente
+    declarados com a relação "É Complementar De""
+    """
+
+    # FIXME: verificar as notas
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("df",{}).get("justificacao")
+            if just:
+                jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
+                proRels = classe.get("proRel",[])
+                proRelCods = classe.get("processosRelacionados",[])
+                compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
+                for crit in jComlpementaridade:
+                    procRefs = crit.get("procRefs",[])
+                    for p in procRefs:
+                        if p not in compls:
+                            rep.addFalhaInv("rel_9_inv_7",cod,p)

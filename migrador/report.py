@@ -575,6 +575,12 @@ class ErroInv:
                 msg = f"O processo {self.cod} é transversal, mas não tem participantes"
             case "rel_3_inv_9": # OK
                 msg = f"O processo {self.info} está em harmonização, no entanto o seu filho \"{self.cod}\" está ativo."
+            case "rel_9_inv_5":
+                msg = f"O processo {self.cod} não tem declarado(s) o(s) processos {self.info} com a relação \"Suplemento Para\""
+            case "rel_9_inv_6":
+                msg = f"O processo {self.cod} não tem declarado(s) o(s) processos {self.info} com uma relação de síntese (É sintetizado por/É sintese de)"
+            case "rel_9_inv_7":
+                msg = f"O processo {self.cod} não tem declarado(s) o(s) processos {self.info} com a relação \"É Complementar De\""
             case _:
                 pass
         return msg

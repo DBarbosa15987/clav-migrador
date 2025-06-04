@@ -72,6 +72,9 @@ def migra(filename):
     c.rel_4_inv_14(allClasses,rep)
     c.rel_8_inv_1(allClasses,rep)
     c.rel_3_inv_9(allClasses,harmonizacao,rep)
+    c.rel_9_inv_5(allClasses,rep)
+    c.rel_9_inv_6(allClasses,rep)
+    c.rel_9_inv_7(allClasses,rep)
 
     c.checkUniqueInst(allClasses,rep)
 

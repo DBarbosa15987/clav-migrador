@@ -134,5 +134,21 @@
     "rel_9_inv_2": {
         "desc": "Se um PN é eSinteseDe -> DF é de conservação",
         "clarificacao": ""
+    },
+    "rel_9_inv_4": {
+        "desc": "Qualquer processo referenciado num critério da justificação do PCA/DF tem de estar devidamente declarado.",
+        "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\""
+    },
+    "rel_9_inv_5": {
+        "desc": "Todos os processos referenciados no critério de densidade informacional devem estar devidamente declarados com a relação \"Síntese de\" ou \"Sintetizado por\"",
+        "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\""
+    },
+    "rel_9_inv_6": {
+        "desc": "Todos os processos referenciados no critério de complementaridade informacional devem estar devidamente declarados com a relação \"É Complementar De\"",
+        "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\""
+    },
+    "rel_9_inv_7": {
+        "desc": "Todos os processos referenciados no critério de utilidade administrativa devem estar devidamente declarados com a relação \"Suplemento Para\"",
+        "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\""
     }
 }
