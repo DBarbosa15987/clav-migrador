@@ -428,34 +428,31 @@ def rel_3_inv_3(allClasses,rep: Report):
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             codFilhos = classe.get("filhos",[])
-            filhos = [(c,allClasses[c]) for c in codFilhos if allClasses.get(c)]
-            if len(filhos)>=2:
-                # Assume-se aqui que se tiver filhos, tem pelo menos 2
-                for i in range(0,len(filhos)):
-                    for j in range(i+1,len(filhos)):
-                        f1 = filhos[i][1]
-                        f2 = filhos[j][1]
-                        codF1 = filhos[i][0]
-                        codF2 = filhos[j][0]
-                        df1 = f1.get("df",{}).get("valor")
-                        df2 = f2.get("df",{}).get("valor")
+            # Assume-se aqui que se tiver filhos, tem 2
+            if len(codFilhos) == 2:
+                codF1 = codFilhos[0]
+                codF2 = codFilhos[1]
+                f1 = allClasses.get(codF1)
+                f2 = allClasses.get(codF2)
+                df1 = f1.get("df",{}).get("valor")
+                df2 = f2.get("df",{}).get("valor")
 
-                        # Aqui só interessam os que têm DFs distintos
-                        if df1 and df2 and df1 != df2:
-                            f1Rels = f1.get("proRel")
-                            f1RelCods = f1.get("processosRelacionados")
+                # Aqui só interessam os que têm DFs distintos
+                if df1 and df2 and df1 != df2:
+                    f1Rels = f1.get("proRel")
+                    f1RelCods = f1.get("processosRelacionados")
 
-                            # A relação de "eSinteseDe" é inversa de "eSintetizadoPor",
-                            # e são feitas inferências iniciais que tornam este tipo de
-                            # situações explícitas, por isso basta verificar do processo
-                            # A para B, e verificar B para A torna-se redundante.
-                            if f1Rels and f1RelCods:
-                                relacoesF1 = zip(f1Rels,f1RelCods)
-                                if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
-                                    rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
-                            else:
-                                # Se algum não tem relações então já está mal
-                                rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
+                    # A relação de "eSinteseDe" é inversa de "eSintetizadoPor",
+                    # e são feitas inferências iniciais que tornam este tipo de
+                    # situações explícitas, por isso basta verificar do processo
+                    # A para B, e verificar B para A torna-se redundante.
+                    if f1Rels and f1RelCods:
+                        relacoesF1 = zip(f1Rels,f1RelCods)
+                        if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
+                            rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
+                    else:
+                        # Se algum não tem relações então já está mal
+                        rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
 
 
 def rel_5_inv_1(allClasses,rep:Report):
@@ -588,34 +585,36 @@ def rel_5_inv_3(allClasses,rep:Report):
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            proRel = classe.get("proRel")
-            proRelCods = classe.get("processosRelacionados")
-            if proRel and proRelCods and "eSuplementoDe" in proRel:
-                pca = classe.get("pca",{})
-                just = pca.get("justificacao",[])
-                supl = [cod for rel,cod in zip(proRel,proRelCods) if rel=="eSuplementoDe"]
-                if just:
-                    allProcRefs = []
-                    for j in just:
-                        procRefs = j.get("procRefs",[])
-                        allProcRefs+=procRefs
+            codFilhos = classe.get("filhos")
+            if not codFilhos:
+                proRel = classe.get("proRel")
+                proRelCods = classe.get("processosRelacionados")
+                if proRel and proRelCods and "eSuplementoDe" in proRel:
+                    pca = classe.get("pca",{})
+                    just = pca.get("justificacao",[])
+                    supl = [cod for rel,cod in zip(proRel,proRelCods) if rel=="eSuplementoDe"]
+                    if just:
+                        allProcRefs = []
+                        for j in just:
+                            procRefs = j.get("procRefs",[])
+                            allProcRefs+=procRefs
 
-                    for sup in supl:
-                        if sup not in allProcRefs:
-                            if sup in allClasses:
-                                rep.addFalhaInv("rel_5_inv_3",cod,sup)
-                else:
-                    extra = ""
-                    if pca:
-                        extra = "Neste caso nem tem justificação do PCA"
+                        for sup in supl:
+                            if sup not in allProcRefs:
+                                if sup in allClasses:
+                                    rep.addFalhaInv("rel_5_inv_3",cod,sup)
                     else:
-                        extra = "Neste caso nem tem PCA"
+                        extra = ""
+                        if pca:
+                            extra = "Neste caso nem tem justificação do PCA"
+                        else:
+                            extra = "Neste caso nem tem PCA"
 
-                    # Aqui como nem tem justificação/pca, não tem nenhum procRef,
-                    # por isso todos os sups estão em falta
-                    for sup in supl:
-                        if sup in allClasses:
-                            rep.addFalhaInv("rel_5_inv_3",cod,sup,extra=extra)
+                        # Aqui como nem tem justificação/pca, não tem nenhum procRef,
+                        # por isso todos os sups estão em falta
+                        for sup in supl:
+                            if sup in allClasses:
+                                rep.addFalhaInv("rel_5_inv_3",cod,sup,extra=extra)
 
 
 def rel_9_inv_2(allClasses,rep: Report):
