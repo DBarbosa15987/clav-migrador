@@ -127,6 +127,10 @@
         "desc": "Um DF, na sua justificação, deverá conter apenas critérios de densidade informacional, complementaridade informacional e legal",
         "clarificacao": ""
     },
+    "rel_8_inv_2": {
+        "desc": "A justificação de um DF só pode contem um critério de cada tipo",
+        "clarificacao": ""
+    },
     "rel_9_inv_1": {
         "desc": "Se um PN é eComplementarDe -> DF é de conservação",
         "clarificacao": ""
@@ -150,5 +154,9 @@
     "rel_9_inv_7": {
         "desc": "Todos os processos referenciados no critério de utilidade administrativa devem estar devidamente declarados com a relação \"Suplemento Para\"",
         "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\""
+    },
+    "rel_10_inv_1": {
+        "desc": "A justificação de um PCA só pode contem um critério de cada tipo",
+        "clarificacao": ""
     }
 }

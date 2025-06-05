@@ -76,6 +76,8 @@ def migra(filename):
     c.rel_9_inv_5(allClasses,rep)
     c.rel_9_inv_6(allClasses,rep)
     c.rel_9_inv_7(allClasses,rep)
+    c.rel_10_inv_1(allClasses,rep)
+    c.rel_8_inv_2(allClasses,rep)
 
     c.checkUniqueInst(allClasses,rep)
 

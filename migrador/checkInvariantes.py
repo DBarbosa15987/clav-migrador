@@ -1037,9 +1037,9 @@ def rel_9_inv_4(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Todos os processos referenciados no critério de
-    utilidade administrativa devem estar devidamente
-    declarados com a relação "Suplemento Para""
+    "Qualquer processo referenciado num critério
+    da justificação do PCA/DF tem de estar
+    devidamente declarado."
     """
 
     for cod,classe in allClasses.items():
@@ -1078,6 +1078,7 @@ def rel_9_inv_5(allClasses,rep: Report):
                     for p in procRefs:
                         if p not in supls:
                             rep.addFalhaInv("rel_9_inv_5",cod,p)
+
 
 def rel_9_inv_6(allClasses,rep: Report):
     """
@@ -1129,3 +1130,47 @@ def rel_9_inv_7(allClasses,rep: Report):
                     for p in procRefs:
                         if p not in compls:
                             rep.addFalhaInv("rel_9_inv_7",cod,p)
+
+
+def rel_10_inv_1(allClasses, rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "A justificação de um PCA só pode conter um
+    critério de cada tipo"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("pca",{}).get("justificacao")
+            if just:
+                tiposSet = set()
+                tipos = [x["tipo"] for x in just if "tipo" in x]
+                for t in tipos:
+                    if t in tiposSet:
+                        rep.addFalhaInv("rel_10_inv_1",cod,t)
+                    else:
+                        tiposSet.add(t)
+
+
+def rel_8_inv_2(allClasses, rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "A justificação de um DF só pode conter um
+    critério de cada tipo"
+    """
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] in [3,4]:
+            just = classe.get("df",{}).get("justificacao")
+            if just:
+                tiposSet = set()
+                tipos = [x["tipo"] for x in just if "tipo" in x]
+                for t in tipos:
+                    if t in tiposSet:
+                        rep.addFalhaInv("rel_10_inv_1",cod,t)
+                    else:
+                        tiposSet.add(t)

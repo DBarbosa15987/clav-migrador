@@ -583,6 +583,10 @@ class ErroInv:
                 msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado com uma relação de síntese (É sintetizado por/É sintese de)"
             case "rel_9_inv_7":
                 msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado com a relação \"É Complementar De\""
+            case "rel_10_inv_1":
+                msg = f"Na justificação do PCA do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info}."
+            case "rel_8_inv_2":
+                msg = f"Na justificação do DF do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info}."
             case _:
                 pass
         return msg
