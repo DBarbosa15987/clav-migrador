@@ -1170,6 +1170,6 @@ def rel_8_inv_2(allClasses, rep: Report):
                 tipos = [x["tipo"] for x in just if "tipo" in x]
                 for t in tipos:
                     if t in tiposSet:
-                        rep.addFalhaInv("rel_10_inv_1",cod,t)
+                        rep.addFalhaInv("rel_8_inv_2",cod,t)
                     else:
                         tiposSet.add(t)
