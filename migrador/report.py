@@ -6,20 +6,20 @@ from path_utils import DUMP_DIR, PROJECT_ROOT,FILES_DIR
 class Report:
 
     def __init__(self):
-        self.declaracoes = {} # {"100":["100.ttl"], "200":["100.ttl","200.ttl"]}
+        self.declaracoes = {} # {"100":["100_csv"], "200":["100_csv","200_csv"]}
         self.missingRels = {
             "relsSimetricas": [],
             "relsInverseOf": []
         }
         self.globalErrors = {
             "grave":{
-                "declsRepetidas": {}, # {"200":["100.ttl","200.ttl"]}
+                "declsRepetidas": {}, # {"200":["100_csv","200_csv"]}
                 "relsInvalidas": {}, # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
                 "outro": {} # {"200": ["mensagem de erro"]}
             },
             "normal": {}, # {"200": ["mensagem de erro"]}
             "erroInv": {}, # {"rel_x_inv_y": [erroInv:ErroInv]}
-            "erroInvByCod": {} # {"200": [erroInv:ErroInv]}
+            "erroInvByEnt": {} # {"200": [erroInv:ErroInv]}
         }
         self.warnings = {}
 
@@ -82,18 +82,18 @@ class Report:
             self.addWarning("I",r)
 
 
-    def addDecl(self,cod,fileName):
-        # "cod" aparece declarado repetidamente no(s) ficheiro(s) set(declaracoes[cod])
+    def addDecl(self,cod,sheet):
+        # "cod" aparece declarado repetidamente na(s) folha(s) self.declaracoes[cod]
         if cod in self.declaracoes:
-            self.declaracoes[cod].append(fileName+".json")
+            self.declaracoes[cod].append(sheet+"_csv")
         else:
-            self.declaracoes[cod] = [fileName+".json"]
+            self.declaracoes[cod] = [sheet+"_csv"]
 
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
         """
         Adiciona a `rep` uma relação inválida, ou seja, o processo
-        `proRel` relaciona-se com um processo `cod` que não existe.
+        `proRel` relaciona-se com um processo `cod`, que não existe.
 
         O `tipoProcRef` indica o tipo de relação em questão, pode ter
         os valores de `None` (referente aos "processosRelacionados" de
@@ -166,24 +166,24 @@ class Report:
                     self.warnings["normal"] = [info]
 
 
-    def errorsByCod(self):
+    def errorsByEnt(self):
         """
-        Função que agrupa os erros por código,
+        Função que agrupa os erros por entidade,
         para ser mostrado no HTML.
         """
 
-        errosInv = {}
-        with open(os.path.join(FILES_DIR, "classesN1.json")) as f:
-            classesN1 = json.load(f)
-        for cod in classesN1:
-            errosInv[cod] = []
+        errors = {}
 
-        for errors in self.globalErrors["erroInv"].values():
-            for err in errors:
-                classeN1 = err.cod[:3]
-                errosInv[classeN1].append(err)
+        for inv, erros in self.globalErrors["erroInv"].items():
+            for err in erros:
+                ent = err.cod[:3]
+                if ent not in errors:
+                    errors[ent] = {}
+                if inv not in errors[ent]:
+                    errors[ent][inv] = []
+                errors[ent][inv].append(err)
 
-        self.globalErrors["erroInvByCod"] = errosInv
+        self.globalErrors["erroInvByEnt"] = errors
 
 
     def dumpReport(self,dumpFileName="dump.json"):
@@ -202,7 +202,7 @@ class Report:
 
         Os erros são agrupados por tipo.
         """
-        self.errorsByCod()
+
         with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
             invs = json.load(f)
 
@@ -217,24 +217,25 @@ class Report:
         <div>
         """
 
-        html_content += f'<div class="error-section">🟥 Erros Graves</div>\n'
+        if self.globalErrors["grave"]["declsRepetidas"] or self.globalErrors["grave"]["relsInvalidas"] or self.globalErrors["grave"]["outro"]:
+            html_content += f'<div class="error-section">🟥 Erros Graves (Estes erros têm de ser corrigidos para a ontologia ser gerada)</div>\n'
 
         # Decls Repetidas (Grave)
         if self.globalErrors["grave"]["declsRepetidas"]:
-            html_content += '<div class="error-section">Declarações Repetidas</div>\n'
-            html_content += '<table class="error-table"><tr><th>Código</th><th>Ficheiros</th></tr>'
+            html_content += f'<div class="error-section">Declarações Repetidas ({len(self.globalErrors["grave"]["declsRepetidas"])}): Códigos que foram declarados mais do que uma vez</div>\n'
+            html_content += '<table class="error-table"><tr><th>Código Repetido</th><th>Folhas</th></tr>'
             for cod, files in self.globalErrors["grave"]["declsRepetidas"].items():
-                html_content += f"<tr><td>{cod}</td><td>{', '.join(files)}</td></tr>"
+                html_content += f"<tr><td><span style='color: yelow;'>{cod}</span></td><td>{', '.join(files)}</td></tr>"
             html_content += '</table>'
 
         # Rels Invalidas (Grave)
         if self.globalErrors["grave"]["relsInvalidas"]:
-            html_content += '<div class="error-section">Relações Inválidas</div>\n'
-            html_content += '<table class="error-table"><tr><th>Código</th><th>Relações</th></tr>'
+            html_content += f'<div class="error-section">Relações Inválidas ({len(self.globalErrors["grave"]["relsInvalidas"])}): Declarações que referenciam um processo que não existe</div>\n'
+            html_content += '<table class="error-table"><tr><th>Código Inválido</th><th>Relação Inválida</th></tr>'
             for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
-                html_content += f"<tr><td>{cod}</td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
+                html_content += f"<tr><td><span style='color: red;'>{cod}</span></td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
                 for rel in rels:
-                    html_content += f"<li style='display: list-item;'>{cod} {rel[1]} {rel[0]}</li>"
+                    html_content += f"<li style='display: list-item;'>{rel[0]} {rel[1]} <span style='color: red;'>{cod}</span></li>"
                 html_content += "</ul></td></tr>"
             html_content += '</table>'
 
@@ -286,16 +287,27 @@ class Report:
         Gera um dicionário indexado por entidade da AP
         em que o seu valor é a tabela HTML correspondente.
         """
-        self.errorsByCod()
+        self.errorsByEnt()
         with open(os.path.join(FILES_DIR, "classesN1.json")) as f:
             classesN1 = json.load(f)
 
-        entity_tables = {}
+        with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
+            invs = json.load(f)
+
+        entityTables = {}
+        entityNumErrors = {}
+        grave_header = '<div class="error-section">🟥 Erros Graves (Estes erros têm de ser corrigidos para a ontologia ser gerada)</div>\n'
+        grave_ents = set()
 
         def addRow(entity_dict, ent, content):
             if ent not in entity_dict:
                 entity_dict[ent] = ''
             entity_dict[ent] += content
+
+        def ensureGraveHeader(ent):
+            if ent not in grave_ents:
+                addRow(entityTables, ent, grave_header)
+                grave_ents.add(ent)
 
         def getEnt(cod):
             ent = cod
@@ -305,51 +317,64 @@ class Report:
                 pass
             return ent
 
+        def addError(ent):
+            if ent in entityNumErrors:
+                entityNumErrors[ent]+=1
+            else:
+                entityNumErrors[ent]=1
+
         # Declarações Repetidas
         # TODO: Falta testar
         if self.globalErrors["grave"]["declsRepetidas"]:
             ents = set()
-            for cod, files in self.globalErrors["grave"]["declsRepetidas"].items():
+            for cod, sheet in self.globalErrors["grave"]["declsRepetidas"].items():
                 ent = getEnt(cod)
+                ensureGraveHeader(ent)
                 # Header de cada tabela (uma por entidade)
                 if ent not in ents:
-                    header = f'<div class="error-section">Declarações Repetidas</div>\n'
-                    header += '<table class="error-table"><tr><th>Código</th><th>Ficheiros</th></tr>'
-                    addRow(entity_tables, ent, header)
+                    header = f'<div class="error-section">Declarações Repetidas: Códigos que foram declarados mais do que uma vez</div>\n'
+                    header += '<table class="error-table"><tr><th>Código Repetido</th><th>Folhas</th></tr>'
+                    addRow(entityTables, ent, header)
                 ents.add(ent)
 
                 # Linhas de cada tabela
-                row = f"<tr><td>{cod}</td><td>{', '.join(files)}</td></tr>"
-                addRow(entity_tables, ent, row)
+                row = f"<tr><td><span style='color: yelow;'>{cod}</span></td><td>{', '.join(sheet)}</td></tr>"
+                addError(ent)
+                addRow(entityTables, ent, row)
 
             # Conclusão de cada tabela
             for cod in self.globalErrors["grave"]["declsRepetidas"]:
                 ent = getEnt(cod)
-                addRow(entity_tables, ent, "</table>")
+                addRow(entityTables, ent, "</table>")
 
         # Relações Inválidas
         if self.globalErrors["grave"]["relsInvalidas"]:
             ents = set()
+            # Criação dos headers das tabelas para as entidades
             for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
-                ent = getEnt(cod)
-                # Header de cada tabela (uma por entidade)
-                if ent not in ents:
-                    rels_header = f'<div class="error-section">Relações Inválidas</div>\n'
-                    rels_header += '<table class="error-table"><tr><th>Código</th><th>Relações</th></tr>'
-                    addRow(entity_tables, ent, rels_header)
-                ents.add(ent)
-
-                # Linhas de cada tabela
-                rels_html = f"<tr><td>{cod}</td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
                 for rel in rels:
-                    rels_html += f"<li style='display: list-item;'>{cod} {rel[1]} {rel[0]}</li>"
-                rels_html += "</ul></td></tr>"
-                addRow(entity_tables, ent, rels_html)
+                    ent = getEnt(rel[0])
+                    ensureGraveHeader(ent)
+                    if ent not in ents:
+                        rels_header = f'<div class="error-section">Relações Inválidas: Declarações que referenciam um processo que não existe</div>\n'
+                        rels_header += '<table class="error-table"><tr><th>Código Inválido</th><th>Relação Inválida</th></tr>'
+                        addRow(entityTables, ent, rels_header)
+                        ents.add(ent)
+
+            # Linhas de cada tabela
+            for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
+                for rel in rels:
+                    ent = getEnt(rel[0])
+                    rels_html = f"<tr><td><span style='color: red;'>{cod}</span></td>"
+                    rels_html += f"<td>{rel[0]} {rel[1]} <span style='color: red;'>{cod}</span></td></tr>"
+                    addError(ent)
+                    addRow(entityTables, ent, rels_html)
 
             # Conclusão de cada tabela
-            for cod in self.globalErrors["grave"]["relsInvalidas"]:
-                ent = getEnt(cod)
-                addRow(entity_tables, ent, "</table>")
+            for cod, rels in self.globalErrors["grave"]["relsInvalidas"].items():
+                for rel in rels:
+                    ent = getEnt(rel[0])
+                    addRow(entityTables, ent, "</table>")
 
         # Outros Erros Graves
         # TODO: Falta testar
@@ -357,22 +382,24 @@ class Report:
             ents = set()
             for cod, msgs in self.globalErrors["grave"]["outro"].items():
                 ent = getEnt(cod)
+                ensureGraveHeader(ent)
                 # Header de cada tabela (uma por entidade)
                 if ent not in ents:
                     header = f'<div class="error-section">Outros Erros Graves</div>\n'
                     header += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
-                    addRow(entity_tables, ent, header)
+                    addRow(entityTables, ent, header)
                 ents.add(ent)
 
                 # Linhas de cada tabela
                 for msg in msgs:
                     row = f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
-                    addRow(entity_tables, ent, row)
+                    addError(ent)
+                    addRow(entityTables, ent, row)
 
             # Conclusão de cada tabela
             for cod in self.globalErrors["grave"]["outro"]:
                 ent = getEnt(cod)
-                addRow(entity_tables, ent, "</table>")
+                addRow(entityTables, ent, "</table>")
 
         # Erros Genéricos
         # TODO: Falta testar
@@ -384,36 +411,53 @@ class Report:
                 if ent not in ents:
                     header = f'<div class="error-section">🟨 Erros Genéricos</div>\n'
                     header += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
-                    addRow(entity_tables, ent, header)
+                    addRow(entityTables, ent, header)
                 ents.add(ent)
 
                 # Linhas de cada tabela
                 for msg in msgs:
                     row = f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
-                    addRow(entity_tables, ent, row)
+                    addError(ent)
+                    addRow(entityTables, ent, row)
 
             # Conclusão de cada tabela
             for cod in self.globalErrors["normal"]:
                 ent = getEnt(cod)
-                addRow(entity_tables, ent, "</table>")
+                addRow(entityTables, ent, "</table>")
 
         # Erros de Invariantes por entidade
-        if self.globalErrors["erroInvByCod"]:
-            for cod, erros in self.globalErrors["erroInvByCod"].items():
-                inv = classesN1.get(cod, {"titulo": "Sem descrição", "clarificacao": ""})
-                errTitle = f"{cod} ({len(erros)}): {inv['titulo']}"
-                html_part = f'<div class="error-section">Erros de Invariantes</div>\n'
-                html_part += f'<div class="error-section">{errTitle}</div>\n'
-                html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
-                for err in erros:
-                    msg = html.escape(err.msg)
-                    if err.fixed:
-                        msg = f"<span style='color: green;'>✅ {msg} (corrigido automaticamente)</span>"
-                    html_part += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
-                html_part += "</table>"
-                addRow(entity_tables, cod, html_part)
+        if self.globalErrors["erroInvByEnt"]:
 
-        return entity_tables
+            for ent, invs_dict in self.globalErrors["erroInvByEnt"].items():
+
+                addRow(entityTables, ent, '<div class="error-section">🟦 Erros de Invariantes</div>\n')
+
+                for inv, erros in invs_dict.items():
+                    invariante = invs.get(inv, {"desc": "Sem descrição", "clarificacao": ""})
+                    errTitle = f"{inv} ({len(erros)}): {invariante['desc']}"
+                    if invariante["clarificacao"]:
+                        errTitle += f" ({invariante['clarificacao']})"
+
+                    html_part = f'<div class="error-section">{errTitle}</div>\n'
+                    html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
+                    for err in erros:
+                        msg = html.escape(err.msg)
+                        if err.fixed:
+                            msg = f"<span style='color: green;'>✅ {msg} (corrigido automaticamente)</span>"
+
+                        addError(ent)
+                        html_part += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
+                    html_part += "</table>\n"
+
+                    addRow(entityTables, ent, html_part)
+
+        # Criar o header para todas as entidades referidas
+        for entCod in entityTables:
+            ent = classesN1.get(entCod, {"titulo": "Sem descrição", "clarificacao": ""})
+            entTitle = f'<div class="error-section">{entCod} ({entityNumErrors[entCod]}): {ent['titulo']}</div>\n'
+            entityTables[entCod] = entTitle + entityTables[entCod]
+
+        return entityTables
 
 
 class ErroInv:
