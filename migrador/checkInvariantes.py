@@ -86,7 +86,7 @@ def processClasses(rep: Report):
         if proRels:
             for proc,rel in zip(proRels, rels):
                 # Se não existir, é registada como inválida, se existir confirma-se
-                # se as simetricas e anti-simetrias estão corretas
+                # se as simetrias e anti-simetrias estão corretas
                 # Aqui "inválida" != "harmonização"
                 if proc not in data.keys():
                     rep.addRelInvalida(proc,rel,cod)

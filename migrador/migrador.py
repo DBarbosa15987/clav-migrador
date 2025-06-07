@@ -6,7 +6,6 @@ import json
 import os
 from . import queryfix as fix
 from path_utils import FILES_DIR
-import zipfile
 
 def migra(filename):
 
@@ -26,7 +25,6 @@ def migra(filename):
     print("\nProcessamento inicial dos dados\n")
 
     allClasses,harmonizacao = c.processClasses(rep)
-    # TODO: Falta decidir exatamente o que fazer de acordo com o output da função
     ok = rep.checkStruct()
 
     # Inferências de relações
@@ -72,6 +70,7 @@ def migra(filename):
     c.rel_4_inv_14(allClasses,rep)
     c.rel_8_inv_1(allClasses,rep)
     c.rel_3_inv_9(allClasses,harmonizacao,rep)
+
     c.rel_9_inv_4(allClasses,rep)
     c.rel_9_inv_5(allClasses,rep)
     c.rel_9_inv_6(allClasses,rep)
@@ -97,18 +96,20 @@ def migra(filename):
     # Geração da ontologia final
     # --------------------------------------------
 
-    print("\nGeração da ontologia final\n")
+    # A ontologia só é gerada se nenhum erro "grave" for encontrado
+    if ok:
+        print("\nGeração da ontologia final\n")
 
-    g.tiGenTTL()
-    g.entidadeGenTTL()
-    g.tipologiaGenTTL()
-    g.legGenTTL()
+        g.tiGenTTL()
+        g.entidadeGenTTL()
+        g.tipologiaGenTTL()
+        g.legGenTTL()
 
-    classes = ['100','150','200','250','300','350','400','450','500','550','600',
-                '650','700','710','750','800','850','900','950']
-    for classe in classes:
-        print('Classe: ', classe)
-        g.classeGenTTL(classe)
+        classes = ['100','150','200','250','300','350','400','450','500','550','600',
+                    '650','700','710','750','800','850','900','950']
+        for classe in classes:
+            print('Classe: ', classe)
+            g.classeGenTTL(classe)
 
-    return rep
+    return rep,ok
 

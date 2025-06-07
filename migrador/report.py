@@ -274,7 +274,7 @@ class Report:
                     cod = err.cod
                     msg = html.escape(err.msg)
                     if err.fixed:
-                        msg = f"<span style='color: green;'>✅ {msg} (corrigido automaticamente)</span>"
+                        msg = f"<span style='color: green;'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
                     html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
                 html_content += "</table>\n"
 
@@ -443,7 +443,7 @@ class Report:
                     for err in erros:
                         msg = html.escape(err.msg)
                         if err.fixed:
-                            msg = f"<span style='color: green;'>✅ {msg} (corrigido automaticamente)</span>"
+                            msg = f"<span style='color: green;'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
 
                         addError(ent)
                         html_part += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"

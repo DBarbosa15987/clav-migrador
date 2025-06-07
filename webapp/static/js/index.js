@@ -12,10 +12,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loading-indicator');
     const reportContainer = document.getElementById('report-container');
 
+    window.addEventListener('load', function () {
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            selectedFileText.textContent = `Ficheiro selecionado: ${file.name}`;
+            selectedFileText.classList.remove('hidden');
+        } else {
+            selectedFileText.textContent = 'Nenhum ficheiro selecionado';
+            selectedFileText.classList.remove('hidden');
+        }
+    });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        // TODO: temporário
         if (fileInput.files.length === 0) {
             alert('Por favor selecione um ficheiro');
             return;
@@ -23,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buttonText.textContent = 'Carregando...';
         loadingIndicator.classList.remove('hidden');
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
 
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
@@ -37,6 +58,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
             if (result.error) throw new Error(result.error);
+
+
+            const downloadBtn = document.getElementById('download-btn');
+            if (result.ok) {
+                downloadBtn.classList.remove('hidden');
+            } else {
+                downloadBtn.classList.add('hidden');
+            }
 
             // Setup entity tables
             if (result.table_by_entity && result.table_by_invariant) {
@@ -67,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             buttonText.textContent = 'Processar Ficheiro';
             loadingIndicator.classList.add('hidden');
+
+            submitButton.disabled = false;
+            submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
 

@@ -23,11 +23,6 @@
 
 
     <main class="container mx-auto px-4 py-10">
-        <a href="/download" class="button" download>
-            ⬇️ Download da ontologia
-        </a>
-        <br>
-        <br>
         <div class="w-full max-w-7xl mx-auto">
             <!-- Upload Card -->
             <div class="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all hover:shadow-xl">
@@ -44,11 +39,9 @@
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <div id="file-preview" class="flex flex-col items-center gap-2">
                                 <i class="fas fa-cloud-upload-alt text-5xl text-gray-400"></i>
-                                <span class="text-gray-500 font-medium">Selecione o ficheiro</span>
-                                <!-- <span class="text-sm text-gray-400">Max file size: 10MB</span> -->
+                                <span id="selected-file" class="text-gray-500 font-medium">Selecione o ficheiro</span>
                             </div>
                         </div>
-                        <p id="selected-file" class="mt-2 text-sm text-gray-500 hidden">No file selected</p>
                     </div>
 
                     <!-- Submit Button -->
@@ -66,6 +59,11 @@
                             </svg>
                         </span>
                     </button>
+                    <!-- Download Button -->
+                    <a href="/download" id="download-btn" download
+                        class="w-full mt-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center text-center hidden">
+                        <span>Download Output</span>
+                    </a>
                 </form>
             </div>
 
