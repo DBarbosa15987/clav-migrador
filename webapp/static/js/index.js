@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (file) {
             selectedFileText.textContent = `Ficheiro selecionado: ${file.name}`;
             selectedFileText.classList.remove('hidden');
+
+            // Re-enable the submit button when a new file is selected
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = false;
+            submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            buttonText.textContent = 'Processar Ficheiro';
         } else {
             selectedFileText.textContent = 'Nenhum ficheiro selecionado';
             selectedFileText.classList.remove('hidden');
@@ -85,21 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 document.querySelectorAll('.report-view').forEach(div => div.classList.add('hidden'));
                 document.getElementById(document.getElementById('view-selector').value).classList.remove('hidden');
+
+            } else {
+                throw new Error(result.error || 'Erro ao processar o ficheiro.');
             }
 
             reportContainer.classList.remove('hidden');
             reportContainer.scrollIntoView({ behavior: 'smooth' });
+            buttonText.textContent = 'Ficheiro Processado';
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
 
         } catch (error) {
+            showError(error.message || 'Erro inesperado');
             console.error('Erro:', error);
-            reportContainer.classList.remove('hidden');
-        } finally {
-            buttonText.textContent = 'Processar Ficheiro';
-            loadingIndicator.classList.add('hidden');
 
+            // Reset report display data
+            reportContainer.classList.add('hidden');
+            entityReportContent.innerHTML = '';
+            reportByInvariant.innerHTML = '';
+            entityTables = {};
+
+            // Re-enable the button on error
             submitButton.disabled = false;
             submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            buttonText.textContent = 'Processar Ficheiro';
+        } finally {
+            loadingIndicator.classList.add('hidden');
         }
+
     });
 
     // Handle view switching
@@ -118,3 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
         entityReportContent.innerHTML = entityTables[selectedEntity];
     });
 });
+
+function showError(message) {
+    const popup = document.getElementById('error-popup');
+    const msgSpan = document.getElementById('error-message');
+
+    msgSpan.textContent = message;
+    popup.classList.remove('hidden');
+
+    setTimeout(() => {
+        popup.classList.add('hidden');
+    }, 4000);
+}

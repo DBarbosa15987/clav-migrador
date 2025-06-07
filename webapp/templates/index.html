@@ -16,8 +16,10 @@
     <header class="bg-gradient-to-r from-purple-600 to-indigo-800 text-white shadow-md">
         <div class="container mx-auto px-4 py-6">
             <h1 class="text-3xl font-bold tracking-tight">Migrador CLAV</h1>
-            <p class="text-purple-100 mt-2">Descrição descrição descrição descrição descrição descrição descrição
-                descrição</p>
+            <p class="text-purple-100 mt-2">O Migrador CLAV é responsável por efetuar a migração do ficheiro de excel
+                para a ontologia que alimenta a ontologia CLAV. Também é responsável criar um relatório com todos os
+                erros e inconsistências encontradas nos dados providenciados.
+            </p>
         </div>
     </header>
 
@@ -26,9 +28,8 @@
         <div class="w-full max-w-7xl mx-auto">
             <!-- Upload Card -->
             <div class="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all hover:shadow-xl">
-                <!-- <h3 class="text-2xl font-semibold text-gray-800 mb-3">Selecione o ficheiro para efetuar a migração, depois de completa vai poder descarregar a ontologia final</h3> -->
-                <p class="text-gray-800 mb-6">Selecione o ficheiro para efetuar a migração, depois de completa vai poder
-                    descarregar a ontologia final</p>
+                <h4 class="text-xl font-semibold text-gray-800 mb-3">Selecione o ficheiro para efetuar a migração,
+                    depois de completa vai poder descarregar a ontologia final</h4>
 
                 <form id="upload-form" enctype="multipart/form-data" class="space-y-6">
                     <!-- Custom File Input -->
@@ -59,6 +60,7 @@
                             </svg>
                         </span>
                     </button>
+
                     <!-- Download Button -->
                     <a href="/download" id="download-btn" download
                         class="w-full mt-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center text-center hidden">
@@ -92,6 +94,10 @@
             </div>
 
         </div>
+        </div>
+        <div id="error-popup"
+            class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-3 rounded shadow-lg z-50 transition-opacity duration-300">
+            <span id="error-message"></span>
         </div>
     </main>
 
