@@ -66,39 +66,54 @@
                         class="w-full mt-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center text-center hidden">
                         <span>Download Output</span>
                     </a>
+                    <!-- Download Not Available -->
+                    <div id="download-warning"
+                        class="hidden w-full mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg shadow text-center">
+                        <strong>Atenção:</strong> A ontologia final não pôde ser gerada corretamente. Os erros marcados
+                        como <strong>🟥 Erros Graves</strong> têm de ser corrigidos diretamente no Excel original.
+                    </div>
+                    <!-- Generic Error -->
+                    <div id="general-error"
+                        class="hidden w-full mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow text-center">
+                        <span id="general-error-message" class="font-semibold"></span>
+                    </div>
+
                 </form>
             </div>
 
             <!-- Report Container -->
-            <div id="report-container" class="hidden">
-                <div class="mb-4">
-                    <label for="view-selector">Ver por:</label>
-                    <select id="view-selector" class="border px-2 py-1 rounded">
-                        <option value="by-invariant">Invariante</option>
-                        <option value="by-entity">Entidade</option>
-                    </select>
+            <div id="report-container" class="hidden mt-8">
+
+                <!-- View Selector -->
+                <div class="mb-6 flex flex-wrap items-center gap-6">
+                    <div class="flex items-center space-x-3">
+                        <label for="view-selector" class="text-sm font-medium text-gray-700">Ver por:</label>
+                        <select id="view-selector"
+                            class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                            <option value="by-invariant">Invariante</option>
+                            <option value="by-entity">Entidade</option>
+                        </select>
+                    </div>
+
+                    <!-- Entity Selector -->
+                    <div id="entity-selector-wrapper" class="hidden flex items-center space-x-3">
+                        <label for="entity-selector" class="text-sm font-medium text-gray-700">Entidade:</label>
+                        <select id="entity-selector"
+                            class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></select>
+                    </div>
                 </div>
 
+                <!-- Report Views -->
                 <div id="report-views">
-
                     <div id="by-invariant" class="report-view hidden"></div>
-
                     <div id="by-entity" class="report-view hidden">
-                        <div class="mb-4">
-                            <label for="entity-selector">Escolher entidade:</label>
-                            <select id="entity-selector" class="border px-2 py-1 rounded"></select>
-                        </div>
                         <div id="entity-report-content"></div>
                     </div>
                 </div>
             </div>
+        </div>
+        </div>
 
-        </div>
-        </div>
-        <div id="error-popup"
-            class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-3 rounded shadow-lg z-50 transition-opacity duration-300">
-            <span id="error-message"></span>
-        </div>
     </main>
 
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>

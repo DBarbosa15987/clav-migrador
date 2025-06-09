@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loading-indicator');
     const reportContainer = document.getElementById('report-container');
 
+    const downloadWarning = document.getElementById('download-warning');
+    const downloadBtn = document.getElementById('download-btn');
+    const generalError = document.getElementById('general-error');
+
     window.addEventListener('load', function () {
         const fileInput = document.querySelector('input[type="file"]');
         if (fileInput) {
@@ -21,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fileInput.addEventListener('change', () => {
         const file = fileInput.files[0];
+
+        // When the file changes, the error "banners" are reset
+        downloadWarning.classList.add('hidden');
+        generalError.classList.add('hidden');
+
         if (file) {
             selectedFileText.textContent = `Ficheiro selecionado: ${file.name}`;
             selectedFileText.classList.remove('hidden');
@@ -65,12 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.error) throw new Error(result.error);
 
-
-            const downloadBtn = document.getElementById('download-btn');
             if (result.ok) {
                 downloadBtn.classList.remove('hidden');
+                downloadWarning.classList.add('hidden');
             } else {
                 downloadBtn.classList.add('hidden');
+                downloadWarning.classList.remove('hidden');
             }
 
             // Setup entity tables
@@ -103,8 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.classList.add('opacity-50', 'cursor-not-allowed');
 
         } catch (error) {
-            showError(error.message || 'Erro inesperado');
+
             console.error('Erro:', error);
+            const generalErrorMessage = document.getElementById('general-error-message');
+            generalErrorMessage.textContent = error.message || 'Erro inesperado';
+            generalError.classList.remove('hidden');
 
             // Reset report display data
             reportContainer.classList.add('hidden');
@@ -123,14 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle view switching
-    document.getElementById('view-selector').addEventListener('change', function () {
-        const selected = this.value;
-        document.querySelectorAll('.report-view').forEach(div => {
-            div.classList.add('hidden');
-        });
-        document.getElementById(selected).classList.remove('hidden');
-
+    const viewSelector = document.getElementById('view-selector');
+    viewSelector.addEventListener('change', () => {
+        updateViewSelectorUI(viewSelector.value);
     });
+    updateViewSelectorUI(viewSelector.value);
 
     // Handle entity selection within entity view
     entitySelector.addEventListener('change', () => {
@@ -139,14 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function showError(message) {
-    const popup = document.getElementById('error-popup');
-    const msgSpan = document.getElementById('error-message');
+function updateViewSelectorUI(selectedView) {
+    document.querySelectorAll('.report-view').forEach(div => div.classList.add('hidden'));
+    document.getElementById(selectedView).classList.remove('hidden');
 
-    msgSpan.textContent = message;
-    popup.classList.remove('hidden');
-
-    setTimeout(() => {
-        popup.classList.add('hidden');
-    }, 4000);
+    document.getElementById('entity-selector-wrapper')
+        .classList.toggle('hidden', selectedView !== 'by-entity');
 }
