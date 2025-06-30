@@ -1,13 +1,17 @@
 from itertools import islice
+import logging
 import pandas as pd
 import json
 import re
 import os
 from path_utils import FILES_DIR
+from log_utils import PROC
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 
 def processSheet(sheet, nome):
+
+    loggerProc = logging.getLogger(PROC)
     # Load one worksheet.
     fnome = nome.split("_")[0]
     ws = sheet
@@ -30,6 +34,6 @@ def processSheet(sheet, nome):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
-    print("Termos de índice extraídos: ", len(myClasse))
+    loggerProc.info("Termos de índice extraídos: ", len(myClasse))
     outFile.close()
     return len(myClasse)

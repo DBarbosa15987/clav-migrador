@@ -1,16 +1,19 @@
 from itertools import islice
+import logging
 import pandas as pd
 import json
 import re
 import os
 from path_utils import FILES_DIR
+from log_utils import PROC
 from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
 def processSheet(sheet, rep: Report):
-    print("# Migração do Catálogo de Entidades ----------------------")
+    loggerProc = logging.getLogger(PROC)
+    loggerProc.info("# Migração do Catálogo de Entidades ----------------------")
     # Load one worksheet.
     ws = sheet
     data = ws.values
@@ -59,11 +62,11 @@ def processSheet(sheet, rep: Report):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myEntidade, outFile, indent = 4, ensure_ascii=False)
-    print("Entidades extraídas: ", len(myEntidade))
+    loggerProc.info("Entidades extraídas: ", len(myEntidade))
     outFile.close()
     catalogPath = os.path.join(FILES_DIR, "entCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(entCatalog, catalog, indent = 4, ensure_ascii=False)
-    print("Catálogo de entidades criado.")
-    print("# FIM: Migração do Catálogo de Entidades -----------------")
+    loggerProc.info("Catálogo de entidades criado.")
+    loggerProc.info("# FIM: Migração do Catálogo de Entidades -----------------")
     return len(myEntidade)

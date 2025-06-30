@@ -1,16 +1,19 @@
 from itertools import islice
+import logging
 import pandas as pd
 import json
 import re
 import os
 from path_utils import FILES_DIR
+from log_utils import PROC
 from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
 def processSheet(sheet, rep: Report):
-    print("# Migração do Catálogo de Tipologias -------------------")
+    loggerProc = logging.getLogger(PROC)
+    loggerProc.info("# Migração do Catálogo de Tipologias -------------------")
     # Load one worksheet.
     ws = sheet
     data = ws.values
@@ -41,11 +44,11 @@ def processSheet(sheet, rep: Report):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myTipologia, outFile, indent = 4, ensure_ascii=False)
-    print("Tipologias extraídas: ", len(myTipologia))
+    loggerProc.info("Tipologias extraídas: ", len(myTipologia))
     outFile.close()
     catalogPath = os.path.join(FILES_DIR, "tipCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(tipCatalog, catalog, indent = 4, ensure_ascii=False)
-    print("Catálogo de tipologias criado.")
-    print("# FIM: Migração do Catálogo de Tipologias -----------------")
+    loggerProc.info("Catálogo de tipologias criado.")
+    loggerProc.info("# FIM: Migração do Catálogo de Tipologias -----------------")
     return len(myTipologia)

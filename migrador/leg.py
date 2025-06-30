@@ -1,17 +1,20 @@
 from itertools import islice
+import logging
 import pandas as pd
 import json
 from datetime import datetime
 import re
 import os
 from path_utils import FILES_DIR
+from log_utils import PROC
 from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')
 sepExtra = re.compile(r'#$|^#')
 
 def processSheet(sheet, nome, rep: Report):
-    print("# Migração do Catálogo Legislativo ---------------------------")
+    loggerProc = logging.getLogger(PROC)
+    loggerProc.info("# Migração do Catálogo Legislativo ---------------------------")
     # Carregam-se os catálogos de entidades e tipologias
     # --------------------------------------------------
     ecatalog = open(os.path.join(FILES_DIR, "entCatalog.json"))
@@ -101,11 +104,11 @@ def processSheet(sheet, nome, rep: Report):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myLeg, outFile, indent = 4, ensure_ascii=False)
-    print("Documentos legislativos extraídos: ", len(myLeg))
+    loggerProc.info("Documentos legislativos extraídos: ", len(myLeg))
     outFile.close()
 
     catalogPath = os.path.join(FILES_DIR, "legCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")
     json.dump(legCatalog, catalog, indent = 4, ensure_ascii=False)
-    print("Catálogo de legislação criado.")
-    print("# FIM: Migração do Catálogo Legislativo ----------------------")
+    loggerProc.info("Catálogo de legislação criado.")
+    loggerProc.info("# FIM: Migração do Catálogo Legislativo ----------------------")

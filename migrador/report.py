@@ -2,6 +2,8 @@ import json
 import html
 import os
 from path_utils import DUMP_DIR, PROJECT_ROOT,FILES_DIR
+import logging
+from log_utils import PROC
 
 class Report:
 
@@ -57,6 +59,9 @@ class Report:
         simétricas e inversas que estão declaradas implicitamente,
         tornando-as explícitas.
         """
+
+        logger = logging.getLogger(PROC)
+
         for r in self.missingRels["relsSimetricas"]:
             classe = allClasses.get(r[0])
             proRel = classe.get("proRel")
@@ -69,6 +74,8 @@ class Report:
                 classe["processosRelacionados"] = [r[2]]
             self.addWarning("I",r)
 
+        logger.info(f"Foram efetuadas {len(self.missingRels["relsSimetricas"])} inferências de relações simétricas")
+
         for r in self.missingRels["relsInverseOf"]:
             classe = allClasses.get(r[0])
             proRel = classe.get("proRel")
@@ -80,6 +87,8 @@ class Report:
                 classe["proRel"] = [r[1]]
                 classe["processosRelacionados"] = [r[2]]
             self.addWarning("I",r)
+
+        logger.info(f"Foram efetuadas {len(self.missingRels["relsInverseOf"])} inferências de relações inversas")
 
 
     def addDecl(self,cod,sheet):
@@ -110,6 +119,7 @@ class Report:
     def checkStruct(self):
         # Verifica a existência de erros "graves" no código.
         ok = True
+        logger = logging.getLogger(PROC)
         repetidas = [(k,v) for k,v in self.declaracoes.items() if len(v)>1]
         if repetidas:
             self.globalErrors["grave"]["declsRepetidas"] = repetidas
@@ -118,8 +128,12 @@ class Report:
         if len(self.globalErrors["grave"]["relsInvalidas"])>0:
             ok = False
 
+
         if len(self.globalErrors["grave"]["outro"])>0:
             ok = False
+
+        if not ok:
+            logger.error("Foram encontrados erros graves nos dados, a ontologia final não será criada")
 
         return ok
 
@@ -190,9 +204,15 @@ class Report:
         report = {}
         report["globalErrors"] = self.globalErrors
         report["warnings"] = self.warnings
+        logger = logging.getLogger(PROC)
 
-        with open(os.path.join(DUMP_DIR, dumpFileName),'w') as f:
-            json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
+        dumpPath = os.path.join(DUMP_DIR, dumpFileName)
+        try:
+            logger.info(f"Criação de um dump do relatório de erros: {dumpPath}")
+            with open(dumpPath,'w') as f:
+                json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
+        except Exception as e:
+            logger.error(f"Criação do dump do relatório de erros falhou: {e}")
 
 
     def generate_error_table(self):

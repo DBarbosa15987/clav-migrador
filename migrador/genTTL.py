@@ -8,6 +8,10 @@ from rdflib import Graph, Namespace, Literal, RDF, RDFS, OWL, URIRef
 from rdflib.namespace import RDF,OWL
 import os
 from path_utils import FILES_DIR, ONTOLOGY_DIR, OUTPUT_DIR
+from log_utils import GEN
+import logging
+
+logger = logging.getLogger(GEN)
 
 ns = Namespace("http://jcr.di.uminho.pt/m51-clav#")
 dc = Namespace("http://purl.org/dc/elements/1.1/")
@@ -21,6 +25,8 @@ dataAtualizacao = agora.strftime("%Y-%m-%d")
 # --- Migra os termos de índice ------------------------
 # ------------------------------------------------------
 def tiGenTTL():
+
+    logger.info("Geração da ontologia dos termos índice")
     fin = open(os.path.join(FILES_DIR,"ti.json"))
     termos = json.load(fin)
 
@@ -41,11 +47,14 @@ def tiGenTTL():
 
     fin.close()
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"ti.ttl"))
+    logger.info("Geração da ontologia dos termos índice terminada")
 
 
 # --- Migra a legislação -------------------------------
 # ------------------------------------------------------
 def legGenTTL():
+
+    logger.info("Geração da ontologia da legislação")
     fin = open(os.path.join(FILES_DIR,"leg.json"))
     leg = json.load(fin)
 
@@ -77,11 +86,14 @@ def legGenTTL():
 
     fin.close()
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"leg.ttl"))
+    logger.info("Geração da ontologia da legislação terminada")
 
 
 # --- Migra as tipologias ------------------------------
 # ------------------------------------------------------
 def tipologiaGenTTL():
+
+    logger.info("Geração da ontologia da tipologia")
     fin = open(os.path.join(FILES_DIR,"tip.json"))
     tipologias = json.load(fin)
 
@@ -101,11 +113,14 @@ def tipologiaGenTTL():
 
     fin.close()
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"tip.ttl"))
+    logger.info("Geração da ontologia da tipologia terminada")
 
 
 # --- Migra as entidades -------------------------------
 # ------------------------------------------------------
 def entidadeGenTTL():
+
+    logger.info("Geração da ontologia das entidades")
     fin = open(os.path.join(FILES_DIR,"ent.json"))
     entidades = json.load(fin)
 
@@ -142,11 +157,14 @@ def entidadeGenTTL():
 
     fin.close()
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"ent.ttl"))
+    logger.info("Geração da ontologia das entidades terminada")
 
 
 # --- Migra uma classe ---------------------------------
 # ------------------------------------------------------
 def classeGenTTL(c):
+
+    logger.info(f"Geração da ontologia da classe {classe}")
     fin = open(os.path.join(FILES_DIR,f"{c}.json"))
     classes = json.load(fin)
 
@@ -168,7 +186,7 @@ def classeGenTTL(c):
 
     for cod,classe in classes.items():
 
-        print(cod)
+        # print(cod)
         # codigo, estado, nível e título
         codigoUri = ns[f"c{cod}"]
         g.add((codigoUri,RDF.type, OWL.NamedIndividual))
@@ -391,6 +409,7 @@ def classeGenTTL(c):
 
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,f"{c}.ttl"))
     fin.close()
+    logger.info(f"Geração da ontologia da classe {classe} terminada")
 
 
 # --- Geração da ontologia final -----------------------
@@ -402,16 +421,26 @@ def genFinalOntology():
     outputFile = os.path.join(OUTPUT_DIR, f"CLAV_{timestamp}.ttl")
 
     # Concatenação dos ficheiros intermédios num só
-    ontFiles = sorted(glob.glob(os.path.join(ONTOLOGY_DIR, "*.ttl")))
-    with open(outputFile, 'w', encoding='utf-8') as outfile:
-        for file_path in ontFiles:
-            with open(file_path, 'r', encoding='utf-8') as infile:
-                outfile.write(infile.read())
-                outfile.write('\n')
+    logger.info("Concatenação dos ficheiros ttl intermédios num só")
+    try:
+        ontFiles = sorted(glob.glob(os.path.join(ONTOLOGY_DIR, "*.ttl")))
+        with open(outputFile, 'w', encoding='utf-8') as outfile:
+            for file_path in ontFiles:
+                with open(file_path, 'r', encoding='utf-8') as infile:
+                    outfile.write(infile.read())
+                    outfile.write('\n')
+    except Exception as e:
+        logger.error(f"[{e.__class__.__name__}]: {e}")
 
     # Validação da ontologia final
-    result = subprocess.run(["rapper", "-c", "-i", "turtle", outputFile], capture_output=True, text=True)
-    print(result.returncode)
-    print(result.stdout)
-    if result.stderr:
-        print("Errors/Warnings:", result.stderr)
+    cmd = ["rapper", "-c", "-i", "turtle", outputFile]
+    logger.info("Validação da ontologia final")
+    logger.info(f"> {' '.join(cmd)}")
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        logger.error("Validação do rapper falhou com código %d", result.returncode)
+        logger.error("STDOUT:\n%s", result.stdout)
+        logger.error("STDERR:\n%s", result.stderr)
+    else:
+        logger.info("Ontologia validada")
+        logger.info("STDOUT:\n%s", result.stdout)

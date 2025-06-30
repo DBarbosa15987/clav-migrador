@@ -1,4 +1,5 @@
 from itertools import islice
+import logging
 from nanoid import generate
 import pandas as pd
 import json
@@ -8,6 +9,7 @@ from . import decisao
 from .report import Report
 import os
 from path_utils import FILES_DIR
+from log_utils import PROC
 
 hreg = re.compile(r'[hH][aA][rR][mM][oO]?[nN]?')
 ireg = re.compile(r'[iI][nN][Aa][tT]?[iI]?[vV]?')
@@ -88,6 +90,8 @@ def calcSubdivisoes(df,rep:Report):
     return indN3
 
 def processSheet(sheet, nome, rep:Report, classesN1):
+
+    loggerProc = logging.getLogger(PROC)
     # Carregam-se os catálogos
     # --------------------------------------------------
     ecatalog = open(os.path.join(FILES_DIR,'entCatalog.json'))
@@ -100,7 +104,7 @@ def processSheet(sheet, nome, rep:Report, classesN1):
     # Load one worksheet.
     # --------------------------------------------------
     fnome = nome.split("_")[0]
-    print("# Migração da Classe  " + fnome + "----------------------")
+    loggerProc.info("# Migração da Classe  " + fnome + "----------------------")
     ws = sheet
     data = ws.values
     cols = next(data)[0:]
@@ -167,6 +171,6 @@ def processSheet(sheet, nome, rep:Report, classesN1):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
-    print("Classe extraída: ", nome, " :: ", len(myClasse))
+    loggerProc.info("Classe extraída: ", nome, " :: ", len(myClasse))
     outFile.close()
-    print("# FIM: Migração da Classe  " + fnome + "-----------------")
+    loggerProc.info("# FIM: Migração da Classe  " + fnome + "-----------------")

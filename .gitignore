@@ -1,5 +1,6 @@
 files/*.json
 dump/*.json
+logs/*.log
 ontologia/*.ttl
 uploads/*
 !uploads/.gitkeep

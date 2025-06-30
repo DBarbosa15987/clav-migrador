@@ -4,15 +4,20 @@ from .report import Report
 from collections import Counter
 import os
 from path_utils import FILES_DIR
+from log_utils import INV, PROC
+import logging
+
+logger = logging.getLogger(INV)
+loggerProc = logging.getLogger(PROC)
 
 sheets = ['100','150','200','250','300','350','400','450','500','550','600',
             '650','700','710','750','800','850','900','950']
 
 relsSimetricas = ["eCruzadoCom","eComplementarDe"]
 relsInverseOf = {
-    "eSinteseDe":"eSintetizadoPor",
-    "eSuplementoDe":"eSuplementoPara",
-    "eSucessorDe":"eAntecessorDe",
+    "eSinteseDe": "eSintetizadoPor",
+    "eSuplementoDe": "eSuplementoPara",
+    "eSucessorDe": "eAntecessorDe",
     "eSintetizadoPor": "eSinteseDe",
     "eSuplementoPara": "eSuplementoDe",
     "eAntecessorDe": "eSucessorDe"
@@ -134,6 +139,9 @@ def processClasses(rep: Report):
                             elif data[p]['estado'] == 'H':
                                 rep.addWarning("R",(cod,rel,p))
 
+    loggerProc.info(f"Foram encontrados {len(harmonizacao)} processos em harmonização")
+    loggerProc.info(f"Foram encontradas {len(allClasses)} processos em ativos/inativos")
+
     return allClasses,harmonizacao
 
 
@@ -146,6 +154,8 @@ def rel_4_inv_0(allClasses,rep: Report):
     tem de ter uma justificação associada ao PCA."
     """
 
+    logger.info("Verificação do invariante rel_4_inv_0")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             # Se não tem filhos tem de ter uma justificação associada ao PCA
@@ -153,9 +163,12 @@ def rel_4_inv_0(allClasses,rep: Report):
                 pca = classe.get("pca")
                 just = pca.get("justificacao")
                 if not just:
-                        rep.addFalhaInv("rel_4_inv_0",cod)
+                    rep.addFalhaInv("rel_4_inv_0",cod)
                 elif not pca:
                     rep.addFalhaInv("rel_4_inv_0",cod,extra="Neste caso nem tem PCA")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_3")
 
 
 def checkAntissimetrico(allClasses,rel,rep: Report,invName):
@@ -305,7 +318,12 @@ def rel_4_inv_3(allClasses,rep: Report):
     "A relação eSintetizadoPor é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_4_inv_3")
+    logger.info("Verificação do invariante rel_4_inv_3")
+
+    checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_4_inv_3")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_3")
 
 
 def rel_4_inv_4(allClasses,rep: Report):
@@ -316,7 +334,12 @@ def rel_4_inv_4(allClasses,rep: Report):
     "A relação eSucessorDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
+    logger.info("Verificação do invariante rel_4_inv_4")
+
+    checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_4")
 
 
 def rel_4_inv_11(allClasses,rep: Report):
@@ -328,6 +351,8 @@ def rel_4_inv_11(allClasses,rep: Report):
     'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
     """
 
+    logger.info("Verificação do invariante rel_4_inv_11")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             proRels = classe.get("proRel")
@@ -338,6 +363,9 @@ def rel_4_inv_11(allClasses,rep: Report):
                     sinteses = [(c,r) for (c,r) in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
                     rep.addFalhaInv("rel_4_inv_11",cod,sinteses)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_11",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_11")
+
 
 def rel_4_inv_12(allClasses,rep: Report):
     """
@@ -345,11 +373,16 @@ def rel_4_inv_12(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Um diploma legislativo referenciado num critério de
-    justicação tem de estar associado na zona de contexto
+    justificação tem de estar associado na zona de contexto
     do processo que tem essa justificação (Classes de nível 3)"
     """
 
-    return checkJustRef(allClasses,3,rep,"rel_4_inv_12")
+    logger.info("Verificação do invariante rel_4_inv_12")
+
+    checkJustRef(allClasses,3,rep,"rel_4_inv_12")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_12",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_12")
 
 
 def rel_4_inv_13(allClasses,rep: Report):
@@ -358,11 +391,17 @@ def rel_4_inv_13(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Um diploma legislativo referenciado num critério de
-    justicação tem de estar associado na zona de contexto do
+    justificação tem de estar associado na zona de contexto do
     processo que tem essa justificação (Classes de nível 4)"
     """
 
-    return checkJustRef(allClasses,4,rep,"rel_4_inv_13")
+    logger.info("Verificação do invariante rel_4_inv_13")
+
+    checkJustRef(allClasses,4,rep,"rel_4_inv_13")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_13",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_13")
+
 
 
 def rel_4_inv_5(allClasses,rep: Report):
@@ -373,7 +412,12 @@ def rel_4_inv_5(allClasses,rep: Report):
     "A relação eSuplementoDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_4_inv_5")
+    logger.info("Verificação do invariante rel_4_inv_5")
+
+    checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_4_inv_5")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_5",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_5")
 
 
 def rel_4_inv_6(allClasses,rep: Report):
@@ -384,7 +428,12 @@ def rel_4_inv_6(allClasses,rep: Report):
     "A relação eSuplementoPara é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_4_inv_6")
+    logger.info("Verificação do invariante rel_4_inv_6")
+
+    checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_4_inv_6")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_6",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_6")
 
 
 def rel_4_inv_2(allClasses,rep: Report):
@@ -395,7 +444,13 @@ def rel_4_inv_2(allClasses,rep: Report):
     "A relação eSinteseDe é antisimétrica."
     """
 
-    return checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
+    logger.info("Verificação do invariante rel_4_inv_2")
+
+    checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_2")
+
 
 
 def rel_3_inv_6(allClasses,rep: Report):
@@ -407,6 +462,8 @@ def rel_3_inv_6(allClasses,rep: Report):
     se esta não tiver filhos"
     """
 
+    logger.info("Verificação do invariante rel_3_inv_6")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             if not classe.get("filhos"):
@@ -414,6 +471,9 @@ def rel_3_inv_6(allClasses,rep: Report):
                 temDf = bool(classe.get("df"))
                 if not temPca or not temDf:
                     rep.addFalhaInv("rel_3_inv_6",cod,{"temPca":temPca,"temDf":temDf})
+
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_6",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_6")
 
 
 def rel_3_inv_3(allClasses,rep: Report):
@@ -424,6 +484,8 @@ def rel_3_inv_3(allClasses,rep: Report):
     "DF distinto: Deve haver uma relação de sintese (de ou por)
     entre as classes 4 filhas."
     """
+
+    logger.info("Verificação do invariante rel_3_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -454,6 +516,9 @@ def rel_3_inv_3(allClasses,rep: Report):
                         # Se algum não tem relações então já está mal
                         rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
 
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_3")
+
 
 def rel_5_inv_1(allClasses,rep:Report):
     """
@@ -464,6 +529,8 @@ def rel_5_inv_1(allClasses,rep:Report):
     deve ser acrescentado um critério de utilidade
     administrativa na justificação do respetivo PCA"
     """
+
+    logger.info("Verificação do invariante rel_5_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -481,6 +548,9 @@ def rel_5_inv_1(allClasses,rep:Report):
                     else:
                         rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem PCA")
 
+    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_1")
+
 
 def rel_5_inv_2(allClasses,rep:Report):
     """
@@ -491,6 +561,8 @@ def rel_5_inv_2(allClasses,rep:Report):
     todos os processos com os quais existe uma relação de
     suplemento para"
     """
+
+    logger.info("Verificação do invariante rel_5_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -523,6 +595,9 @@ def rel_5_inv_2(allClasses,rep:Report):
                         for s in supls:
                             rep.addFalhaInv("rel_5_inv_2",cod,s,extra=extra)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_2")
+
 
 def rel_7_inv_2(allClasses,rep:Report):
     """
@@ -533,6 +608,8 @@ def rel_7_inv_2(allClasses,rep:Report):
     a justificação do DF deverá conter o critério
     de complementaridade informacional"
     """
+
+    logger.info("Verificação do invariante rel_7_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -549,6 +626,9 @@ def rel_7_inv_2(allClasses,rep:Report):
                 else:
                     rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem tem DF")
 
+    err = len(rep.globalErrors["erroInv"].get("rel_7_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_2")
+
 
 def rel_6_inv_2(allClasses,rep: Report):
     """
@@ -558,6 +638,8 @@ def rel_6_inv_2(allClasses,rep: Report):
     "Quando o PN em causa é síntetizado por outro,
     o DF deve ter o valor de 'Eliminação'"
     """
+
+    logger.info("Verificação do invariante rel_6_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -571,6 +653,9 @@ def rel_6_inv_2(allClasses,rep: Report):
                         if valor != 'E':
                             rep.addFalhaInv("rel_6_inv_2",cod,valor)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_2")
+
 
 def rel_5_inv_3(allClasses,rep:Report):
     """
@@ -582,6 +667,8 @@ def rel_5_inv_3(allClasses,rep:Report):
     é o critério legal. Todos os processos relacionados pela
     relação suplemento de devem figurar neste critério"
     """
+
+    logger.info("Verificação do invariante rel_5_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -616,6 +703,9 @@ def rel_5_inv_3(allClasses,rep:Report):
                             if sup in allClasses:
                                 rep.addFalhaInv("rel_5_inv_3",cod,sup,extra=extra)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_3")
+
 
 def rel_9_inv_2(allClasses,rep: Report):
     """
@@ -624,6 +714,8 @@ def rel_9_inv_2(allClasses,rep: Report):
 
     "Se um PN é eSinteseDe -> DF é de conservação"
     """
+
+    logger.info("Verificação do invariante rel_9_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -634,6 +726,9 @@ def rel_9_inv_2(allClasses,rep: Report):
                 if valor != "C":
                     rep.addFalhaInv("rel_9_inv_2",cod,valor)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_2")
+
 
 def rel_3_inv_1(allClasses,rep: Report):
     """
@@ -642,6 +737,8 @@ def rel_3_inv_1(allClasses,rep: Report):
 
     "Só existe desdobramento caso o PCA ou DF sejam distintos"
     """
+
+    logger.info("Verificação do invariante rel_3_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -663,6 +760,9 @@ def rel_3_inv_1(allClasses,rep: Report):
                     if len(cods) > 1:
                         rep.addFalhaInv("rel_3_inv_1",cod,{"valor": valor, "filhos": cods})
 
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_1")
+
 
 def rel_3_inv_5(allClasses,rep: Report):
     """
@@ -673,6 +773,8 @@ def rel_3_inv_5(allClasses,rep: Report):
     classe 3 se esta tiver filhos"
     """
 
+    logger.info("Verificação do invariante rel_3_inv_5")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             if classe.get("filhos"):
@@ -680,6 +782,9 @@ def rel_3_inv_5(allClasses,rep: Report):
                 temDf = bool(classe.get("df"))
                 if (temDf or temPca):
                     rep.addFalhaInv("rel_3_inv_5",cod,(temPca,temDf))
+
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_5",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_5")
 
 
 def rel_3_inv_7(allClasses,rep: Report):
@@ -693,6 +798,8 @@ def rel_3_inv_7(allClasses,rep: Report):
     manter-se ao 3º nível. Pelo menos um dos 4ºs níveis
     deve ser de conservação."
     """
+
+    logger.info("Verificação do invariante rel_3_inv_7")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -715,6 +822,9 @@ def rel_3_inv_7(allClasses,rep: Report):
                         if not conservacao:
                             rep.addFalhaInv("rel_3_inv_7",cod,{"proc": compl,"filhos": filhos})
 
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_7",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_7")
+
 
 def rel_3_inv_4(allClasses,termosIndice,rep: Report):
     """
@@ -724,6 +834,8 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
     "Quando há desdobramento em 4ºs níveis, os termos de
     índice são replicados em cada um desses níveis."
     """
+
+    logger.info("Verificação do invariante rel_3_inv_4")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -736,6 +848,9 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                         if t not in termosFilho:
                             rep.addFalhaInv("rel_3_inv_4",cod,{"termo":t,"filho" :c})
 
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_4")
+
 
 def rel_6_inv_3(allClasses,rep: Report):
     """
@@ -746,6 +861,8 @@ def rel_6_inv_3(allClasses,rep: Report):
     ter uma justificação onde consta um critério de
     densidade informacional"
     """
+
+    logger.info("Verificação do invariante rel_6_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -764,6 +881,9 @@ def rel_6_inv_3(allClasses,rep: Report):
                     else:
                         rep.addFalhaInv("rel_6_inv_3",cod,extra="Neste caso nem tem DF")
 
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_3")
+
 
 def rel_6_inv_4(allClasses,rep: Report):
     """
@@ -774,6 +894,8 @@ def rel_6_inv_4(allClasses,rep: Report):
     síntese deverão estar relacionados com o critério de
     densidade informacional da respetiva justificação"
     """
+
+    logger.info("Verificação do invariante rel_6_inv_4")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -810,6 +932,9 @@ def rel_6_inv_4(allClasses,rep: Report):
                             for c,r in sints:
                                 rep.addFalhaInv("rel_6_inv_4",cod,{"proc": c, "rel": r},extra=extra)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_4")
+
 
 def rel_7_inv_3(allClasses,rep: Report):
     """
@@ -820,6 +945,8 @@ def rel_7_inv_3(allClasses,rep: Report):
     de, devem estar relacionados com o critério de complementaridade
     informacional da respetiva justificação"
     """
+
+    logger.info("Verificação do invariante rel_7_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -850,6 +977,9 @@ def rel_7_inv_3(allClasses,rep: Report):
                     for c in compls:
                         rep.addFalhaInv("rel_7_inv_3",cod,c,extra=extra)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_7_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_3")
+
 
 def rel_9_inv_1(allClasses,rep: Report):
     """
@@ -858,6 +988,8 @@ def rel_9_inv_1(allClasses,rep: Report):
 
     "Se um PN é eComplementarDe -> DF é de conservação"
     """
+
+    logger.info("Verificação do invariante rel_9_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -870,6 +1002,9 @@ def rel_9_inv_1(allClasses,rep: Report):
                     if valor != "C":
                         rep.addFalhaInv("rel_9_inv_1",cod,valor)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_1")
+
 
 def rel_4_inv_8(allClasses,rep: Report):
     """
@@ -878,6 +1013,8 @@ def rel_4_inv_8(allClasses,rep: Report):
 
     "Um PN só pode ter uma relação com outro PN."
     """
+
+    logger.info("Verificação do invariante rel_4_inv_8")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -891,6 +1028,8 @@ def rel_4_inv_8(allClasses,rep: Report):
                         relsDuplicadas = [(c,r) for c,r in rels if c == x]
                         rep.addFalhaInv("rel_4_inv_8",cod,{"proc":x,"rels":relsDuplicadas})
 
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_8",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_8")
 
 def rel_6_inv_1(allClasses,rep: Report):
     """
@@ -900,6 +1039,8 @@ def rel_6_inv_1(allClasses,rep: Report):
     "Quando o PN em causa é síntese de outro, o DF deve
     ter o valor de 'Conservação'"
     """
+
+    logger.info("Verificação do invariante rel_6_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -911,6 +1052,9 @@ def rel_6_inv_1(allClasses,rep: Report):
                     if valor != 'C':
                         rep.addFalhaInv("rel_6_inv_1",cod,valor)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_1")
+
 
 def rel_4_inv_1_0(allClasses,rep: Report):
     """
@@ -920,6 +1064,8 @@ def rel_4_inv_1_0(allClasses,rep: Report):
     "Um processo não transversal não pode ter participantes"
     """
 
+    logger.info("Verificação do invariante rel_4_inv_1_0")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             procTrans = classe.get("procTrans")
@@ -927,6 +1073,9 @@ def rel_4_inv_1_0(allClasses,rep: Report):
                 participantes = classe.get("participantes")
                 if participantes:
                     rep.addFalhaInv("rel_4_inv_1_0",cod)
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_1_0",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_1_0")
 
 
 def rel_4_inv_10(termosIndice,rep: Report):
@@ -937,6 +1086,8 @@ def rel_4_inv_10(termosIndice,rep: Report):
     "Os termos de índice de um PN não existem em mais
     nenhuma classe 3"
     """
+
+    logger.info("Verificação do invariante rel_4_inv_10")
 
     n3 = re.compile(r'^\d{3}\.\d{1,3}\.\d{1,3}$')
     termos = {} # {termo:[100,200]}
@@ -956,6 +1107,9 @@ def rel_4_inv_10(termosIndice,rep: Report):
                 # TODO: indexar por termos? somehow
                 rep.addFalhaInv("rel_4_inv_10",c,{"t":t,cods: "cods"})
 
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_10",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_10")
+
 
 def rel_4_inv_7(allClasses,rep: Report):
     """
@@ -965,6 +1119,8 @@ def rel_4_inv_7(allClasses,rep: Report):
     "Na relação temRelProc um PN não se relaciona
     com ele próprio."
     """
+
+    logger.info("Verificação do invariante rel_4_inv_7")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -977,6 +1133,9 @@ def rel_4_inv_7(allClasses,rep: Report):
                 for r in selfRels:
                     rep.addFalhaInv("rel_4_inv_7",cod,r)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_7",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_7")
+
 
 def rel_8_inv_1(allClasses,rep: Report):
     """
@@ -988,6 +1147,8 @@ def rel_8_inv_1(allClasses,rep: Report):
     complementaridade informacional e legal"
     """
 
+    logger.info("Verificação do invariante rel_8_inv_1")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
             just = classe.get("df",{}).get("justificacao")
@@ -995,6 +1156,9 @@ def rel_8_inv_1(allClasses,rep: Report):
                 for j in just:
                     if j["tipo"] not in ["complementaridade","densidade","legal"]:
                         rep.addFalhaInv("rel_8_inv_1",cod,j["tipo"])
+
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_1")
 
 
 def rel_4_inv_14(allClasses,rep: Report):
@@ -1005,6 +1169,8 @@ def rel_4_inv_14(allClasses,rep: Report):
     "Um processo transversal tem que ter participantes."
     """
 
+    logger.info("Verificação do invariante rel_4_inv_14")
+
     for cod,classe in allClasses.items():
         if classe['nivel'] == 3:
             procTrans = classe.get("procTrans")
@@ -1012,6 +1178,9 @@ def rel_4_inv_14(allClasses,rep: Report):
                 participantes = classe.get("participantes")
                 if not participantes:
                     rep.addFalhaInv("rel_4_inv_14",cod)
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_14",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_14")
 
 
 def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
@@ -1022,6 +1191,8 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
     "Os PNs em harmonização não podem ter filhos ativos."
     """
 
+    logger.info("Verificação do invariante rel_3_inv_9")
+
     # Como em `allClasses` apenas existem processos ativos,
     # a verificação é feita dos filhos para os pais.
     for cod,classe in allClasses.items():
@@ -1029,6 +1200,9 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
             if pai in harmonizacao:
                 rep.addFalhaInv("rel_3_inv_9",cod,pai)
+
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_9",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_9")
 
 
 def rel_9_inv_4(allClasses,rep: Report):
@@ -1041,6 +1215,8 @@ def rel_9_inv_4(allClasses,rep: Report):
     devidamente declarado."
     """
 
+    logger.info("Verificação do invariante rel_9_inv_4")
+
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
             just = classe.get("pca",{}).get("justificacao")
@@ -1052,6 +1228,9 @@ def rel_9_inv_4(allClasses,rep: Report):
                         if p not in proRelCods:
                             rep.addFalhaInv("rel_9_inv_4",cod,p)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_4")
+
 
 def rel_9_inv_5(allClasses,rep: Report):
     """
@@ -1062,6 +1241,8 @@ def rel_9_inv_5(allClasses,rep: Report):
     utilidade administrativa devem estar devidamente
     declarados com a relação "Suplemento Para""
     """
+
+    logger.info("Verificação do invariante rel_9_inv_5")
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
@@ -1078,6 +1259,9 @@ def rel_9_inv_5(allClasses,rep: Report):
                         if p not in supls:
                             rep.addFalhaInv("rel_9_inv_5",cod,p)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_5",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_5")
+
 
 def rel_9_inv_6(allClasses,rep: Report):
     """
@@ -1088,6 +1272,8 @@ def rel_9_inv_6(allClasses,rep: Report):
     densidade informacional devem estar devidamente
     declarados com a relação "Síntese de" ou "Sintetizado por""
     """
+
+    logger.info("Verificação do invariante rel_9_inv_6")
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
@@ -1104,6 +1290,9 @@ def rel_9_inv_6(allClasses,rep: Report):
                         if p not in sints:
                             rep.addFalhaInv("rel_9_inv_6",cod,p)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_6",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_6")
+
 
 def rel_9_inv_7(allClasses,rep: Report):
     """
@@ -1114,6 +1303,8 @@ def rel_9_inv_7(allClasses,rep: Report):
     complementaridade informacional devem estar devidamente
     declarados com a relação "É Complementar De""
     """
+
+    logger.info("Verificação do invariante rel_9_inv_7")
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
@@ -1130,6 +1321,9 @@ def rel_9_inv_7(allClasses,rep: Report):
                         if p not in compls:
                             rep.addFalhaInv("rel_9_inv_7",cod,p)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_7",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_7")
+
 
 def rel_10_inv_1(allClasses, rep: Report):
     """
@@ -1139,6 +1333,8 @@ def rel_10_inv_1(allClasses, rep: Report):
     "A justificação de um PCA só pode conter um
     critério de cada tipo"
     """
+
+    logger.info("Verificação do invariante rel_10_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
@@ -1152,6 +1348,9 @@ def rel_10_inv_1(allClasses, rep: Report):
                     else:
                         tiposSet.add(t)
 
+    err = len(rep.globalErrors["erroInv"].get("rel_10_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_10_inv_1")
+
 
 def rel_8_inv_2(allClasses, rep: Report):
     """
@@ -1161,6 +1360,8 @@ def rel_8_inv_2(allClasses, rep: Report):
     "A justificação de um DF só pode conter um
     critério de cada tipo"
     """
+
+    logger.info("Verificação do invariante rel_8_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
@@ -1173,3 +1374,6 @@ def rel_8_inv_2(allClasses, rep: Report):
                         rep.addFalhaInv("rel_8_inv_2",cod,t)
                     else:
                         tiposSet.add(t)
+
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_2")
