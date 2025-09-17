@@ -120,7 +120,7 @@ class Report:
         # Verifica a existência de erros "graves" no código.
         ok = True
         logger = logging.getLogger(PROC)
-        repetidas = [(k,v) for k,v in self.declaracoes.items() if len(v)>1]
+        repetidas = {k:set(v) for k,v in self.declaracoes.items() if len(v)>1}
         if repetidas:
             self.globalErrors["grave"]["declsRepetidas"] = repetidas
             ok = False
@@ -510,6 +510,7 @@ class ErroInv:
         msg = ""
         match self.inv:
             case "rel_4_inv_0": # OK
+                # FIXME: falta o extra!!
                 msg = f"O processo {self.cod} não tem desdobramento ao nível 4, mas não contém justificação associada ao PCA."
             case "rel_4_inv_11": # OK
                 msg = f"No processo {self.cod} foram encontradas relações de \"eSinteseDe\" e \"eSintetizadoPor\" em simultâneo:\n"
@@ -554,7 +555,7 @@ class ErroInv:
                     msg = f"O processo {self.cod} é sintetizado por outro e o valor do seu DF devia ser \"Eliminação\", mas neste caso o processo nem tem DF"
                 msg += "."
             case "rel_5_inv_3": # OK...
-                msg = f"O processo {self.cod} contém relações de \"eSuplementoDe\" no processo {self.info}. No entanto estes não são mencionados na justificação do PCA"
+                msg = f"O processo {self.cod} contém relações de \"eSuplementoDe\" no processo {self.info}, no entanto estes não são mencionados na justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."

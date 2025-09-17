@@ -13,13 +13,15 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(ONTOLOGY_DIR, exist_ok=True)
 
 now = datetime.now()
-timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
+dateFormat = "%Y-%m-%d_%H-%M-%S"
+timestamp = now.strftime(dateFormat)
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+    format="%(asctime)s.%(msecs)03d | %(name)s | %(levelname)s | %(message)s",
+    datefmt='%Y-%m-%d %H:%M:%S',
     filename=os.path.join(LOG_DIR, f"clav_{timestamp}.log"),
-    filemode="w"
+    filemode="w",
 )
 
 if __name__ == '__main__':
