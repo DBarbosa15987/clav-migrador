@@ -37,12 +37,12 @@ def migra(filename):
     loggerProc.info("-"*80)
     allClasses,harmonizacao = c.processClasses(rep)
 
-    loggerProc.info("Verificação da estrutura dos dados")
-    ok = rep.checkStruct()
-
     # Inferências de relações
     loggerProc.info("Inferências de relações")
     rep.fixMissingRels(allClasses)
+
+    loggerProc.info("Verificação da estrutura dos dados")
+    ok = rep.checkStruct()
 
     loggerProc.info("-"*80)
     loggerProc.info("Processamento Inicial de dados terminado")
@@ -98,6 +98,7 @@ def migra(filename):
     c.rel_10_inv_1(allClasses,rep)
     c.rel_8_inv_2(allClasses,rep)
 
+    # rel_2_inv_1, rel_2_inv_2 e rel_2_inv_3
     c.checkUniqueInst(allClasses,rep)
 
     loggerInv.info("-"*80)

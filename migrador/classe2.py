@@ -32,8 +32,8 @@ def calcEstado(cod,e,rep:Report):
     elif ireg.search(e):
         return 'I'
     else:
-        # ERRO: O estado da classe inválido
-        rep.addErro(cod,f"O estado da classe inválido ({e})")
+        # ERRO: Estado da classe inválido
+        rep.addErro(cod,f"Estado da classe inválido ({e})")
         return 'Erro'
 # --------------------------------------------------
 #

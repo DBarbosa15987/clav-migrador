@@ -78,7 +78,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
             elif re.search(r'9\s+-', formaContagem):
                 myReg['pca']['subFormaContagem'] = 'F01.09'
             else:
-                rep.addErro(cod,f"Não consegui extrair a subforma de contagem::{formaContagem}")
+                rep.addErro(cod,f"Não foi possível extrair a subforma de contagem::{formaContagem}")
         else:
             myReg['pca']['formaContagem'] = "Desconhecida"
             rep.addErro(cod,f"Forma de contagem do PCA desconhecida::{formaContagem}")

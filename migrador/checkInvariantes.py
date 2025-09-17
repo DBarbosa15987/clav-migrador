@@ -77,7 +77,7 @@ def processClasses(rep: Report):
                     rep.addWarning("",f"O processo {cod} está ativo/inativo, mas o seu pai {pai} está em harmonização")
 
         else:
-            # O valor em questão encontra-se fora do domínio estabelecido
+            # O valor do estado da classe encontra-se fora do domínio estabelecido.
             # Trata-se de um erro que já foi registado previamente, nestes
             # casos os invariantes não são verificados
             continue
@@ -145,36 +145,10 @@ def processClasses(rep: Report):
     return allClasses,harmonizacao
 
 
-def rel_4_inv_0(allClasses,rep: Report):
-    """
-    A função testa o seguinte invariante e guarda
-    em `rep` os casos em que falha:
-
-    "Um processo sem desdobramento ao 4º nível
-    tem de ter uma justificação associada ao PCA."
-    """
-
-    logger.info("Verificação do invariante rel_4_inv_0")
-
-    for cod,classe in allClasses.items():
-        if classe["nivel"] == 3:
-            # Se não tem filhos tem de ter uma justificação associada ao PCA
-            if not classe.get("filhos"):
-                pca = classe.get("pca")
-                just = pca.get("justificacao")
-                if not just:
-                    rep.addFalhaInv("rel_4_inv_0",cod)
-                elif not pca:
-                    rep.addFalhaInv("rel_4_inv_0",cod,extra="Neste caso nem tem PCA")
-
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_3",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_3")
-
-
 def checkAntissimetrico(allClasses,rel,rep: Report,invName):
     """
     Verifica para todas as classes se uma dada
-    relação `rel` é antisimétrica.
+    relação `rel` é antissimétrica.
 
     Os casos em que tal não acontece são guardados
     em `rep`.
@@ -309,13 +283,42 @@ def checkUniqueInst(allClasses,rep: Report):
             if len(cods) > 1:
                 rep.addFalhaInv(inv,id,cods)
 
+    # FIXME: como fazer os logs
+    # FIXME: fazer um erro grave se invariante falhar??
+
+
+def rel_4_inv_0(allClasses,rep: Report):
+    """
+    A função testa o seguinte invariante e guarda
+    em `rep` os casos em que falha:
+
+    "Um processo sem desdobramento ao 4º nível
+    tem de ter uma justificação associada ao PCA."
+    """
+
+    logger.info("Verificação do invariante rel_4_inv_0")
+
+    for cod,classe in allClasses.items():
+        if classe["nivel"] == 3:
+            # Se não tem filhos tem de ter uma justificação associada ao PCA
+            if not classe.get("filhos"):
+                pca = classe.get("pca")
+                just = pca.get("justificacao")
+                if not just:
+                    rep.addFalhaInv("rel_4_inv_0",cod)
+                elif not pca:
+                    rep.addFalhaInv("rel_4_inv_0",cod,extra="Neste caso nem tem PCA")
+
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_0",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_0")
+
 
 def rel_4_inv_3(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSintetizadoPor é antisimétrica."
+    "A relação eSintetizadoPor é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_4_inv_3")
@@ -331,7 +334,7 @@ def rel_4_inv_4(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSucessorDe é antisimétrica."
+    "A relação eSucessorDe é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_4_inv_4")
@@ -403,13 +406,12 @@ def rel_4_inv_13(allClasses,rep: Report):
     logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_13")
 
 
-
 def rel_4_inv_5(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSuplementoDe é antisimétrica."
+    "A relação eSuplementoDe é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_4_inv_5")
@@ -425,7 +427,7 @@ def rel_4_inv_6(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSuplementoPara é antisimétrica."
+    "A relação eSuplementoPara é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_4_inv_6")
@@ -441,7 +443,7 @@ def rel_4_inv_2(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSinteseDe é antisimétrica."
+    "A relação eSinteseDe é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_4_inv_2")
@@ -450,7 +452,6 @@ def rel_4_inv_2(allClasses,rep: Report):
 
     err = len(rep.globalErrors["erroInv"].get("rel_4_inv_2",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_2")
-
 
 
 def rel_3_inv_6(allClasses,rep: Report):
@@ -808,7 +809,7 @@ def rel_3_inv_7(allClasses,rep: Report):
             if proRels and proRelCods and "eComplementarDe" in proRels:
                 compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
                 for compl in compls:
-                    codFilhos = allClasses[compl].get("filhos")
+                    codFilhos = allClasses.get(compl,{}).get("filhos",[])
                     filhos = [allClasses.get(c) for c in codFilhos]
                     if filhos:
                         conservacao = False
@@ -1030,6 +1031,7 @@ def rel_4_inv_8(allClasses,rep: Report):
 
     err = len(rep.globalErrors["erroInv"].get("rel_4_inv_8",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_8")
+
 
 def rel_6_inv_1(allClasses,rep: Report):
     """
