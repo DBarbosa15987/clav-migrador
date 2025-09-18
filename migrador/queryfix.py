@@ -46,6 +46,7 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
         # nível 4, a correção acontece na classe pai
         pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', err.cod).group(1)
         classePai = allClasses.get(pai)
+
         if classePai:
             if "legislacao" not in classePai:
                 classePai["legislacao"] = [err.info]
@@ -56,6 +57,12 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
                 classePai["legislacao"].append(err.info)
                 err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
                 errFixed += 1
+            # Aqui o erro já se encontra corrrigido,
+            # provavelmente durrante a correção de um processo "irmão"
+            else:
+                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+                errFixed += 1
+
         else:
             err.fix(f"Processo {pai} não encontrado",failed=True)
             errFailed += 1
@@ -96,9 +103,14 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 procRefs = utilidade[0].get("procRefs",[])
                 procRefs.append(err.info)
                 critCod = utilidade[0]["critCodigo"]
-                # TODO: concatenar alguma coisa no conteudo?
                 for crit in just:
                     if crit["tipo"] == "utilidade":
+                        # Adicionar o conteúdo de acordo com o que já lá está
+                        if crit["conteudo"] and crit["conteudo"][-1] != ';':
+                            crit["conteudo"] += f";É suplemento para {err.info};"
+                        else:
+                            crit["conteudo"] += f"É suplemento para {err.info};"
+
                         crit["procRefs"] = procRefs
                         break
                 err.fix(f"O processo {err.info} foi adicionado no critério de justificação {critCod} do PCA do processo {err.cod}")
@@ -111,7 +123,7 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "utilidade",
-                    "conteudo": f"É suplemento para {err.info}",
+                    "conteudo": f"É suplemento para {err.info};",
                     "procRefs": [err.info]
                 }
                 just.append(newCrit)
@@ -160,9 +172,14 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
                 procRefs = densidade[0].get("procRefs",[])
                 procRefs.append(err.info["proc"])
                 critCod = densidade[0]["critCodigo"]
-                # TODO: concatenar alguma coisa no conteudo?
                 for crit in just:
                     if crit["tipo"] == "densidade":
+                        # Adicionar o conteúdo de acordo com o que já lá está
+                        if crit["conteudo"] and crit["conteudo"][-1] != ';':
+                            crit["conteudo"] += f";{rel} {err.info};"
+                        else:
+                            crit["conteudo"] += f"{rel} {err.info};"
+
                         crit["procRefs"] = procRefs
                         break
                 err.fix(f"O processo {err.info["proc"]} foi adicionado no critério de justificação {critCod} do DF do processo {err.cod}")
@@ -176,7 +193,7 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "densidade",
-                    "conteudo": f"{rel} {err.info["proc"]}",
+                    "conteudo": f"{rel} {err.info["proc"]};",
                     "procRefs": [err.info["proc"]]
                 }
                 just.append(newCrit)
@@ -221,9 +238,14 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
                 procRefs = compls[0].get("procRefs",[])
                 procRefs.append(err.info)
                 critCod = compls[0]["critCodigo"]
-                # TODO: concatenar alguma coisa no conteudo?
                 for crit in just:
                     if crit["tipo"] == "complementaridade":
+                        # Adicionar o conteúdo de acordo com o que já lá está
+                        if crit["conteudo"] and crit["conteudo"][-1] != ';':
+                            crit["conteudo"] += f";É complementar de {err.info};"
+                        else:
+                            crit["conteudo"] += f"É complementar de {err.info};"
+
                         crit["procRefs"] = procRefs
                         break
                 err.fix(f"O processo {err.info} foi adicionado no critério de justificação {critCod} do DF do processo {err.cod}")
@@ -237,7 +259,7 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "complementaridade",
-                    "conteudo": f"É complementar de {err.info}",
+                    "conteudo": f"É complementar de {err.info};",
                     "procRefs": [err.info]
                 }
                 just.append(newCrit)
@@ -252,6 +274,27 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_7_inv_3")
     logger.info(f"Falharam {errFixed} correções do invariante rel_7_inv_3")
 
+
+def rel_3_inv_4_fix(termosIndice,erros: list[ErroInv]):
+    """
+    Faz a correção das falhas do invariante rel_3_inv_4.
+    """
+
+    errFixed = 0
+    errFailed = 0
+    logger.info("Correção do invariante rel_3_inv_4")
+    for err in erros:
+        # Formulação do novo termo índice
+        termo = {
+            "codigo" : err.info["filho"],
+            "termo": err.info["termo"]
+        }
+        termosIndice.append(termo)
+        err.fix(f"O termo índice \"{err.info["termo"]}\" foi adicionado ao processo {err.info["filho"]}")
+        errFixed += 1
+
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_3_inv_4")
+    logger.info(f"Falharam {errFixed} correções do invariante rel_3_inv_4")
 
 
 def rel_9_inv_5_fix(allClasses,erros: list[ErroInv]):
