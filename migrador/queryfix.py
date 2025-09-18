@@ -10,19 +10,26 @@ def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
     Faz a correção das falhas do invariante rel_4_inv_12.
     """
     errFixed = 0
+    errFailed = 0
     logger.info("Correção do invariante rel_4_inv_12")
     for err in erros:
         classe = allClasses.get(err.cod)
         if classe:
             if "legislacao" not in classe:
                 classe["legislacao"] = [err.info]
+                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {err.cod}")
+                errFixed += 1
             # Aqui evitam-se adicionar legislações repetidas
             elif err.info not in classe["legislacao"]:
                 classe["legislacao"].append(err.info)
-            err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {err.cod}")
-            errFixed += 1
+                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {err.cod}")
+                errFixed += 1
+        else:
+            err.fix(f"Processo {err.cod} não encontrado",failed=True)
+            errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_13")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_12")
+    logger.info(f"Falharam {errFixed} correções do invariante rel_4_inv_12")
 
 
 def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
@@ -32,6 +39,7 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
 
     logger.info("Correção do invariante rel_4_inv_13")
     errFixed = 0
+    errFailed = 0
 
     for err in erros:
         # Neste caso, como os erros são acerca de classes de
@@ -41,13 +49,19 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
         if classePai:
             if "legislacao" not in classePai:
                 classePai["legislacao"] = [err.info]
+                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+                errFixed += 1
             # Aqui evitam-se adicionar legislações repetidas
             elif err.info not in classePai["legislacao"]:
                 classePai["legislacao"].append(err.info)
-            err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
-            errFixed += 1
+                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+                errFixed += 1
+        else:
+            err.fix(f"Processo {pai} não encontrado",failed=True)
+            errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_13")
+    logger.info(f"Falharam {errFixed} correções do invariante rel_4_inv_13")
 
 
 def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
@@ -57,6 +71,7 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
 
     logger.info("Correção do invariante rel_5_inv_2")
     errFixed = 0
+    errFailed = 0
 
     for err in erros:
         classe = allClasses[err.cod]
@@ -64,17 +79,20 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
         just = pca.get("justificacao",[])
         # Para efetuar a correção é necessário que haja um pca
         if pca:
+
+            critCod = ""
             # Verifica-se primeiro se existe apenas um critério do tipo "utilidade"
             # Se existir mais do que 1, não é possível realizar a correção
             utilidade = [j for j in just if j.get("tipo") == "utilidade"]
             if len(utilidade) > 1:
+                err.fix(f"O processo {err.cod} contém mais do que uma justificação de critério do tipo \"utilidade\" no seu PCA",failed=True)
+                errFailed += 1
                 continue
 
-            critCod = ""
 
             # Se já existe um critério do tipo "utilidade",
             # o processo em falta é acrescentado nele
-            if len(utilidade) == 1:
+            elif len(utilidade) == 1:
                 procRefs = utilidade[0].get("procRefs",[])
                 procRefs.append(err.info)
                 critCod = utilidade[0]["critCodigo"]
@@ -101,7 +119,11 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 pca["justificacao"] = just
                 err.fix(f"Um novo critério de utilidade da justificação do PCA do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info} foi adicionado ao critério criado.")
                 errFixed += 1
+        else:
+            err.fix(f"O processo {err.cod} não tem PCA", failed=True)
+            errFailed += 1
 
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")
 
 
@@ -118,22 +140,23 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
         just = df.get("justificacao",[])
         # Para efetuar a correção é necessário que haja um df
         if df:
-            # Verifica-se primeiro se existe apenas um critério do tipo "densidade"
-            # Se existir mais do que 1, não é possível realizar a correção
-            densidade = [j for j in just if j.get("tipo") == "densidade"]
-            if len(densidade) > 1:
-                continue
-
             critCod = ""
             rel = ""
             if err.info["rel"] == "eSinteseDe":
                 rel = "É síntese de"
             elif err.info["rel"] == "eSintetizadoPor":
                 rel = "É sintetizado por"
+            # Verifica-se primeiro se existe apenas um critério do tipo "densidade"
+            # Se existir mais do que 1, não é possível realizar a correção
+            densidade = [j for j in just if j.get("tipo") == "densidade"]
+            if len(densidade) > 1:
+                err.fix(f"O processo {err.cod} contém mais do que uma justificação de critério do tipo \"densidade\" no seu DF",failed=True)
+                errFailed += 1
+                continue
 
             # Se já existe um critério do tipo "densidade",
             # o processo em falta é acrescentado nele
-            if len(densidade) == 1:
+            elif len(densidade) == 1:
                 procRefs = densidade[0].get("procRefs",[])
                 procRefs.append(err.info["proc"])
                 critCod = densidade[0]["critCodigo"]
@@ -161,8 +184,12 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
                 df["justificacao"] = just
                 err.fix(f"Um novo critério de densidade da justificação do DF do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info["proc"]} foi adicionado ao critério criado.")
                 errFixed += 1
+        else:
+            err.fix(f"O processo {err.cod} não tem DF", failed=True)
+            errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_6_inv_4")
+    logger.info(f"Falharam {errFixed} correções do invariante rel_6_inv_4")
 
 
 def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
@@ -178,17 +205,19 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
         just = df.get("justificacao",[])
         # Para efetuar a correção é necessário que haja um df
         if df:
+            critCod = ""
+
             # Verifica-se primeiro se existe apenas um critério do tipo "complementaridade"
             # Se existir mais do que 1, não é possível realizar a correção
             compls = [j for j in just if j.get("tipo") == "complementaridade"]
             if len(compls) > 1:
+                err.fix(f"O processo {err.cod} contém mais do que uma justificação de critério do tipo \"complementaridade\" no seu DF",failed=True)
+                errFailed += 1
                 continue
-
-            critCod = ""
 
             # Se já existe um critério do tipo "complementaridade",
             # o processo em falta é acrescentado nele
-            if len(compls) == 1:
+            elif len(compls) == 1:
                 procRefs = compls[0].get("procRefs",[])
                 procRefs.append(err.info)
                 critCod = compls[0]["critCodigo"]
@@ -216,8 +245,34 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
                 df["justificacao"] = just
                 err.fix(f"Um novo critério de complementaridade da justificação do DF do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info} foi adicionado ao critério criado.")
                 errFixed += 1
+        else:
+            err.fix(f"O processo {err.cod} não tem DF", failed=True)
+            errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_7_inv_3")
+    logger.info(f"Falharam {errFixed} correções do invariante rel_7_inv_3")
+
+
+
+def rel_9_inv_5_fix(allClasses,erros: list[ErroInv]):
+    """
+    Faz a correção das falhas do invariante rel_9_inv_5.
+    """
+    # TODO: esperar pelas notas
+
+
+def rel_9_inv_6_fix(allClasses,erros: list[ErroInv]):
+    """
+    Faz a correção das falhas do invariante rel_9_inv_6.
+    """
+    # TODO: esperar pelas notas
+
+
+def rel_9_inv_7_fix(allClasses,erros: list[ErroInv]):
+    """
+    Faz a correção das falhas do invariante rel_9_inv_7.
+    """
+    # TODO: esperar pelas notas
 
 
 def genCritCod(tipo, cod, classe):

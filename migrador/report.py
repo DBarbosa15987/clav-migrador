@@ -4,6 +4,8 @@ import os
 from path_utils import DUMP_DIR, PROJECT_ROOT,FILES_DIR
 import logging
 from log_utils import PROC
+from enum import Enum
+
 
 class Report:
 
@@ -293,7 +295,7 @@ class Report:
                 for err in erros:
                     cod = err.cod
                     msg = html.escape(err.msg)
-                    if err.fixed:
+                    if err.fixStatus == FixStatus.FIXED:
                         msg = f"<span style='color: green;'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
                     html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
                 html_content += "</table>\n"
@@ -462,7 +464,7 @@ class Report:
                     html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
                     for err in erros:
                         msg = html.escape(err.msg)
-                        if err.fixed:
+                        if err.fixStatus == FixStatus.FIXED:
                             msg = f"<span style='color: green;'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
 
                         addError(ent)
@@ -480,6 +482,12 @@ class Report:
         return entityTables
 
 
+class FixStatus(Enum):
+    FAILED = -1
+    UNFIXED = 0
+    FIXED = 1
+
+
 class ErroInv:
 
     def __init__(self,inv,cod,info,extra):
@@ -487,25 +495,29 @@ class ErroInv:
         self.cod = cod
         self.info = info
         self.extra = extra
-        self.fixed = False
-        self.fixedMsg = ""
+        self.fixStatus = FixStatus.UNFIXED
+        self.fixMsg = ""
         self.msg = self.errorMsg()
 
-    def fix(self,fixedMsg):
-        self.fixed = True
-        self.fixedMsg = fixedMsg
+    def fix(self, fixMsg, failed = False):
+        if failed:
+            self.fixStatus = FixStatus.FAILED
+            self.fixMsg = fixMsg
+        else:
+            self.fixStatus = FixStatus.FIXED
+            self.fixMsg = fixMsg
 
     def errorMsg(self):
 
         def getValue(abrev):
 
-            abrevDic = {
+            dfAbrevDic = {
                 "C": "Conservação",
                 "CP": "Conservação Parcial",
                 "E": "Eliminação"
             }
 
-            return abrevDic.get(abrev,abrev)
+            return dfAbrevDic.get(abrev,abrev)
 
         msg = ""
         match self.inv:
