@@ -623,12 +623,6 @@ class ErroInv:
                 ultimaRel = self.info["rels"][-1]
                 relacoes += f"e \"{self.cod} {ultimaRel[1]} {ultimaRel[0]}\""
                 msg = f"O processo {self.cod} tem mais do que uma relação com o processo {self.info["proc"]} ({relacoes})."
-            case "rel_6_inv_1": # TODO: TEST
-                if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de {getValue(self.info)}, em vez de \"Conservação\""
-                else:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
-                msg += "."
             case "rel_4_inv_1_0": # OK
                 msg = f"O processo {self.cod} não é transversal, no entanto foram encontrados participantes associados a ele."
             case "rel_4_inv_3": # OK
@@ -653,7 +647,7 @@ class ErroInv:
             case "rel_3_inv_9": # OK
                 msg = f"O processo {self.info} está em harmonização, no entanto o seu filho \"{self.cod}\" está ativo."
             case "rel_9_inv_4":
-                msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado."
+                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]} na justificação do {self.info["tipo"]}, mas {self.info["proc"]} não está devidamente declarado."
             case "rel_9_inv_5":
                 msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado com a relação \"Suplemento Para\""
             case "rel_9_inv_6":

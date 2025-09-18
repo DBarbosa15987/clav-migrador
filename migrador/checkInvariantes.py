@@ -1033,31 +1033,6 @@ def rel_4_inv_8(allClasses,rep: Report):
     logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_8")
 
 
-def rel_6_inv_1(allClasses,rep: Report):
-    """
-    A função testa o seguinte invariante e guarda
-    em `rep` os casos em que falha:
-
-    "Quando o PN em causa é síntese de outro, o DF deve
-    ter o valor de 'Conservação'"
-    """
-
-    logger.info("Verificação do invariante rel_6_inv_1")
-
-    for cod,classe in allClasses.items():
-        if classe["nivel"] == 3:
-            if not classe.get("filhos"):
-                proRels = classe.get("proRel")
-                if proRels and "eSinteseDe" in proRels and "eSintetizadoPor" not in proRels:
-                    df = classe.get("df",{})
-                    valor = df.get("valor")
-                    if valor != 'C':
-                        rep.addFalhaInv("rel_6_inv_1",cod,valor)
-
-    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_1")
-
-
 def rel_4_inv_1_0(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
@@ -1220,15 +1195,26 @@ def rel_9_inv_4(allClasses,rep: Report):
     logger.info("Verificação do invariante rel_9_inv_4")
 
     for cod,classe in allClasses.items():
-        if classe["nivel"] in [3,4]:
-            just = classe.get("pca",{}).get("justificacao")
-            if just:
+        if classe["nivel"] == 3:
+            filhos = classe.get("filhos")
+            if not filhos:
                 proRelCods = classe.get("processosRelacionados",[])
-                for crit in just:
-                    procRefs = crit.get("procRefs",[])
-                    for p in procRefs:
-                        if p not in proRelCods:
-                            rep.addFalhaInv("rel_9_inv_4",cod,p)
+
+                justPca = classe.get("pca",{}).get("justificacao")
+                if justPca:
+                    for crit in justPca:
+                        procRefs = crit.get("procRefs",[])
+                        for p in procRefs:
+                            if p not in proRelCods:
+                                rep.addFalhaInv("rel_9_inv_4",cod,{"proc":p,"tipo":"PCA"})
+
+                justDf = classe.get("df",{}).get("justificacao")
+                if justDf:
+                    for crit in justDf:
+                        procRefs = crit.get("procRefs",[])
+                        for p in procRefs:
+                            if p not in proRelCods:
+                                rep.addFalhaInv("rel_9_inv_4",cod,{"proc":p,"tipo":"DF"})
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_4",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_4")
@@ -1248,18 +1234,20 @@ def rel_9_inv_5(allClasses,rep: Report):
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
-        if classe["nivel"] in [3,4]:
-            just = classe.get("pca",{}).get("justificacao")
-            if just:
-                jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
-                proRels = classe.get("proRel",[])
-                proRelCods = classe.get("processosRelacionados",[])
-                supls = [c for r,c in zip(proRels,proRelCods) if r=="eSuplementoPara"]
-                for crit in jUtilidade:
-                    procRefs = crit.get("procRefs",[])
-                    for p in procRefs:
-                        if p not in supls:
-                            rep.addFalhaInv("rel_9_inv_5",cod,p)
+        if classe["nivel"] == 3:
+            filhos = classe.get("filhos")
+            if not filhos:
+                just = classe.get("pca",{}).get("justificacao")
+                if just:
+                    jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                    proRels = classe.get("proRel",[])
+                    proRelCods = classe.get("processosRelacionados",[])
+                    supls = [c for r,c in zip(proRels,proRelCods) if r=="eSuplementoPara"]
+                    for crit in jUtilidade:
+                        procRefs = crit.get("procRefs",[])
+                        for p in procRefs:
+                            if p not in supls:
+                                rep.addFalhaInv("rel_9_inv_5",cod,p)
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_5",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_5")
@@ -1279,18 +1267,20 @@ def rel_9_inv_6(allClasses,rep: Report):
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
-        if classe["nivel"] in [3,4]:
-            just = classe.get("df",{}).get("justificacao")
-            if just:
-                jDensidade = [x for x in just if x["tipo"]=="densidade"]
-                proRels = classe.get("proRel",[])
-                proRelCods = classe.get("processosRelacionados",[])
-                sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
-                for crit in jDensidade:
-                    procRefs = crit.get("procRefs",[])
-                    for p in procRefs:
-                        if p not in sints:
-                            rep.addFalhaInv("rel_9_inv_6",cod,p)
+        if classe["nivel"] == 3:
+            filhos = classe.get("filhos")
+            if not filhos:
+                just = classe.get("df",{}).get("justificacao")
+                if just:
+                    jDensidade = [x for x in just if x["tipo"]=="densidade"]
+                    proRels = classe.get("proRel",[])
+                    proRelCods = classe.get("processosRelacionados",[])
+                    sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
+                    for crit in jDensidade:
+                        procRefs = crit.get("procRefs",[])
+                        for p in procRefs:
+                            if p not in sints:
+                                rep.addFalhaInv("rel_9_inv_6",cod,p)
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_6",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_6")
@@ -1310,18 +1300,20 @@ def rel_9_inv_7(allClasses,rep: Report):
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
-        if classe["nivel"] in [3,4]:
-            just = classe.get("df",{}).get("justificacao")
-            if just:
-                jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
-                proRels = classe.get("proRel",[])
-                proRelCods = classe.get("processosRelacionados",[])
-                compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
-                for crit in jComlpementaridade:
-                    procRefs = crit.get("procRefs",[])
-                    for p in procRefs:
-                        if p not in compls:
-                            rep.addFalhaInv("rel_9_inv_7",cod,p)
+        if classe["nivel"] == 3:
+            filhos = classe.get("filhos")
+            if not filhos:
+                just = classe.get("df",{}).get("justificacao")
+                if just:
+                    jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
+                    proRels = classe.get("proRel",[])
+                    proRelCods = classe.get("processosRelacionados",[])
+                    compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
+                    for crit in jComlpementaridade:
+                        procRefs = crit.get("procRefs",[])
+                        for p in procRefs:
+                            if p not in compls:
+                                rep.addFalhaInv("rel_9_inv_7",cod,p)
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_7",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_7")
