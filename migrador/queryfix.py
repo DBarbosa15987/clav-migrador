@@ -5,13 +5,13 @@ import logging
 
 logger = logging.getLogger(FIX)
 
-def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
+def rel_2_inv_12_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_4_inv_12.
+    Faz a correção das falhas do invariante rel_2_inv_12.
     """
     errFixed = 0
     errFailed = 0
-    logger.info("Correção do invariante rel_4_inv_12")
+    logger.info("Correção do invariante rel_2_inv_12")
     for err in erros:
         classe = allClasses.get(err.cod)
         if classe:
@@ -28,16 +28,16 @@ def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
             err.fix(f"Processo {err.cod} não encontrado",failed=True)
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_12")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_12")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_2_inv_12")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_2_inv_12")
 
 
-def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
+def rel_2_inv_13_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_4_inv_13.
+    Faz a correção das falhas do invariante rel_2_inv_13.
     """
 
-    logger.info("Correção do invariante rel_4_inv_13")
+    logger.info("Correção do invariante rel_2_inv_13")
     errFixed = 0
     errFailed = 0
 
@@ -67,16 +67,16 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
             err.fix(f"Processo {pai} não encontrado",failed=True)
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_13")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_13")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_2_inv_13")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_2_inv_13")
 
 
-def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
+def rel_3_inv_2_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_5_inv_2.
+    Faz a correção das falhas do invariante rel_3_inv_2.
     """
 
-    logger.info("Correção do invariante rel_5_inv_2")
+    logger.info("Correção do invariante rel_3_inv_2")
     errFixed = 0
     errFailed = 0
 
@@ -135,18 +135,18 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
             err.fix(f"O processo {err.cod} não tem PCA", failed=True)
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_5_inv_2")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_3_inv_2")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_3_inv_2")
 
 
-def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
+def rel_4_inv_3_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_6_inv_4.
+    Faz a correção das falhas do invariante rel_4_inv_3.
     """
 
     errFixed = 0
     errFailed = 0
-    logger.info("Correção do invariante rel_6_inv_4")
+    logger.info("Correção do invariante rel_4_inv_3")
     for err in erros:
         classe = allClasses[err.cod]
         df = classe.get("df",{})
@@ -206,18 +206,18 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
             err.fix(f"O processo {err.cod} não tem DF", failed=True)
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_6_inv_4")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_6_inv_4")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_3")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_3")
 
 
-def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
+def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_7_inv_3.
+    Faz a correção das falhas do invariante rel_5_inv_2.
     """
 
     errFixed = 0
     errFailed = 0
-    logger.info("Correção do invariante rel_7_inv_3")
+    logger.info("Correção do invariante rel_5_inv_2")
     for err in erros:
         classe = allClasses[err.cod]
         df = classe.get("df",{})
@@ -273,18 +273,18 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
             err.fix(f"O processo {err.cod} não tem DF", failed=True)
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_7_inv_3")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_7_inv_3")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_5_inv_2")
 
 
-def rel_3_inv_4_fix(termosIndice,erros: list[ErroInv]):
+def rel_1_inv_3_fix(termosIndice,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_3_inv_4.
+    Faz a correção das falhas do invariante rel_1_inv_3.
     """
 
     errFixed = 0
     errFailed = 0
-    logger.info("Correção do invariante rel_3_inv_4")
+    logger.info("Correção do invariante rel_1_inv_3")
     for err in erros:
         # Formulação do novo termo índice
         termo = {
@@ -295,27 +295,27 @@ def rel_3_inv_4_fix(termosIndice,erros: list[ErroInv]):
         err.fix(f"O termo índice \"{err.info["termo"]}\" foi adicionado ao processo {err.info["filho"]}")
         errFixed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_3_inv_4")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_3_inv_4")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_1_inv_3")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_1_inv_3")
 
 
-def rel_9_inv_5_fix(allClasses,erros: list[ErroInv]):
+def rel_8_inv_4_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_9_inv_5.
-    """
-    # TODO: esperar pelas notas
-
-
-def rel_9_inv_6_fix(allClasses,erros: list[ErroInv]):
-    """
-    Faz a correção das falhas do invariante rel_9_inv_6.
+    Faz a correção das falhas do invariante rel_8_inv_4.
     """
     # TODO: esperar pelas notas
 
 
-def rel_9_inv_7_fix(allClasses,erros: list[ErroInv]):
+def rel_8_inv_5_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_9_inv_7.
+    Faz a correção das falhas do invariante rel_8_inv_5.
+    """
+    # TODO: esperar pelas notas
+
+
+def rel_8_inv_6_fix(allClasses,erros: list[ErroInv]):
+    """
+    Faz a correção das falhas do invariante rel_8_inv_6.
     """
     # TODO: esperar pelas notas
 

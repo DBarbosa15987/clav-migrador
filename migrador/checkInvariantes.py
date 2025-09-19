@@ -287,7 +287,7 @@ def checkUniqueInst(allClasses,rep: Report):
     # FIXME: fazer um erro grave se invariante falhar??
 
 
-def rel_4_inv_0(allClasses,rep: Report):
+def rel_2_inv_1(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -296,7 +296,7 @@ def rel_4_inv_0(allClasses,rep: Report):
     tem de ter uma justificação associada ao PCA."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_0")
+    logger.info("Verificação do invariante rel_2_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -305,15 +305,15 @@ def rel_4_inv_0(allClasses,rep: Report):
                 pca = classe.get("pca")
                 just = pca.get("justificacao")
                 if not just:
-                    rep.addFalhaInv("rel_4_inv_0",cod)
+                    rep.addFalhaInv("rel_2_inv_1",cod)
                 elif not pca:
-                    rep.addFalhaInv("rel_4_inv_0",cod,extra="Neste caso nem tem PCA")
+                    rep.addFalhaInv("rel_2_inv_1",cod,extra="Neste caso nem tem PCA")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_0",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_0")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_1")
 
 
-def rel_4_inv_3(allClasses,rep: Report):
+def rel_2_inv_4(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -321,15 +321,15 @@ def rel_4_inv_3(allClasses,rep: Report):
     "A relação eSintetizadoPor é antissimétrica."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_3")
+    logger.info("Verificação do invariante rel_2_inv_4")
 
-    checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_4_inv_3")
+    checkAntissimetrico(allClasses,"eSintetizadoPor",rep,"rel_2_inv_4")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_3",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_3")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_4")
 
 
-def rel_4_inv_4(allClasses,rep: Report):
+def rel_2_inv_5(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -337,15 +337,15 @@ def rel_4_inv_4(allClasses,rep: Report):
     "A relação eSucessorDe é antissimétrica."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_4")
+    logger.info("Verificação do invariante rel_2_inv_5")
 
-    checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_4_inv_4")
+    checkAntissimetrico(allClasses,"eSucessorDe",rep,"rel_2_inv_5")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_4",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_4")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_5",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_5")
 
 
-def rel_4_inv_11(allClasses,rep: Report):
+def rel_2_inv_11(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -354,7 +354,7 @@ def rel_4_inv_11(allClasses,rep: Report):
     'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
     """
 
-    logger.info("Verificação do invariante rel_4_inv_11")
+    logger.info("Verificação do invariante rel_2_inv_11")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -364,13 +364,13 @@ def rel_4_inv_11(allClasses,rep: Report):
             if proRels and proRelCods:
                 if "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
                     sinteses = [(c,r) for (c,r) in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
-                    rep.addFalhaInv("rel_4_inv_11",cod,{"sinteses":sinteses})
+                    rep.addFalhaInv("rel_2_inv_11",cod,{"sinteses":sinteses})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_11",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_11")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_11",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_11")
 
 
-def rel_4_inv_12(allClasses,rep: Report):
+def rel_2_inv_12(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -380,15 +380,15 @@ def rel_4_inv_12(allClasses,rep: Report):
     do processo que tem essa justificação (Classes de nível 3)"
     """
 
-    logger.info("Verificação do invariante rel_4_inv_12")
+    logger.info("Verificação do invariante rel_2_inv_12")
 
-    checkJustRef(allClasses,3,rep,"rel_4_inv_12")
+    checkJustRef(allClasses,3,rep,"rel_2_inv_12")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_12",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_12")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_12",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_12")
 
 
-def rel_4_inv_13(allClasses,rep: Report):
+def rel_2_inv_13(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -398,15 +398,15 @@ def rel_4_inv_13(allClasses,rep: Report):
     processo que tem essa justificação (Classes de nível 4)"
     """
 
-    logger.info("Verificação do invariante rel_4_inv_13")
+    logger.info("Verificação do invariante rel_2_inv_13")
 
-    checkJustRef(allClasses,4,rep,"rel_4_inv_13")
+    checkJustRef(allClasses,4,rep,"rel_2_inv_13")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_13",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_13")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_13",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_13")
 
 
-def rel_4_inv_5(allClasses,rep: Report):
+def rel_2_inv_6(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -414,15 +414,15 @@ def rel_4_inv_5(allClasses,rep: Report):
     "A relação eSuplementoDe é antissimétrica."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_5")
+    logger.info("Verificação do invariante rel_2_inv_6")
 
-    checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_4_inv_5")
+    checkAntissimetrico(allClasses,"eSuplementoDe",rep,"rel_2_inv_6")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_5",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_5")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_6",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_6")
 
 
-def rel_4_inv_6(allClasses,rep: Report):
+def rel_2_inv_7(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -430,15 +430,15 @@ def rel_4_inv_6(allClasses,rep: Report):
     "A relação eSuplementoPara é antissimétrica."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_6")
+    logger.info("Verificação do invariante rel_2_inv_7")
 
-    checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_4_inv_6")
+    checkAntissimetrico(allClasses,"eSuplementoPara",rep,"rel_2_inv_7")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_6",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_6")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_7",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_7")
 
 
-def rel_4_inv_2(allClasses,rep: Report):
+def rel_2_inv_3(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -446,15 +446,15 @@ def rel_4_inv_2(allClasses,rep: Report):
     "A relação eSinteseDe é antissimétrica."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_2")
+    logger.info("Verificação do invariante rel_2_inv_3")
 
-    checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_4_inv_2")
+    checkAntissimetrico(allClasses,"eSinteseDe",rep,"rel_2_inv_3")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_3")
 
 
-def rel_3_inv_6(allClasses,rep: Report):
+def rel_1_inv_5(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -463,7 +463,7 @@ def rel_3_inv_6(allClasses,rep: Report):
     se esta não tiver filhos"
     """
 
-    logger.info("Verificação do invariante rel_3_inv_6")
+    logger.info("Verificação do invariante rel_1_inv_5")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -471,13 +471,13 @@ def rel_3_inv_6(allClasses,rep: Report):
                 temPca = bool(classe.get("pca"))
                 temDf = bool(classe.get("df"))
                 if not temPca or not temDf:
-                    rep.addFalhaInv("rel_3_inv_6",cod,{"temPca":temPca,"temDf":temDf})
+                    rep.addFalhaInv("rel_1_inv_5",cod,{"temPca":temPca,"temDf":temDf})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_6",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_6")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_5",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_5")
 
 
-def rel_3_inv_3(allClasses,rep: Report):
+def rel_1_inv_2(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -486,7 +486,7 @@ def rel_3_inv_3(allClasses,rep: Report):
     entre as classes 4 filhas."
     """
 
-    logger.info("Verificação do invariante rel_3_inv_3")
+    logger.info("Verificação do invariante rel_1_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -512,16 +512,16 @@ def rel_3_inv_3(allClasses,rep: Report):
                     if f1Rels and f1RelCods:
                         relacoesF1 = zip(f1Rels,f1RelCods)
                         if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
-                            rep.addFalhaInv("rel_3_inv_3",cod,{"codF1":codF1,"codF2":codF2})
+                            rep.addFalhaInv("rel_1_inv_2",cod,{"codF1":codF1,"codF2":codF2})
                     else:
                         # Se algum não tem relações então já está mal
-                        rep.addFalhaInv("rel_3_inv_3",cod,{"codF1":codF1,"codF2":codF2})
+                        rep.addFalhaInv("rel_1_inv_2",cod,{"codF1":codF1,"codF2":codF2})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_3",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_3")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_2")
 
 
-def rel_5_inv_1(allClasses,rep:Report):
+def rel_3_inv_1(allClasses,rep:Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -531,7 +531,7 @@ def rel_5_inv_1(allClasses,rep:Report):
     administrativa na justificação do respetivo PCA"
     """
 
-    logger.info("Verificação do invariante rel_5_inv_1")
+    logger.info("Verificação do invariante rel_3_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -543,17 +543,17 @@ def rel_5_inv_1(allClasses,rep:Report):
                     if just:
                         justUtilidade = [x for x in just if x["tipo"]=="utilidade"]
                         if not justUtilidade:
-                            rep.addFalhaInv("rel_5_inv_1",cod)
+                            rep.addFalhaInv("rel_3_inv_1",cod)
                     elif pca:
-                        rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem justificação do PCA")
+                        rep.addFalhaInv("rel_3_inv_1",cod,extra="Neste caso nem tem justificação do PCA")
                     else:
-                        rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem PCA")
+                        rep.addFalhaInv("rel_3_inv_1",cod,extra="Neste caso nem tem PCA")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_1")
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_1")
 
 
-def rel_5_inv_2(allClasses,rep:Report):
+def rel_3_inv_2(allClasses,rep:Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -563,7 +563,7 @@ def rel_5_inv_2(allClasses,rep:Report):
     suplemento para"
     """
 
-    logger.info("Verificação do invariante rel_5_inv_2")
+    logger.info("Verificação do invariante rel_3_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -583,7 +583,7 @@ def rel_5_inv_2(allClasses,rep:Report):
 
                         for s in supls:
                             if s not in allProcRefs:
-                                rep.addFalhaInv("rel_5_inv_2",cod,{"proc":s})
+                                rep.addFalhaInv("rel_3_inv_2",cod,{"proc":s})
                     else:
                         extra = ""
                         if pca:
@@ -594,13 +594,13 @@ def rel_5_inv_2(allClasses,rep:Report):
                         # Aqui como nem tem justificação/pca, não tem nenhum procRef,
                         # por isso todos os supls estão em falta
                         for s in supls:
-                            rep.addFalhaInv("rel_5_inv_2",cod,{"proc":s},extra=extra)
+                            rep.addFalhaInv("rel_3_inv_2",cod,{"proc":s},extra=extra)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_2")
 
 
-def rel_7_inv_2(allClasses,rep:Report):
+def rel_5_inv_1(allClasses,rep:Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -610,7 +610,7 @@ def rel_7_inv_2(allClasses,rep:Report):
     de complementaridade informacional"
     """
 
-    logger.info("Verificação do invariante rel_7_inv_2")
+    logger.info("Verificação do invariante rel_5_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -621,17 +621,17 @@ def rel_7_inv_2(allClasses,rep:Report):
                 if just:
                     justComplementaridade = [x for x in just if x["tipo"]=="complementaridade"]
                     if not justComplementaridade:
-                        rep.addFalhaInv("rel_7_inv_2",cod)
+                        rep.addFalhaInv("rel_5_inv_1",cod)
                 elif df:
-                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem tem justificação no DF")
+                    rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem justificação no DF")
                 else:
-                    rep.addFalhaInv("rel_7_inv_2",cod,extra="Neste caso nem tem DF")
+                    rep.addFalhaInv("rel_5_inv_1",cod,extra="Neste caso nem tem DF")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_7_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_1")
 
 
-def rel_6_inv_2(allClasses,rep: Report):
+def rel_4_inv_1(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -640,7 +640,7 @@ def rel_6_inv_2(allClasses,rep: Report):
     o DF deve ter o valor de 'Eliminação'"
     """
 
-    logger.info("Verificação do invariante rel_6_inv_2")
+    logger.info("Verificação do invariante rel_4_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -652,13 +652,13 @@ def rel_6_inv_2(allClasses,rep: Report):
                         df = classe.get("df",{})
                         valor = df.get("valor")
                         if valor != 'E':
-                            rep.addFalhaInv("rel_6_inv_2",cod,{"valor":valor})
+                            rep.addFalhaInv("rel_4_inv_1",cod,{"valor":valor})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_1")
 
 
-def rel_5_inv_3(allClasses,rep:Report):
+def rel_3_inv_3(allClasses,rep:Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -669,7 +669,7 @@ def rel_5_inv_3(allClasses,rep:Report):
     relação suplemento de devem figurar neste critério"
     """
 
-    logger.info("Verificação do invariante rel_5_inv_3")
+    logger.info("Verificação do invariante rel_3_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -690,7 +690,7 @@ def rel_5_inv_3(allClasses,rep:Report):
                         for sup in supl:
                             if sup not in allProcRefs:
                                 if sup in allClasses:
-                                    rep.addFalhaInv("rel_5_inv_3",cod,{"proc":sup})
+                                    rep.addFalhaInv("rel_3_inv_3",cod,{"proc":sup})
                     else:
                         extra = ""
                         if pca:
@@ -702,13 +702,13 @@ def rel_5_inv_3(allClasses,rep:Report):
                         # por isso todos os sups estão em falta
                         for sup in supl:
                             if sup in allClasses:
-                                rep.addFalhaInv("rel_5_inv_3",cod,{"proc":sup},extra=extra)
+                                rep.addFalhaInv("rel_3_inv_3",cod,{"proc":sup},extra=extra)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_3",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_3")
+    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_3")
 
 
-def rel_9_inv_2(allClasses,rep: Report):
+def rel_8_inv_2(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -716,7 +716,7 @@ def rel_9_inv_2(allClasses,rep: Report):
     "Se um PN é eSinteseDe -> DF é de conservação"
     """
 
-    logger.info("Verificação do invariante rel_9_inv_2")
+    logger.info("Verificação do invariante rel_8_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -725,13 +725,13 @@ def rel_9_inv_2(allClasses,rep: Report):
                 df = classe.get("df",{})
                 valor = df.get("valor")
                 if valor != "C":
-                    rep.addFalhaInv("rel_9_inv_2",cod,{"valor":valor})
+                    rep.addFalhaInv("rel_8_inv_2",cod,{"valor":valor})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_2")
 
 
-def rel_3_inv_1(allClasses,rep: Report):
+def rel_1_inv_1(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -739,7 +739,7 @@ def rel_3_inv_1(allClasses,rep: Report):
     "Só existe desdobramento caso o PCA ou DF sejam distintos"
     """
 
-    logger.info("Verificação do invariante rel_3_inv_1")
+    logger.info("Verificação do invariante rel_1_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -759,13 +759,13 @@ def rel_3_inv_1(allClasses,rep: Report):
                     # o invariante falha. É registado o valor em questão e
                     # os sítios onde acontece
                     if len(cods) > 1:
-                        rep.addFalhaInv("rel_3_inv_1",cod,{"valor": valor, "filhos": cods})
+                        rep.addFalhaInv("rel_1_inv_1",cod,{"valor": valor, "filhos": cods})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_1")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_1")
 
 
-def rel_3_inv_5(allClasses,rep: Report):
+def rel_1_inv_4(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -774,7 +774,7 @@ def rel_3_inv_5(allClasses,rep: Report):
     classe 3 se esta tiver filhos"
     """
 
-    logger.info("Verificação do invariante rel_3_inv_5")
+    logger.info("Verificação do invariante rel_1_inv_4")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -782,13 +782,13 @@ def rel_3_inv_5(allClasses,rep: Report):
                 temPca = bool(classe.get("pca"))
                 temDf = bool(classe.get("df"))
                 if (temDf or temPca):
-                    rep.addFalhaInv("rel_3_inv_5",cod,{"temPca":temPca,"temDf":temDf})
+                    rep.addFalhaInv("rel_1_inv_4",cod,{"temPca":temPca,"temDf":temDf})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_5",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_5")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_4")
 
 
-def rel_3_inv_7(allClasses,rep: Report):
+def rel_1_inv_6(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -800,7 +800,7 @@ def rel_3_inv_7(allClasses,rep: Report):
     deve ser de conservação."
     """
 
-    logger.info("Verificação do invariante rel_3_inv_7")
+    logger.info("Verificação do invariante rel_1_inv_6")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -821,13 +821,13 @@ def rel_3_inv_7(allClasses,rep: Report):
                         # Se nenhum filho tiver o valor de "C",
                         # então o invariante falha
                         if not conservacao:
-                            rep.addFalhaInv("rel_3_inv_7",cod,{"proc": compl,"filhos": filhos})
+                            rep.addFalhaInv("rel_1_inv_6",cod,{"proc": compl,"filhos": filhos})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_7",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_7")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_6",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_6")
 
 
-def rel_3_inv_4(allClasses,termosIndice,rep: Report):
+def rel_1_inv_3(allClasses,termosIndice,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -836,7 +836,7 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
     índice são replicados em cada um desses níveis."
     """
 
-    logger.info("Verificação do invariante rel_3_inv_4")
+    logger.info("Verificação do invariante rel_1_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -847,13 +847,13 @@ def rel_3_inv_4(allClasses,termosIndice,rep: Report):
                     termosFilho = [t["termo"] for t in termosIndice if t["codigo"]==c]
                     for t in termosPai:
                         if t not in termosFilho:
-                            rep.addFalhaInv("rel_3_inv_4",cod,{"termo":t,"filho" :c})
+                            rep.addFalhaInv("rel_1_inv_3",cod,{"termo":t,"filho" :c})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_4",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_4")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_3")
 
 
-def rel_6_inv_3(allClasses,rep: Report):
+def rel_4_inv_2(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -863,7 +863,7 @@ def rel_6_inv_3(allClasses,rep: Report):
     densidade informacional"
     """
 
-    logger.info("Verificação do invariante rel_6_inv_3")
+    logger.info("Verificação do invariante rel_4_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -876,17 +876,17 @@ def rel_6_inv_3(allClasses,rep: Report):
                     if just:
                         justDensidade = [x for x in just if x["tipo"]=="densidade"]
                         if not justDensidade:
-                            rep.addFalhaInv("rel_6_inv_3",cod)
+                            rep.addFalhaInv("rel_4_inv_2",cod)
                     elif df:
-                        rep.addFalhaInv("rel_6_inv_3",cod,extra="Neste caso nem tem justificação do DF")
+                        rep.addFalhaInv("rel_4_inv_2",cod,extra="Neste caso nem tem justificação do DF")
                     else:
-                        rep.addFalhaInv("rel_6_inv_3",cod,extra="Neste caso nem tem DF")
+                        rep.addFalhaInv("rel_4_inv_2",cod,extra="Neste caso nem tem DF")
 
-    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_3",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_3")
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_2")
 
 
-def rel_6_inv_4(allClasses,rep: Report):
+def rel_4_inv_3(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -896,7 +896,7 @@ def rel_6_inv_4(allClasses,rep: Report):
     densidade informacional da respetiva justificação"
     """
 
-    logger.info("Verificação do invariante rel_6_inv_4")
+    logger.info("Verificação do invariante rel_4_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -920,7 +920,7 @@ def rel_6_inv_4(allClasses,rep: Report):
 
                             for c,r in sints:
                                 if c not in allProcRefs:
-                                    rep.addFalhaInv("rel_6_inv_4",cod,{"proc": c, "rel": r})
+                                    rep.addFalhaInv("rel_4_inv_3",cod,{"proc": c, "rel": r})
                         else:
                             extra = ""
                             if df:
@@ -931,13 +931,13 @@ def rel_6_inv_4(allClasses,rep: Report):
                             # Aqui como nem tem justificação, não tem nenhum procRef,
                             # por isso estão todos em falta
                             for c,r in sints:
-                                rep.addFalhaInv("rel_6_inv_4",cod,{"proc": c, "rel": r},extra=extra)
+                                rep.addFalhaInv("rel_4_inv_3",cod,{"proc": c, "rel": r},extra=extra)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_4",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_4")
+    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_3")
 
 
-def rel_7_inv_3(allClasses,rep: Report):
+def rel_5_inv_2(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -947,7 +947,7 @@ def rel_7_inv_3(allClasses,rep: Report):
     informacional da respetiva justificação"
     """
 
-    logger.info("Verificação do invariante rel_7_inv_3")
+    logger.info("Verificação do invariante rel_5_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -965,7 +965,7 @@ def rel_7_inv_3(allClasses,rep: Report):
 
                     for c in compls:
                         if c not in allProcRefs:
-                            rep.addFalhaInv("rel_7_inv_3",cod,{"proc":c})
+                            rep.addFalhaInv("rel_5_inv_2",cod,{"proc":c})
                 else:
                     extra = ""
                     if df:
@@ -976,13 +976,13 @@ def rel_7_inv_3(allClasses,rep: Report):
                     # Aqui como nem tem justificação, não tem nenhum procRef,
                     # por isso estão todos em falta
                     for c in compls:
-                        rep.addFalhaInv("rel_7_inv_3",cod,{"proc":c},extra=extra)
+                        rep.addFalhaInv("rel_5_inv_2",cod,{"proc":c},extra=extra)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_7_inv_3",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_3")
+    err = len(rep.globalErrors["erroInv"].get("rel_5_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_2")
 
 
-def rel_9_inv_1(allClasses,rep: Report):
+def rel_8_inv_1(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -990,7 +990,7 @@ def rel_9_inv_1(allClasses,rep: Report):
     "Se um PN é eComplementarDe -> DF é de conservação"
     """
 
-    logger.info("Verificação do invariante rel_9_inv_1")
+    logger.info("Verificação do invariante rel_8_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -1001,13 +1001,13 @@ def rel_9_inv_1(allClasses,rep: Report):
                     df = classe.get("df",{})
                     valor = df.get("valor")
                     if valor != "C":
-                        rep.addFalhaInv("rel_9_inv_1",cod,{"valor":valor})
+                        rep.addFalhaInv("rel_8_inv_1",cod,{"valor":valor})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_1")
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_1")
 
 
-def rel_4_inv_8(allClasses,rep: Report):
+def rel_2_inv_9(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1015,7 +1015,7 @@ def rel_4_inv_8(allClasses,rep: Report):
     "Um PN só pode ter uma relação com outro PN."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_8")
+    logger.info("Verificação do invariante rel_2_inv_9")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -1027,13 +1027,13 @@ def rel_4_inv_8(allClasses,rep: Report):
                 for x,count in proRelsCount.items():
                     if count > 1:
                         relsDuplicadas = [(c,r) for c,r in rels if c == x]
-                        rep.addFalhaInv("rel_4_inv_8",cod,{"proc":x,"rels":relsDuplicadas})
+                        rep.addFalhaInv("rel_2_inv_9",cod,{"proc":x,"rels":relsDuplicadas})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_8",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_8")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_9",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_9")
 
 
-def rel_4_inv_1_0(allClasses,rep: Report):
+def rel_2_inv_2(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1041,7 +1041,7 @@ def rel_4_inv_1_0(allClasses,rep: Report):
     "Um processo não transversal não pode ter participantes"
     """
 
-    logger.info("Verificação do invariante rel_4_inv_1_0")
+    logger.info("Verificação do invariante rel_2_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -1049,13 +1049,13 @@ def rel_4_inv_1_0(allClasses,rep: Report):
             if procTrans == "N":
                 participantes = classe.get("participantes")
                 if participantes:
-                    rep.addFalhaInv("rel_4_inv_1_0",cod)
+                    rep.addFalhaInv("rel_2_inv_2",cod)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_1_0",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_1_0")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_2")
 
 
-def rel_4_inv_10(termosIndice,rep: Report):
+def rel_2_inv_10(termosIndice,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1064,7 +1064,7 @@ def rel_4_inv_10(termosIndice,rep: Report):
     nenhuma classe 3"
     """
 
-    logger.info("Verificação do invariante rel_4_inv_10")
+    logger.info("Verificação do invariante rel_2_inv_10")
 
     n3 = re.compile(r'^\d{3}\.\d{1,3}\.\d{1,3}$')
     termos = {} # {termo:[100,200]}
@@ -1082,13 +1082,13 @@ def rel_4_inv_10(termosIndice,rep: Report):
             for c in cods:
                 # TODO: excluir os repetidos? (A :x B e B :x A) ou o próprio código estar pressente em `cods`
                 # TODO: indexar por termos? somehow
-                rep.addFalhaInv("rel_4_inv_10",c,{"t":t,cods: "cods"})
+                rep.addFalhaInv("rel_2_inv_10",c,{"t":t,"cods": cods})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_10",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_10")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_10",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_10")
 
 
-def rel_4_inv_7(allClasses,rep: Report):
+def rel_2_inv_8(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1097,7 +1097,7 @@ def rel_4_inv_7(allClasses,rep: Report):
     com ele próprio."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_7")
+    logger.info("Verificação do invariante rel_2_inv_8")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -1108,13 +1108,13 @@ def rel_4_inv_7(allClasses,rep: Report):
                 # se menciona a si próprio
                 selfRels = [(c,r) for c,r in zip(proRelCods,proRels) if cod==c]
                 for r in selfRels:
-                    rep.addFalhaInv("rel_4_inv_7",cod,{"rel":r})
+                    rep.addFalhaInv("rel_2_inv_8",cod,{"rel":r})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_7",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_7")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_8",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_8")
 
 
-def rel_8_inv_1(allClasses,rep: Report):
+def rel_6_inv_1(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1124,7 +1124,7 @@ def rel_8_inv_1(allClasses,rep: Report):
     complementaridade informacional e legal"
     """
 
-    logger.info("Verificação do invariante rel_8_inv_1")
+    logger.info("Verificação do invariante rel_6_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
@@ -1132,13 +1132,13 @@ def rel_8_inv_1(allClasses,rep: Report):
             if just:
                 for j in just:
                     if j["tipo"] not in ["complementaridade","densidade","legal"]:
-                        rep.addFalhaInv("rel_8_inv_1",cod,{"tipo":j["tipo"]})
+                        rep.addFalhaInv("rel_6_inv_1",cod,{"tipo":j["tipo"]})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_1")
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_1")
 
 
-def rel_4_inv_14(allClasses,rep: Report):
+def rel_2_inv_14(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1146,7 +1146,7 @@ def rel_4_inv_14(allClasses,rep: Report):
     "Um processo transversal tem que ter participantes."
     """
 
-    logger.info("Verificação do invariante rel_4_inv_14")
+    logger.info("Verificação do invariante rel_2_inv_14")
 
     for cod,classe in allClasses.items():
         if classe['nivel'] == 3:
@@ -1154,13 +1154,13 @@ def rel_4_inv_14(allClasses,rep: Report):
             if procTrans == "S":
                 participantes = classe.get("participantes")
                 if not participantes:
-                    rep.addFalhaInv("rel_4_inv_14",cod)
+                    rep.addFalhaInv("rel_2_inv_14",cod)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_4_inv_14",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_14")
+    err = len(rep.globalErrors["erroInv"].get("rel_2_inv_14",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_14")
 
 
-def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
+def rel_1_inv_7(allClasses,harmonizacao,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1168,7 +1168,7 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
     "Os PNs em harmonização não podem ter filhos ativos."
     """
 
-    logger.info("Verificação do invariante rel_3_inv_9")
+    logger.info("Verificação do invariante rel_1_inv_7")
 
     # Como em `allClasses` apenas existem processos ativos,
     # a verificação é feita dos filhos para os pais.
@@ -1176,13 +1176,13 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
         if classe["nivel"] == 4:
             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
             if pai in harmonizacao:
-                rep.addFalhaInv("rel_3_inv_9",cod,{"pai":pai})
+                rep.addFalhaInv("rel_1_inv_7",cod,{"pai":pai})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_3_inv_9",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_9")
+    err = len(rep.globalErrors["erroInv"].get("rel_1_inv_7",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_7")
 
 
-def rel_9_inv_4(allClasses,rep: Report):
+def rel_8_inv_3(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1192,7 +1192,7 @@ def rel_9_inv_4(allClasses,rep: Report):
     devidamente declarado."
     """
 
-    logger.info("Verificação do invariante rel_9_inv_4")
+    logger.info("Verificação do invariante rel_8_inv_3")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
@@ -1206,7 +1206,7 @@ def rel_9_inv_4(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in proRelCods:
-                                rep.addFalhaInv("rel_9_inv_4",cod,{"proc":p,"tipo":"PCA"})
+                                rep.addFalhaInv("rel_8_inv_3",cod,{"proc":p,"tipo":"PCA"})
 
                 justDf = classe.get("df",{}).get("justificacao")
                 if justDf:
@@ -1214,13 +1214,13 @@ def rel_9_inv_4(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in proRelCods:
-                                rep.addFalhaInv("rel_9_inv_4",cod,{"proc":p,"tipo":"DF"})
+                                rep.addFalhaInv("rel_8_inv_3",cod,{"proc":p,"tipo":"DF"})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_4",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_4")
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_3",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_3")
 
 
-def rel_9_inv_5(allClasses,rep: Report):
+def rel_8_inv_4(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1230,7 +1230,7 @@ def rel_9_inv_5(allClasses,rep: Report):
     declarados com a relação "Suplemento Para""
     """
 
-    logger.info("Verificação do invariante rel_9_inv_5")
+    logger.info("Verificação do invariante rel_8_inv_4")
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
@@ -1247,13 +1247,13 @@ def rel_9_inv_5(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in supls:
-                                rep.addFalhaInv("rel_9_inv_5",cod,{"proc":p})
+                                rep.addFalhaInv("rel_8_inv_4",cod,{"proc":p})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_5",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_5")
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_4",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_4")
 
 
-def rel_9_inv_6(allClasses,rep: Report):
+def rel_8_inv_5(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1263,7 +1263,7 @@ def rel_9_inv_6(allClasses,rep: Report):
     declarados com a relação "Síntese de" ou "Sintetizado por""
     """
 
-    logger.info("Verificação do invariante rel_9_inv_6")
+    logger.info("Verificação do invariante rel_8_inv_5")
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
@@ -1280,13 +1280,13 @@ def rel_9_inv_6(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in sints:
-                                rep.addFalhaInv("rel_9_inv_6",cod,{"proc":p})
+                                rep.addFalhaInv("rel_8_inv_5",cod,{"proc":p})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_6",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_6")
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_5",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_5")
 
 
-def rel_9_inv_7(allClasses,rep: Report):
+def rel_8_inv_6(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1296,7 +1296,7 @@ def rel_9_inv_7(allClasses,rep: Report):
     declarados com a relação "É Complementar De""
     """
 
-    logger.info("Verificação do invariante rel_9_inv_7")
+    logger.info("Verificação do invariante rel_8_inv_6")
 
     # FIXME: verificar as notas
     for cod,classe in allClasses.items():
@@ -1313,13 +1313,13 @@ def rel_9_inv_7(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in compls:
-                                rep.addFalhaInv("rel_9_inv_7",cod,{"proc":p})
+                                rep.addFalhaInv("rel_8_inv_6",cod,{"proc":p})
 
-    err = len(rep.globalErrors["erroInv"].get("rel_9_inv_7",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_7")
+    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_6",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_6")
 
 
-def rel_10_inv_1(allClasses, rep: Report):
+def rel_7_inv_1(allClasses, rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1328,7 +1328,7 @@ def rel_10_inv_1(allClasses, rep: Report):
     critério de cada tipo"
     """
 
-    logger.info("Verificação do invariante rel_10_inv_1")
+    logger.info("Verificação do invariante rel_7_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
@@ -1338,15 +1338,15 @@ def rel_10_inv_1(allClasses, rep: Report):
                 tipos = [x["tipo"] for x in just if "tipo" in x]
                 for t in tipos:
                     if t in tiposSet:
-                        rep.addFalhaInv("rel_10_inv_1",cod,{"tipo":t})
+                        rep.addFalhaInv("rel_7_inv_1",cod,{"tipo":t})
                     else:
                         tiposSet.add(t)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_10_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_10_inv_1")
+    err = len(rep.globalErrors["erroInv"].get("rel_7_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_1")
 
 
-def rel_8_inv_2(allClasses, rep: Report):
+def rel_6_inv_2(allClasses, rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1355,7 +1355,7 @@ def rel_8_inv_2(allClasses, rep: Report):
     critério de cada tipo"
     """
 
-    logger.info("Verificação do invariante rel_8_inv_2")
+    logger.info("Verificação do invariante rel_6_inv_2")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
@@ -1365,9 +1365,9 @@ def rel_8_inv_2(allClasses, rep: Report):
                 tipos = [x["tipo"] for x in just if "tipo" in x]
                 for t in tipos:
                     if t in tiposSet:
-                        rep.addFalhaInv("rel_8_inv_2",cod,{"tipo":t})
+                        rep.addFalhaInv("rel_6_inv_2",cod,{"tipo":t})
                     else:
                         tiposSet.add(t)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_8_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_2",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_2")
