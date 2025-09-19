@@ -146,9 +146,8 @@ class Report:
         no processo `cod`. O info e extra server para a
         criação de mensagens de erro mais específicas.
 
-        O `info` não é necessariamente uma `str`, também
-        pode ser um `dict`, uma `list` ou um `tuple`,
-        varia de acordo com erro.
+        O `info` é um `dict`, no entanto não contém entradas
+        iguais, depende sempre do invariante.
         """
         if inv in self.globalErrors["erroInv"]:
             self.globalErrors["erroInv"][inv].append(ErroInv(inv,cod,info,extra))
@@ -522,16 +521,18 @@ class ErroInv:
         msg = ""
         match self.inv:
             case "rel_4_inv_0": # OK
-                # FIXME: falta o extra!!
-                msg = f"O processo {self.cod} não tem desdobramento ao nível 4, mas não contém justificação associada ao PCA."
+                msg = f"O processo {self.cod} não tem desdobramento ao nível 4, mas não contém justificação associada ao PCA"
+                if self.extra:
+                    msg += f" ({self.extra})"
+                msg += "."
             case "rel_4_inv_11": # OK
                 msg = f"No processo {self.cod} foram encontradas relações de \"eSinteseDe\" e \"eSintetizadoPor\" em simultâneo:\n"
-                for rel in self.info:
+                for rel in self.info["sinteses"]:
                     msg += f"\t{self.cod} {rel[1]} {rel[0]}\n"
             case "rel_4_inv_12": # OK
-                msg = f"A legislação {self.info} é referenciada na justificação do {self.extra["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada."
+                msg = f"A legislação {self.info["leg"]} é referenciada na justificação do {self.info["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada."
             case "rel_4_inv_13": # OK
-                msg = f"A legislação {self.info} é referenciada na justificação do {self.extra["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada (devia estar declarada na coluna \"Diplomas jurídico-administrativos REF\" do seu processo pai: {self.extra["pai"]})."
+                msg = f"A legislação {self.info["leg"]} é referenciada na justificação do {self.info["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada (devia estar declarada na coluna \"Diplomas jurídico-administrativos REF\" do seu processo pai: {self.info["pai"]})."
             case "rel_3_inv_6": # TODO: TEST
                 temPca = self.info["temPca"]
                 temDf = self.info["temDf"]
@@ -544,36 +545,36 @@ class ErroInv:
                     x = "PCA"
                 msg = f"O processo {self.cod} não tem desdobramento ao nível 4 e não tem {x}."
             case "rel_3_inv_3": # OK
-                msg = f"Os filhos ({self.info[0]} e {self.info[1]}) do processo {self.cod} tem DFs diferentes, mas não têm uma relação de síntese entre eles."
+                msg = f"Os filhos ({self.info["codF1"]} e {self.info["codF2"]}) do processo {self.cod} tem DFs diferentes, mas não têm uma relação de síntese entre eles."
             case "rel_5_inv_1": # TODO: TEST extra
                 msg = f"O processo {self.cod} é suplemento para outro, mas não contém um critério de utilidade administrativa na justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_5_inv_2": # TODO: TEST extra
-                msg = f"O processo {self.cod} tem uma relação de \"suplementoPara\" com o processo {self.info}, mas este não é mencionado no critério de utilidade da justificação do PCA"
+                msg = f"O processo {self.cod} tem uma relação de \"suplementoPara\" com o processo {self.info["proc"]}, mas este não é mencionado no critério de utilidade da justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
-            case "rel_7_inv_2":  # TODO: TEST um dos extras
+            case "rel_7_inv_2": # TODO: TEST um dos extras
                 msg = f"O processo {self.cod} é complementar de outro, no entanto a sua justificação não contém o critério de complementaridade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_6_inv_2": # OK parcial
-                if self.info:
-                    msg = f"O processo {self.cod} é sintetizado por outro, mas o seu DF tem o valor de \"{getValue(self.info)}\", em vez de \"Eliminação\""
+                if self.info["valor"]:
+                    msg = f"O processo {self.cod} é sintetizado por outro, mas o seu DF tem o valor de \"{getValue(self.info["valor"])}\", em vez de \"Eliminação\""
                 else:
                     msg = f"O processo {self.cod} é sintetizado por outro e o valor do seu DF devia ser \"Eliminação\", mas neste caso o processo nem tem DF"
                 msg += "."
             case "rel_5_inv_3": # OK...
-                msg = f"O processo {self.cod} contém relações de \"eSuplementoDe\" no processo {self.info}, no entanto estes não são mencionados na justificação do PCA"
+                msg = f"O processo {self.cod} contém relações de \"eSuplementoDe\" no processo {self.info["proc"]}, no entanto estes não são mencionados na justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_9_inv_2": # OK
-                if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de \"{getValue(self.info)}\", em vez de \"Conservação\""
+                if self.info["valor"]:
+                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de \"{getValue(self.info["valor"])}\", em vez de \"Conservação\""
                 else:
                     msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
                 msg += "."
@@ -606,13 +607,13 @@ class ErroInv:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_7_inv_3": # OK
-                msg = f"O processo {self.info} está em falta na justificação do DF do processo {self.cod}, sob o critério de complementaridade informacional"
+                msg = f"O processo {self.info["proc"]} está em falta na justificação do DF do processo {self.cod}, sob o critério de complementaridade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_9_inv_1": # TODO: TEST
-                if self.info:
-                    msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\", mas tem o valor de DF de {getValue(self.info)}"
+                if self.info["valor"]:
+                    msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\", mas tem o valor de DF de {getValue(self.info["valor"])}"
                 else:
                     msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
             case "rel_4_inv_8": # OK
@@ -639,25 +640,25 @@ class ErroInv:
                 # TODO: indexar por termo??
                 msg = f"O termo {self.info["t"]} foi encontrado repetido nos seguintes processos {self.info["cods"]}"
             case "rel_4_inv_7": # TODO: TEST
-                msg = f"O processo {self.cod} relaciona-se com ele próprio, através da relação {self.info}"
+                msg = f"O processo {self.cod} relaciona-se com ele próprio, através da relação {self.info["rel"]}"
             case "rel_8_inv_1": # TODO: TEST
-                msg = f"No DF do processo {self.cod} foi encontrado uma justificação do tipo {self.info}"
+                msg = f"No DF do processo {self.cod} foi encontrado uma justificação do tipo {self.info["tipo"]}"
             case "rel_4_inv_14": # TODO: TEST
                 msg = f"O processo {self.cod} é transversal, mas não tem participantes"
             case "rel_3_inv_9": # OK
-                msg = f"O processo {self.info} está em harmonização, no entanto o seu filho \"{self.cod}\" está ativo."
+                msg = f"O processo {self.info["pai"]} está em harmonização, no entanto o seu filho \"{self.cod}\" está ativo."
             case "rel_9_inv_4":
                 msg = f"O processo {self.cod} referencia o processo {self.info["proc"]} na justificação do {self.info["tipo"]}, mas {self.info["proc"]} não está devidamente declarado."
             case "rel_9_inv_5":
-                msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado com a relação \"Suplemento Para\""
+                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]}, mas {self.info["proc"]} não está declarado com a relação \"Suplemento Para\""
             case "rel_9_inv_6":
-                msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado com uma relação de síntese (É sintetizado por/É sintese de)"
+                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]}, mas {self.info["proc"]} não está declarado com uma relação de síntese (É sintetizado por/É sintese de)"
             case "rel_9_inv_7":
-                msg = f"O processo {self.cod} referencia o processo {self.info}, mas {self.info} não está declarado com a relação \"É Complementar De\""
+                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]}, mas {self.info["proc"]} não está declarado com a relação \"É Complementar De\""
             case "rel_10_inv_1":
-                msg = f"Na justificação do PCA do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info}."
+                msg = f"Na justificação do PCA do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info["tipo"]}."
             case "rel_8_inv_2":
-                msg = f"Na justificação do DF do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info}."
+                msg = f"Na justificação do DF do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info["tipo"]}."
             case _:
                 pass
         return msg

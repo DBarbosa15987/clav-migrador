@@ -208,7 +208,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
                     if nivel == 3 and (leg not in classe.get("legislacao",[])):
-                        rep.addFalhaInv(invName,cod,leg,extra={"tipo": "PCA"})
+                        rep.addFalhaInv(invName,cod,{"leg":leg,"tipo": "PCA"})
 
                     # Se a classe for de nível 4 verifica-se se
                     # a legislação é mencionada no pai
@@ -218,7 +218,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                         # Tem pai ativo
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
-                                rep.addFalhaInv(invName,cod,leg,extra={"tipo": "PCA", "pai": pai})
+                                rep.addFalhaInv(invName,cod,{"leg":leg,"tipo": "PCA", "pai": pai})
 
             # verificação no df
             justificacaoDf = classe.get("df",{}).get("justificacao")
@@ -231,7 +231,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                     # na lista de legislação associada à classe,
                     # então não cumpre com o invariante
                     if nivel == 3 and (leg not in classe.get("legislacao",[])):
-                        rep.addFalhaInv(invName,cod,leg,extra={"tipo": "DF"})
+                        rep.addFalhaInv(invName,cod,{"leg":leg,"tipo": "DF"})
 
                     # Se a classe for de nível 4 verifica-se se
                     # a legislação é mencionada no pai
@@ -241,7 +241,7 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                         # Tem pai ativo
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
-                                rep.addFalhaInv(invName,cod,leg,extra={"tipo": "DF", "pai": pai})
+                                rep.addFalhaInv(invName,cod,{"leg":leg,"tipo": "DF", "pai": pai})
 
 
 def checkUniqueInst(allClasses,rep: Report):
@@ -364,7 +364,7 @@ def rel_4_inv_11(allClasses,rep: Report):
             if proRels and proRelCods:
                 if "eSinteseDe" in proRels and "eSintetizadoPor" in proRels:
                     sinteses = [(c,r) for (c,r) in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
-                    rep.addFalhaInv("rel_4_inv_11",cod,sinteses)
+                    rep.addFalhaInv("rel_4_inv_11",cod,{"sinteses":sinteses})
 
     err = len(rep.globalErrors["erroInv"].get("rel_4_inv_11",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_11")
@@ -512,10 +512,10 @@ def rel_3_inv_3(allClasses,rep: Report):
                     if f1Rels and f1RelCods:
                         relacoesF1 = zip(f1Rels,f1RelCods)
                         if ("eSinteseDe",codF2) not in relacoesF1 or ("eSintetizadoPor",codF2) not in relacoesF1:
-                            rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
+                            rep.addFalhaInv("rel_3_inv_3",cod,{"codF1":codF1,"codF2":codF2})
                     else:
                         # Se algum não tem relações então já está mal
-                        rep.addFalhaInv("rel_3_inv_3",cod,(codF1,codF2))
+                        rep.addFalhaInv("rel_3_inv_3",cod,{"codF1":codF1,"codF2":codF2})
 
     err = len(rep.globalErrors["erroInv"].get("rel_3_inv_3",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_3")
@@ -583,7 +583,7 @@ def rel_5_inv_2(allClasses,rep:Report):
 
                         for s in supls:
                             if s not in allProcRefs:
-                                rep.addFalhaInv("rel_5_inv_2",cod,s)
+                                rep.addFalhaInv("rel_5_inv_2",cod,{"proc":s})
                     else:
                         extra = ""
                         if pca:
@@ -594,7 +594,7 @@ def rel_5_inv_2(allClasses,rep:Report):
                         # Aqui como nem tem justificação/pca, não tem nenhum procRef,
                         # por isso todos os supls estão em falta
                         for s in supls:
-                            rep.addFalhaInv("rel_5_inv_2",cod,s,extra=extra)
+                            rep.addFalhaInv("rel_5_inv_2",cod,{"proc":s},extra=extra)
 
     err = len(rep.globalErrors["erroInv"].get("rel_5_inv_2",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_2")
@@ -652,7 +652,7 @@ def rel_6_inv_2(allClasses,rep: Report):
                         df = classe.get("df",{})
                         valor = df.get("valor")
                         if valor != 'E':
-                            rep.addFalhaInv("rel_6_inv_2",cod,valor)
+                            rep.addFalhaInv("rel_6_inv_2",cod,{"valor":valor})
 
     err = len(rep.globalErrors["erroInv"].get("rel_6_inv_2",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_2")
@@ -690,7 +690,7 @@ def rel_5_inv_3(allClasses,rep:Report):
                         for sup in supl:
                             if sup not in allProcRefs:
                                 if sup in allClasses:
-                                    rep.addFalhaInv("rel_5_inv_3",cod,sup)
+                                    rep.addFalhaInv("rel_5_inv_3",cod,{"proc":sup})
                     else:
                         extra = ""
                         if pca:
@@ -702,7 +702,7 @@ def rel_5_inv_3(allClasses,rep:Report):
                         # por isso todos os sups estão em falta
                         for sup in supl:
                             if sup in allClasses:
-                                rep.addFalhaInv("rel_5_inv_3",cod,sup,extra=extra)
+                                rep.addFalhaInv("rel_5_inv_3",cod,{"proc":sup},extra=extra)
 
     err = len(rep.globalErrors["erroInv"].get("rel_5_inv_3",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_5_inv_3")
@@ -725,7 +725,7 @@ def rel_9_inv_2(allClasses,rep: Report):
                 df = classe.get("df",{})
                 valor = df.get("valor")
                 if valor != "C":
-                    rep.addFalhaInv("rel_9_inv_2",cod,valor)
+                    rep.addFalhaInv("rel_9_inv_2",cod,{"valor":valor})
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_2",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_2")
@@ -782,7 +782,7 @@ def rel_3_inv_5(allClasses,rep: Report):
                 temPca = bool(classe.get("pca"))
                 temDf = bool(classe.get("df"))
                 if (temDf or temPca):
-                    rep.addFalhaInv("rel_3_inv_5",cod,(temPca,temDf))
+                    rep.addFalhaInv("rel_3_inv_5",cod,{"temPca":temPca,"temDf":temDf})
 
     err = len(rep.globalErrors["erroInv"].get("rel_3_inv_5",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_5")
@@ -965,7 +965,7 @@ def rel_7_inv_3(allClasses,rep: Report):
 
                     for c in compls:
                         if c not in allProcRefs:
-                            rep.addFalhaInv("rel_7_inv_3",cod,c)
+                            rep.addFalhaInv("rel_7_inv_3",cod,{"proc":c})
                 else:
                     extra = ""
                     if df:
@@ -976,7 +976,7 @@ def rel_7_inv_3(allClasses,rep: Report):
                     # Aqui como nem tem justificação, não tem nenhum procRef,
                     # por isso estão todos em falta
                     for c in compls:
-                        rep.addFalhaInv("rel_7_inv_3",cod,c,extra=extra)
+                        rep.addFalhaInv("rel_7_inv_3",cod,{"proc":c},extra=extra)
 
     err = len(rep.globalErrors["erroInv"].get("rel_7_inv_3",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_3")
@@ -1001,7 +1001,7 @@ def rel_9_inv_1(allClasses,rep: Report):
                     df = classe.get("df",{})
                     valor = df.get("valor")
                     if valor != "C":
-                        rep.addFalhaInv("rel_9_inv_1",cod,valor)
+                        rep.addFalhaInv("rel_9_inv_1",cod,{"valor":valor})
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_1",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_1")
@@ -1108,7 +1108,7 @@ def rel_4_inv_7(allClasses,rep: Report):
                 # se menciona a si próprio
                 selfRels = [(c,r) for c,r in zip(proRelCods,proRels) if cod==c]
                 for r in selfRels:
-                    rep.addFalhaInv("rel_4_inv_7",cod,r)
+                    rep.addFalhaInv("rel_4_inv_7",cod,{"rel":r})
 
     err = len(rep.globalErrors["erroInv"].get("rel_4_inv_7",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_4_inv_7")
@@ -1132,7 +1132,7 @@ def rel_8_inv_1(allClasses,rep: Report):
             if just:
                 for j in just:
                     if j["tipo"] not in ["complementaridade","densidade","legal"]:
-                        rep.addFalhaInv("rel_8_inv_1",cod,j["tipo"])
+                        rep.addFalhaInv("rel_8_inv_1",cod,{"tipo":j["tipo"]})
 
     err = len(rep.globalErrors["erroInv"].get("rel_8_inv_1",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_1")
@@ -1176,7 +1176,7 @@ def rel_3_inv_9(allClasses,harmonizacao,rep: Report):
         if classe["nivel"] == 4:
             pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', cod).group(1)
             if pai in harmonizacao:
-                rep.addFalhaInv("rel_3_inv_9",cod,pai)
+                rep.addFalhaInv("rel_3_inv_9",cod,{"pai":pai})
 
     err = len(rep.globalErrors["erroInv"].get("rel_3_inv_9",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_3_inv_9")
@@ -1247,7 +1247,7 @@ def rel_9_inv_5(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in supls:
-                                rep.addFalhaInv("rel_9_inv_5",cod,p)
+                                rep.addFalhaInv("rel_9_inv_5",cod,{"proc":p})
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_5",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_5")
@@ -1280,7 +1280,7 @@ def rel_9_inv_6(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in sints:
-                                rep.addFalhaInv("rel_9_inv_6",cod,p)
+                                rep.addFalhaInv("rel_9_inv_6",cod,{"proc":p})
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_6",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_6")
@@ -1313,7 +1313,7 @@ def rel_9_inv_7(allClasses,rep: Report):
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
                             if p not in compls:
-                                rep.addFalhaInv("rel_9_inv_7",cod,p)
+                                rep.addFalhaInv("rel_9_inv_7",cod,{"proc":p})
 
     err = len(rep.globalErrors["erroInv"].get("rel_9_inv_7",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_9_inv_7")
@@ -1338,7 +1338,7 @@ def rel_10_inv_1(allClasses, rep: Report):
                 tipos = [x["tipo"] for x in just if "tipo" in x]
                 for t in tipos:
                     if t in tiposSet:
-                        rep.addFalhaInv("rel_10_inv_1",cod,t)
+                        rep.addFalhaInv("rel_10_inv_1",cod,{"tipo":t})
                     else:
                         tiposSet.add(t)
 
@@ -1365,7 +1365,7 @@ def rel_8_inv_2(allClasses, rep: Report):
                 tipos = [x["tipo"] for x in just if "tipo" in x]
                 for t in tipos:
                     if t in tiposSet:
-                        rep.addFalhaInv("rel_8_inv_2",cod,t)
+                        rep.addFalhaInv("rel_8_inv_2",cod,{"tipo":t})
                     else:
                         tiposSet.add(t)
 
