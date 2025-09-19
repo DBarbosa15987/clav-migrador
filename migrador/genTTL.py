@@ -164,7 +164,7 @@ def entidadeGenTTL():
 # ------------------------------------------------------
 def classeGenTTL(c):
 
-    logger.info(f"Geração da ontologia da classe {classe}")
+    logger.info(f"Geração da ontologia da classe {c}")
     fin = open(os.path.join(FILES_DIR,f"{c}.json"))
     classes = json.load(fin)
 

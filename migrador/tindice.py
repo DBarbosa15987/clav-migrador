@@ -34,6 +34,6 @@ def processSheet(sheet, nome):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
-    loggerProc.info("Termos de índice extraídos: ", len(myClasse))
+    loggerProc.info(f"Termos de índice extraídos: {len(myClasse)}")
     outFile.close()
     return len(myClasse)

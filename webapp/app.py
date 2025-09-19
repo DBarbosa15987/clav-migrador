@@ -50,7 +50,7 @@ def process_file():
         with open(filePath,"wb") as f:
             f.write(fileContent)
     except Exception as e:
-        logger.warning("Erro ao guardar uma cópia do ficheiro recebido em ",filePath)
+        logger.warning(f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}")
 
     try:
 
@@ -101,7 +101,7 @@ def download_output():
         logger.error("Erro ao encontrar o ficheiro final")
         return "Erro ao encontrar o ficheiro final", 500
     else:
-        logger.info("Ficheiro selecionado: ", clav)
+        logger.info(f"Ficheiro selecionado: {clav}")
 
     logger.info("Download da ontologia")
     return send_file(clav, as_attachment=True, download_name=mostRecentFile)

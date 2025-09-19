@@ -29,7 +29,7 @@ def rel_4_inv_12_fix(allClasses,erros: list[ErroInv]):
             errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_12")
-    logger.info(f"Falharam {errFixed} correções do invariante rel_4_inv_12")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_12")
 
 
 def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
@@ -68,7 +68,7 @@ def rel_4_inv_13_fix(allClasses,erros: list[ErroInv]):
             errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_13")
-    logger.info(f"Falharam {errFixed} correções do invariante rel_4_inv_13")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_13")
 
 
 def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
@@ -136,7 +136,7 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
             errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_5_inv_2")
 
 
 def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
@@ -145,6 +145,7 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
     """
 
     errFixed = 0
+    errFailed = 0
     logger.info("Correção do invariante rel_6_inv_4")
     for err in erros:
         classe = allClasses[err.cod]
@@ -206,7 +207,7 @@ def rel_6_inv_4_fix(allClasses,erros: list[ErroInv]):
             errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_6_inv_4")
-    logger.info(f"Falharam {errFixed} correções do invariante rel_6_inv_4")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_6_inv_4")
 
 
 def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
@@ -215,6 +216,7 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
     """
 
     errFixed = 0
+    errFailed = 0
     logger.info("Correção do invariante rel_7_inv_3")
     for err in erros:
         classe = allClasses[err.cod]
@@ -272,7 +274,7 @@ def rel_7_inv_3_fix(allClasses,erros: list[ErroInv]):
             errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_7_inv_3")
-    logger.info(f"Falharam {errFixed} correções do invariante rel_7_inv_3")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_7_inv_3")
 
 
 def rel_3_inv_4_fix(termosIndice,erros: list[ErroInv]):
@@ -294,7 +296,7 @@ def rel_3_inv_4_fix(termosIndice,erros: list[ErroInv]):
         errFixed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_3_inv_4")
-    logger.info(f"Falharam {errFixed} correções do invariante rel_3_inv_4")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_3_inv_4")
 
 
 def rel_9_inv_5_fix(allClasses,erros: list[ErroInv]):

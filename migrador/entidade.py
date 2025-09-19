@@ -62,7 +62,7 @@ def processSheet(sheet, rep: Report):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myEntidade, outFile, indent = 4, ensure_ascii=False)
-    loggerProc.info("Entidades extraídas: ", len(myEntidade))
+    loggerProc.info(f"Entidades extraídas: {len(myEntidade)}")
     outFile.close()
     catalogPath = os.path.join(FILES_DIR, "entCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")

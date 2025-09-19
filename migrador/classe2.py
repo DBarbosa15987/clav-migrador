@@ -104,7 +104,8 @@ def processSheet(sheet, nome, rep:Report, classesN1):
     # Load one worksheet.
     # --------------------------------------------------
     fnome = nome.split("_")[0]
-    loggerProc.info("# Migração da Classe  " + fnome + "----------------------")
+    loggerProc.info(f"# Migração da Classe  {fnome}----------------------")
+
     ws = sheet
     data = ws.values
     cols = next(data)[0:]
@@ -171,6 +172,6 @@ def processSheet(sheet, nome, rep:Report, classesN1):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myClasse, outFile, indent = 4, ensure_ascii=False)
-    loggerProc.info("Classe extraída: ", nome, " :: ", len(myClasse))
+    loggerProc.info(f"Classe extraída: {nome} :: {len(myClasse)}")
     outFile.close()
-    loggerProc.info("# FIM: Migração da Classe  " + fnome + "-----------------")
+    loggerProc.info(f"# FIM: Migração da Classe  {fnome}")

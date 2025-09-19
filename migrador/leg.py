@@ -104,7 +104,7 @@ def processSheet(sheet, nome, rep: Report):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myLeg, outFile, indent = 4, ensure_ascii=False)
-    loggerProc.info("Documentos legislativos extraídos: ", len(myLeg))
+    loggerProc.info(f"Documentos legislativos extraídos: {len(myLeg)}")
     outFile.close()
 
     catalogPath = os.path.join(FILES_DIR, "legCatalog.json")

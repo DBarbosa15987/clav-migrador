@@ -44,7 +44,7 @@ def processSheet(sheet, rep: Report):
     outFile = open(outFilePath, "w", encoding="utf-8")
 
     json.dump(myTipologia, outFile, indent = 4, ensure_ascii=False)
-    loggerProc.info("Tipologias extraídas: ", len(myTipologia))
+    loggerProc.info(f"Tipologias extraídas: {len(myTipologia)}")
     outFile.close()
     catalogPath = os.path.join(FILES_DIR, "tipCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")
