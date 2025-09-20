@@ -16,13 +16,13 @@ def rel_2_inv_12_fix(allClasses,erros: list[ErroInv]):
         classe = allClasses.get(err.cod)
         if classe:
             if "legislacao" not in classe:
-                classe["legislacao"] = [err.info]
-                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {err.cod}")
+                classe["legislacao"] = [err.info["leg"]]
+                err.fix(f"A legislação {err.info["leg"]} foi adicionada à zona de contexto do processo {err.cod}")
                 errFixed += 1
             # Aqui evitam-se adicionar legislações repetidas
-            elif err.info not in classe["legislacao"]:
-                classe["legislacao"].append(err.info)
-                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {err.cod}")
+            elif err.info["leg"] not in classe["legislacao"]:
+                classe["legislacao"].append(err.info["leg"])
+                err.fix(f"A legislação {err.info["leg"]} foi adicionada à zona de contexto do processo {err.cod}")
                 errFixed += 1
         else:
             err.fix(f"Processo {err.cod} não encontrado",failed=True)
@@ -49,18 +49,18 @@ def rel_2_inv_13_fix(allClasses,erros: list[ErroInv]):
 
         if classePai:
             if "legislacao" not in classePai:
-                classePai["legislacao"] = [err.info]
-                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+                classePai["legislacao"] = [err.info["leg"]]
+                err.fix(f"A legislação {err.info["leg"]} foi adicionada à zona de contexto do processo {pai}")
                 errFixed += 1
             # Aqui evitam-se adicionar legislações repetidas
-            elif err.info not in classePai["legislacao"]:
-                classePai["legislacao"].append(err.info)
-                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+            elif err.info["leg"] not in classePai["legislacao"]:
+                classePai["legislacao"].append(err.info["leg"])
+                err.fix(f"A legislação {err.info["leg"]} foi adicionada à zona de contexto do processo {pai}")
                 errFixed += 1
             # Aqui o erro já se encontra corrrigido,
             # provavelmente durrante a correção de um processo "irmão"
             else:
-                err.fix(f"A legislação {err.info} foi adicionada à zona de contexto do processo {pai}")
+                err.fix(f"A legislação {err.info["leg"]} foi adicionada à zona de contexto do processo {pai}")
                 errFixed += 1
 
         else:
@@ -101,19 +101,19 @@ def rel_3_inv_2_fix(allClasses,erros: list[ErroInv]):
             # o processo em falta é acrescentado nele
             elif len(utilidade) == 1:
                 procRefs = utilidade[0].get("procRefs",[])
-                procRefs.append(err.info)
+                procRefs.append(err.info["proc"])
                 critCod = utilidade[0]["critCodigo"]
                 for crit in just:
                     if crit["tipo"] == "utilidade":
                         # Adicionar o conteúdo de acordo com o que já lá está
                         if crit["conteudo"] and crit["conteudo"][-1] != ';':
-                            crit["conteudo"] += f";É suplemento para {err.info};"
+                            crit["conteudo"] += f";É suplemento para {err.info["proc"]};"
                         else:
-                            crit["conteudo"] += f"É suplemento para {err.info};"
+                            crit["conteudo"] += f"É suplemento para {err.info["proc"]};"
 
                         crit["procRefs"] = procRefs
                         break
-                err.fix(f"O processo {err.info} foi adicionado no critério de justificação {critCod} do PCA do processo {err.cod}")
+                err.fix(f"O processo {err.info["proc"]} foi adicionado no critério de justificação {critCod} do PCA do processo {err.cod}")
                 errFixed += 1
 
             # Se ainda não existe um critério do tipo "utilidade",
@@ -123,13 +123,13 @@ def rel_3_inv_2_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "utilidade",
-                    "conteudo": f"É suplemento para {err.info};",
-                    "procRefs": [err.info]
+                    "conteudo": f"É suplemento para {err.info["proc"]};",
+                    "procRefs": [err.info["proc"]]
                 }
                 just.append(newCrit)
                 # Caso a justifição não exista
                 pca["justificacao"] = just
-                err.fix(f"Um novo critério de utilidade da justificação do PCA do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info} foi adicionado ao critério criado.")
+                err.fix(f"Um novo critério de utilidade da justificação do PCA do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info["proc"]} foi adicionado ao critério criado.")
                 errFixed += 1
         else:
             err.fix(f"O processo {err.cod} não tem PCA", failed=True)
@@ -177,9 +177,9 @@ def rel_4_inv_3_fix(allClasses,erros: list[ErroInv]):
                     if crit["tipo"] == "densidade":
                         # Adicionar o conteúdo de acordo com o que já lá está
                         if crit["conteudo"] and crit["conteudo"][-1] != ';':
-                            crit["conteudo"] += f";{rel} {err.info};"
+                            crit["conteudo"] += f";{rel} {err.info["proc"]};"
                         else:
-                            crit["conteudo"] += f"{rel} {err.info};"
+                            crit["conteudo"] += f"{rel} {err.info["proc"]};"
 
                         crit["procRefs"] = procRefs
                         break
@@ -238,19 +238,19 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
             # o processo em falta é acrescentado nele
             elif len(compls) == 1:
                 procRefs = compls[0].get("procRefs",[])
-                procRefs.append(err.info)
+                procRefs.append(err.info["proc"])
                 critCod = compls[0]["critCodigo"]
                 for crit in just:
                     if crit["tipo"] == "complementaridade":
                         # Adicionar o conteúdo de acordo com o que já lá está
                         if crit["conteudo"] and crit["conteudo"][-1] != ';':
-                            crit["conteudo"] += f";É complementar de {err.info};"
+                            crit["conteudo"] += f";É complementar de {err.info["proc"]};"
                         else:
-                            crit["conteudo"] += f"É complementar de {err.info};"
+                            crit["conteudo"] += f"É complementar de {err.info["proc"]};"
 
                         crit["procRefs"] = procRefs
                         break
-                err.fix(f"O processo {err.info} foi adicionado no critério de justificação {critCod} do DF do processo {err.cod}")
+                err.fix(f"O processo {err.info["proc"]} foi adicionado no critério de justificação {critCod} do DF do processo {err.cod}")
                 errFixed += 1
 
             # Se ainda não existe um critério do tipo "complementaridade",
@@ -261,13 +261,13 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "complementaridade",
-                    "conteudo": f"É complementar de {err.info};",
-                    "procRefs": [err.info]
+                    "conteudo": f"É complementar de {err.info["proc"]};",
+                    "procRefs": [err.info["proc"]]
                 }
                 just.append(newCrit)
                 # Caso a justifição não exista
                 df["justificacao"] = just
-                err.fix(f"Um novo critério de complementaridade da justificação do DF do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info} foi adicionado ao critério criado.")
+                err.fix(f"Um novo critério de complementaridade da justificação do DF do processo {err.cod} foi gerado automaticamente com o código {critCod}. O processo {err.info["proc"]} foi adicionado ao critério criado.")
                 errFixed += 1
         else:
             err.fix(f"O processo {err.cod} não tem DF", failed=True)

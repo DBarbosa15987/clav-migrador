@@ -682,4 +682,8 @@ class ErroInv:
 
 class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
+        if isinstance(obj, Enum):
+            return obj.name
+        if isinstance(obj, (set, frozenset)):
+            return list(obj)
         return obj.__dict__
