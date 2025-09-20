@@ -30,3 +30,5 @@ def excel2json(rep: Report,filename):
     # Registo das classes de nível 1 para futuro agrupamento
     with open(os.path.join(FILES_DIR,'classesN1.json'),'w') as f:
         json.dump(classesN1,f,indent=4,ensure_ascii=False)
+
+    return classesN1

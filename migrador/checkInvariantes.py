@@ -10,9 +10,6 @@ import logging
 logger = logging.getLogger(INV)
 loggerProc = logging.getLogger(PROC)
 
-sheets = ['100','150','200','250','300','350','400','450','500','550','600',
-            '650','700','710','750','800','850','900','950']
-
 relsSimetricas = ["eCruzadoCom","eComplementarDe"]
 relsInverseOf = {
     "eSinteseDe": "eSintetizadoPor",
@@ -24,7 +21,7 @@ relsInverseOf = {
 }
 
 
-def processClasses(rep: Report):
+def processClasses(sheets,rep: Report):
     """
     Função que verifica se existem códigos de classe repetidas
     e se todas as classes mencionadas (em relações) existem de facto.

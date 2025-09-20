@@ -26,7 +26,7 @@ def migra(filename):
     # --------------------------------------------
 
     loggerProc.info("Criação dos ficheiros JSON intermédios")
-    excel2json(rep,filename)
+    classesN1 = excel2json(rep,filename)
 
     # --------------------------------------------
     # Processamento inicial dos dados
@@ -35,7 +35,7 @@ def migra(filename):
     loggerProc.info("-"*80)
     loggerProc.info("Processamento inicial dos dados")
     loggerProc.info("-"*80)
-    allClasses,harmonizacao = c.processClasses(rep)
+    allClasses,harmonizacao = c.processClasses(classesN1,rep)
 
     # Inferências de relações
     loggerProc.info("Inferências de relações")
@@ -131,19 +131,25 @@ def migra(filename):
 
     # A ontologia só é gerada se nenhum erro "grave" for encontrado
     if ok:
+
+        # Reorganização dos dados
+        finalClasses = { c:{} for c in classesN1}
+        for cod,proc in allClasses.items():
+            if len(cod) >=3:
+                classe = cod[:3]
+                finalClasses[classe][cod] = proc
+
         loggerGen.info("-"*80)
         loggerGen.info("Geração dos ficheiros de ontologia")
         loggerGen.info("-"*80)
 
-        g.tiGenTTL()
+        g.tiGenTTL(termosIndice)
         g.entidadeGenTTL()
         g.tipologiaGenTTL()
         g.legGenTTL()
 
-        classes = ['100','150','200','250','300','350','400','450','500','550','600',
-                    '650','700','710','750','800','850','900','950']
-        for classe in classes:
-            g.classeGenTTL(classe)
+        for clN1,procs in finalClasses.items():
+            g.classeGenTTL(clN1,procs)
 
         loggerGen.info("-"*80)
         loggerGen.info("Geração dos ficheiros de ontologia terminada")

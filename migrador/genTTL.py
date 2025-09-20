@@ -24,18 +24,16 @@ dataAtualizacao = agora.strftime("%Y-%m-%d")
 
 # --- Migra os termos de índice ------------------------
 # ------------------------------------------------------
-def tiGenTTL():
+def tiGenTTL(termosIndice):
 
     logger.info("Geração da ontologia dos termos índice")
-    fin = open(os.path.join(FILES_DIR,"ti.json"))
-    termos = json.load(fin)
 
     g = Graph()
     g.bind("", ns)
     g.bind("dc", dc)
     g.add((uri_ontologia, dc.date, Literal(dataAtualizacao)))
 
-    for ti in termos:
+    for ti in termosIndice:
         ticod = "ti_" + ti['codigo'] + '_' + generate('abcdef', 6)
         tiUri = ns[ticod]
         g.add((tiUri,RDF.type, OWL.NamedIndividual))
@@ -45,7 +43,6 @@ def tiGenTTL():
         g.add((tiUri, ns.estado, Literal("Ativo")))
         g.add((tiUri, ns.termo, Literal(ti['termo'])))
 
-    fin.close()
     g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,"ti.ttl"))
     logger.info("Geração da ontologia dos termos índice terminada")
 
@@ -162,20 +159,17 @@ def entidadeGenTTL():
 
 # --- Migra uma classe ---------------------------------
 # ------------------------------------------------------
-def classeGenTTL(c):
+def classeGenTTL(clN1,classes):
 
-    logger.info(f"Geração da ontologia da classe {c}")
-    fin = open(os.path.join(FILES_DIR,f"{c}.json"))
-    classes = json.load(fin)
+    logger.info(f"Geração da ontologia da classe {clN1}")
 
     # Carregam-se os catálogos
     # --------------------------------------------------
     ecatalog = open(os.path.join(FILES_DIR,"entCatalog.json"))
-    tcatalog = open(os.path.join(FILES_DIR,"tipCatalog.json"))
     lcatalog = open(os.path.join(FILES_DIR,"legCatalog.json"))
     entCatalog = json.load(ecatalog)
-    tipCatalog = json.load(tcatalog)
     legCatalog = json.load(lcatalog)
+
     # Correspondência de intervenções e relações
     intervCatalog = {'Apreciar': 'temParticipanteApreciador','Assessorar': 'temParticipanteAssessor',
                     'Comunicar': 'temParticipanteComunicador','Decidir': 'temParticipanteDecisor',
@@ -185,8 +179,6 @@ def classeGenTTL(c):
     g.bind("", ns)
 
     for cod,classe in classes.items():
-
-        # print(cod)
         # codigo, estado, nível e título
         codigoUri = ns[f"c{cod}"]
         g.add((codigoUri,RDF.type, OWL.NamedIndividual))
@@ -407,9 +399,11 @@ def classeGenTTL(c):
                         for ref in crit['procRefs']:
                             g.add((critUri,ns.critTemProcRel,ns[f"c{ref}"]))
 
-    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,f"{c}.ttl"))
-    fin.close()
-    logger.info(f"Geração da ontologia da classe {classe} terminada")
+    ecatalog.close()
+    lcatalog.close()
+
+    g.serialize(format="ttl",destination=os.path.join(ONTOLOGY_DIR,f"{clN1}.ttl"))
+    logger.info(f"Geração da ontologia da classe {clN1} terminada")
 
 
 # --- Geração da ontologia final -----------------------
