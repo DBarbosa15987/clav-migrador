@@ -135,12 +135,12 @@ class Report:
             ok = False
 
         if not ok:
-            logger.error("Foram encontrados erros graves nos dados, a ontologia final não será criada")
+            logger.warning("Foram encontrados erros graves nos dados, a ontologia final não será criada")
 
         return ok
 
 
-    def addFalhaInv(self,inv,cod,info="",extra=""):
+    def addFalhaInv(self,inv,cod,info={},extra=""):
         """
         Regista em `rep` a falha de um invariante `inv`
         no processo `cod`. O info e extra server para a
