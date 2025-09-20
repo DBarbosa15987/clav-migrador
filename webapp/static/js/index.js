@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buttonText.textContent = 'Carregando...';
         loadingIndicator.classList.remove('hidden');
+        generalError.classList.add('hidden');
 
         const submitButton = form.querySelector('button[type="submit"]');
         submitButton.disabled = true;
