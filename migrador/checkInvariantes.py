@@ -315,7 +315,7 @@ def rel_2_inv_4(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSintetizadoPor é antissimétrica."
+    "A relação <b>eSintetizadoPor</b> é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_2_inv_4")
@@ -331,7 +331,7 @@ def rel_2_inv_5(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSucessorDe é antissimétrica."
+    "A relação <b>eSucessorDe</b> é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_2_inv_5")
@@ -348,7 +348,7 @@ def rel_2_inv_11(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Um PN não pode ter em simultâneo relações de
-    'éSínteseDe' e 'éSintetizadoPor' com outros PNs"
+    <b>éSínteseDe</b> e <b>éSintetizadoPor</b> com outros PNs"
     """
 
     logger.info("Verificação do invariante rel_2_inv_11")
@@ -408,7 +408,7 @@ def rel_2_inv_6(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSuplementoDe é antissimétrica."
+    "A relação <b>eSuplementoDe<b> é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_2_inv_6")
@@ -424,7 +424,7 @@ def rel_2_inv_7(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSuplementoPara é antissimétrica."
+    "A relação <b>eSuplementoPara</b> é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_2_inv_7")
@@ -440,7 +440,7 @@ def rel_2_inv_3(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação eSinteseDe é antissimétrica."
+    "A relação <b>eSinteseDe</b> é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_2_inv_3")
@@ -479,8 +479,9 @@ def rel_1_inv_2(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "DF distinto: Deve haver uma relação de sintese (de ou por)
-    entre as classes 4 filhas."
+    "Quando os filhos resultantes de um desdobramento de
+    um PN têm o DF distinto, deve haver uma relação de
+    síntese (de ou por) entre eles."
     """
 
     logger.info("Verificação do invariante rel_1_inv_2")
@@ -523,9 +524,9 @@ def rel_3_inv_1(allClasses,rep:Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando o PN em causa é suplemento para outro,
-    deve ser acrescentado um critério de utilidade
-    administrativa na justificação do respetivo PCA"
+    "Quando o PN em causa é <b>suplementoPara</b> outro,
+    deve ser acrescentado um <b>critério de utilidade
+    administrativa</b> na justificação do respetivo PCA"
     """
 
     logger.info("Verificação do invariante rel_3_inv_1")
@@ -555,9 +556,9 @@ def rel_3_inv_2(allClasses,rep:Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "No critério de utilidade administrativa devem aparecer
+    "No <b>critério de utilidade administrativa</b> devem aparecer
     todos os processos com os quais existe uma relação de
-    suplemento para"
+    <b>suplementoPara</b>"
     """
 
     logger.info("Verificação do invariante rel_3_inv_2")
@@ -602,9 +603,9 @@ def rel_5_inv_1(allClasses,rep:Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando o PN em causa é complementar de outro,
-    a justificação do DF deverá conter o critério
-    de complementaridade informacional"
+    "Quando o PN em causa é <b>complementar de</b> outro,
+    a justificação do DF deverá conter o <b>critério de
+    complementaridade informacional</b>"
     """
 
     logger.info("Verificação do invariante rel_5_inv_1")
@@ -633,8 +634,8 @@ def rel_4_inv_1(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando o PN em causa é síntetizado por outro,
-    o DF deve ter o valor de 'Eliminação'"
+    "Quando o PN em causa é <b>síntetizado por</b>
+    outro, o DF deve ter o valor de \"Eliminação\""
     """
 
     logger.info("Verificação do invariante rel_4_inv_1")
@@ -660,10 +661,9 @@ def rel_3_inv_3(allClasses,rep:Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando o PN em causa é suplemento de outro, o critério
-    a acrescentar na justificação do PCA é livre, normalmente
-    é o critério legal. Todos os processos relacionados pela
-    relação suplemento de devem figurar neste critério"
+    "Quando o PN em causa é <b>suplemento de</b> outro,
+    todos os processos relacionados pela relação
+    <b>suplementoDe</b> devem constar na justificação do PCA."
     """
 
     logger.info("Verificação do invariante rel_3_inv_3")
@@ -710,7 +710,7 @@ def rel_8_inv_2(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Se um PN é eSinteseDe -> DF é de conservação"
+    "Se um PN é <b>eSinteseDe</b> -> DF é de conservação"
     """
 
     logger.info("Verificação do invariante rel_8_inv_2")
@@ -733,7 +733,9 @@ def rel_1_inv_1(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Só existe desdobramento caso o PCA ou DF sejam distintos"
+    "Os PNs só podem ter desbobramento ao nível 4
+    quando os descendentes de nível 4 têm valores
+    de PCA ou DF distintos entre eles."
     """
 
     logger.info("Verificação do invariante rel_1_inv_1")
@@ -767,8 +769,8 @@ def rel_1_inv_4(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "As relações temDF e temPCA, não existem numa
-    classe 3 se esta tiver filhos"
+    "Uma classe de nível 3 não pode ter valores de
+    DF e PCA se esta tiver desdobramento no nível 4."
     """
 
     logger.info("Verificação do invariante rel_1_inv_4")
@@ -790,11 +792,11 @@ def rel_1_inv_6(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Se um PN (Classe 3) for complementar de outro que
-    se desdobra ao 4º nível, é necessário, com base no
-    critério de complementaridade informacional, a relação
-    manter-se ao 3º nível. Pelo menos um dos 4ºs níveis
-    deve ser de conservação."
+    "Se um PN (Classe 3) for <b>complementar de</b> outro
+    que se desdobra ao 4º nível, é necessário, com base no
+    <b>critério de complementaridade informacional</b>,
+    a relação manter-se ao 3º nível.
+    Pelo menos um dos 4ºs níveis deve ser de conservação."
     """
 
     logger.info("Verificação do invariante rel_1_inv_6")
@@ -829,8 +831,8 @@ def rel_1_inv_3(allClasses,termosIndice,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando há desdobramento em 4ºs níveis, os termos de
-    índice são replicados em cada um desses níveis."
+    "Quando há desdobramento em 4ºs níveis, os termos
+    de índice são replicados em cada um desses níveis."
     """
 
     logger.info("Verificação do invariante rel_1_inv_3")
@@ -855,9 +857,9 @@ def rel_4_inv_2(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Se um PN tem uma relação de síntese, o seu DF deverá
-    ter uma justificação onde consta um critério de
-    densidade informacional"
+    "Se um PN tem uma relação de <b>síntese</b>,
+    o seu DF deverá ter uma justificação onde consta
+    um <b>critério de densidade informacional</b>"
     """
 
     logger.info("Verificação do invariante rel_4_inv_2")
@@ -889,8 +891,9 @@ def rel_4_inv_3(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Todos os processos relacionados por uma relação de
-    síntese deverão estar relacionados com o critério de
-    densidade informacional da respetiva justificação"
+    <b>síntese</b> deverão estar relacionados com o
+    <b>critério de densidade informacional</b> da
+    respetiva justificação"
     """
 
     logger.info("Verificação do invariante rel_4_inv_3")
@@ -939,9 +942,10 @@ def rel_5_inv_2(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Todos os processos relacionados pela relação é complementar
-    de, devem estar relacionados com o critério de complementaridade
-    informacional da respetiva justificação"
+    "Todos os processos relacionados pela relação
+    <b>eComplementarDe</b>, devem estar relacionados
+    com o <b>critério de complementaridade informacional</b>
+    da respetiva justificação"
     """
 
     logger.info("Verificação do invariante rel_5_inv_2")
@@ -984,7 +988,7 @@ def rel_8_inv_1(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Se um PN é eComplementarDe -> DF é de conservação"
+    "Se um PN é <b>eComplementarDe</b> -> DF é de conservação"
     """
 
     logger.info("Verificação do invariante rel_8_inv_1")
@@ -1090,8 +1094,7 @@ def rel_2_inv_8(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Na relação temRelProc um PN não se relaciona
-    com ele próprio."
+    "Um PN não se pode relacionar com ele próprio."
     """
 
     logger.info("Verificação do invariante rel_2_inv_8")
@@ -1116,9 +1119,9 @@ def rel_6_inv_1(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Um DF, na sua justificação, deverá conter
-    apenas critérios de densidade informacional,
-    complementaridade informacional e legal"
+    "Um DF, na sua justificação, deverá conter apenas
+    <b>critérios de densidade informacional</b>,
+    <b>complementaridade informacional</b> e <b>legal</b>"
     """
 
     logger.info("Verificação do invariante rel_6_inv_1")
@@ -1222,9 +1225,10 @@ def rel_8_inv_4(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Todos os processos referenciados no critério de
-    utilidade administrativa devem estar devidamente
-    declarados com a relação "Suplemento Para""
+    "Todos os processos referenciados no <b>critério
+    de densidade informacional</b> devem estar
+    devidamente declarados com a relação
+    <b>sinteseDe</b> ou <b>sintetizadoPor</b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_4")
@@ -1255,9 +1259,9 @@ def rel_8_inv_5(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Todos os processos referenciados no critério de
-    densidade informacional devem estar devidamente
-    declarados com a relação "Síntese de" ou "Sintetizado por""
+    "Todos os processos referenciados no <b>critério
+    de complementaridade informacional</b> devem estar
+    devidamente declarados com a relação <b>eComplementarDe<b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_5")
@@ -1288,9 +1292,9 @@ def rel_8_inv_6(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Todos os processos referenciados no critério de
-    complementaridade informacional devem estar devidamente
-    declarados com a relação "É Complementar De""
+    "Todos os processos referenciados no <b>critério
+    de utilidade administrativa</b> devem estar devidamente
+    declarados com a relação <b>suplementoPara</b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_6")

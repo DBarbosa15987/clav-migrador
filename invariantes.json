@@ -12,7 +12,7 @@
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Quando os filhos resultantes de um desdobramento de um PN têm o DF distinto, deve haver uma relação de sintese (de ou por) entre eles.",
+                    "desc": "Quando os filhos resultantes de um desdobramento de um PN têm o DF distinto, deve haver uma relação de síntese (de ou por) entre eles.",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_3"
                 },
@@ -36,8 +36,8 @@
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "Se um PN (Classe 3) for complementar de outro que se desdobra ao 4º nível, é necessário, com base no critério de complementaridade informacional, a relação manter-se ao 3º nível. Pelo menos um dos 4ºs níveis deve ser de conservação.",
-                    "clarificacao": "Se um PN for complementar de um PN com filhos, pelo menos um deles precisa de ter o valor de 'C' (Conservação) no DF.",
+                    "desc": "Se um PN (Classe 3) for <b>complementar de</b> outro que se desdobra ao 4º nível, é necessário, com base no <b>critério de complementaridade informacional</b>, a relação manter-se ao 3º nível. Pelo menos um dos 4ºs níveis deve ser de conservação.",
+                    "clarificacao": "Se um PN for <b>complementar de</b> um PN com filhos, pelo menos um deles precisa de ter o valor de 'C' (Conservação) no DF.",
                     "oldId": "rel_3_inv_7"
                 },
                 {
@@ -66,31 +66,31 @@
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "A relação eSinteseDe é antisimétrica.",
+                    "desc": "A relação <b>eSinteseDe</b> é antissimétrica.",
                     "clarificacao": "Se A é Síntese de B, então B não pode ser Síntese de A",
                     "oldId": "rel_4_inv_2"
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "A relação eSintetizadoPor é antisimétrica.",
+                    "desc": "A relação <b>eSintetizadoPor</b> é antissimétrica.",
                     "clarificacao": "Se A é Sintetizado por B, então B não pode ser Sintetizado por A",
                     "oldId": "rel_4_inv_3"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "A relação eSucessorDe é antisimétrica.",
+                    "desc": "A relação <b>eSucessorDe</b> é antissimétrica.",
                     "clarificacao": "Se A é Sucessor de B, então B não pode ser Sucessor de A",
                     "oldId": "rel_4_inv_4"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "A relação eSuplementoDe é antisimétrica.",
+                    "desc": "A relação <b>eSuplementoDe<b> é antissimétrica.",
                     "clarificacao": "Se A é Suplemento de B, então B não pode ser Suplemento de A",
                     "oldId": "rel_4_inv_5"
                 },
                 {
                     "idInv": "inv_7",
-                    "desc": "A relação eSuplementoPara é antisimétrica.",
+                    "desc": "A relação <b>eSuplementoPara</b> é antissimétrica.",
                     "clarificacao": "Se A é Suplemento para B, então B não pode ser Suplemento para A",
                     "oldId": "rel_4_inv_6"
                 },
@@ -108,13 +108,13 @@
                 },
                 {
                     "idInv": "inv_10",
-                    "desc": "Os termos de indice de um PN não existem em mais nenhuma classe 3",
+                    "desc": "Os termos de índice de um PN não existem em mais nenhuma classe 3",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_10"
                 },
                 {
                     "idInv": "inv_11",
-                    "desc": "Um PN não pode ter em simultâneo relações de 'éSínteseDe' e 'éSintetizadoPor' com outros PNs",
+                    "desc": "Um PN não pode ter em simultâneo relações de <b>éSínteseDe</b> e <b>éSintetizadoPor</b> com outros PNs",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_11"
                 },
@@ -144,20 +144,20 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Quando o PN em causa é suplemento para outro, deve ser acrescentado um critério de utilidade administrativa na justificação do respetivo PCA",
-                    "clarificacao": "Quando o PN em causa é suplemento para outro, deve ser acrescentado um critério de utilidade administrativa na justificação do respetivo PCA",
+                    "desc": "Quando o PN em causa é <b>suplementoPara</b> outro, deve ser acrescentado um <b>critério de utilidade administrativa</b> na justificação do respetivo PCA",
+                    "clarificacao": "",
                     "oldId": "rel_5_inv_1"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "No critério de utilidade administrativa devem aparecer todos os processos com os quais existe uma relação de suplemento para",
-                    "clarificacao": "No critério de utilidade administrativa devem aparecer todos os processos com os quais existe uma relação de suplemento para",
+                    "desc": "No <b>critério de utilidade administrativa</b> devem aparecer todos os processos com os quais existe uma relação de <b>suplementoPara</b>",
+                    "clarificacao": "",
                     "oldId": "rel_5_inv_2"
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Quando o PN em causa é suplemento de outro, todos os processos relacionados pela relação suplemento de devem constar na justificação do PCA.",
-                    "clarificacao": "Quando o PN em causa é suplemento de outro, todos os processos relacionados pela relação suplemento de devem constar na justificação do PCA.",
+                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b>suplementoDe</b> devem constar na justificação do PCA.",
+                    "clarificacao": "",
                     "oldId": "rel_5_inv_3"
                 }
             ]
@@ -168,19 +168,19 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Quando o PN em causa é síntetizado por outro, o DF deve ter o valor de \"Eliminação\"",
+                    "desc": "Quando o PN em causa é <b>síntetizado por</b> outro, o DF deve ter o valor de \"Eliminação\"",
                     "clarificacao": "",
                     "oldId": "rel_6_inv_2"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Se um PN tem uma relação de síntese, o seu DF deverá ter uma justificação onde consta um critério de densidade informacional",
+                    "desc": "Se um PN tem uma relação de <b>síntese</b>, o seu DF deverá ter uma justificação onde consta um <b>critério de densidade informacional</b>",
                     "clarificacao": "",
                     "oldId": "rel_6_inv_3"
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Todos os processos relacionados por uma relação de síntese deverão estar relacionados com o critério de densidade informacional da respetiva justificação",
+                    "desc": "Todos os processos relacionados por uma relação de <b>síntese</b> deverão estar relacionados com o <b>critério de densidade informacional</b> da respetiva justificação",
                     "clarificacao": "",
                     "oldId": "rel_6_inv_4"
                 }
@@ -198,7 +198,7 @@
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Todos os processos relacionados pela <b>relação é complementar de</b>, devem <b>estar relacionados</b> com o <b>critério de complementaridade informacional</b> da respetiva justificação",
+                    "desc": "Todos os processos relacionados pela relação <b>eComplementarDe</b>, devem estar relacionados com o <b>critério de complementaridade informacional</b> da respetiva justificação",
                     "clarificacao": "",
                     "oldId": "rel_7_inv_3"
                 }
@@ -210,7 +210,7 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Um DF, na sua justificação, deverá conter apenas critérios de densidade informacional, complementaridade informacional e legal",
+                    "desc": "Um DF, na sua justificação, deverá conter apenas <b>critérios de densidade informacional</b>, <b>complementaridade informacional</b> e <b>legal</b>",
                     "clarificacao": "",
                     "oldId": "rel_8_inv_1"
                 },
@@ -240,13 +240,13 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Se um PN é eComplementarDe -> DF é de conservação",
+                    "desc": "Se um PN é <b>eComplementarDe</b> -> DF é de conservação",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_1"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Se um PN é eSinteseDe -> DF é de conservação",
+                    "desc": "Se um PN é <b>eSinteseDe</b> -> DF é de conservação",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_2"
                 },
@@ -258,19 +258,19 @@
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "Todos os processos referenciados no critério de densidade informacional devem estar devidamente declarados com a relação \"Síntese de\" ou \"Sintetizado por\"",
+                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar devidamente declarados com a relação <b>sinteseDe</b> ou <b>sintetizadoPor</b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_5"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "Todos os processos referenciados no critério de complementaridade informacional devem estar devidamente declarados com a relação \"É Complementar De\"",
+                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar devidamente declarados com a relação <b>eComplementarDe<b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_6"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "Todos os processos referenciados no critério de utilidade administrativa devem estar devidamente declarados com a relação \"Suplemento Para\"",
+                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar devidamente declarados com a relação <b>suplementoPara</b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_7"
                 }
