@@ -241,13 +241,14 @@ class ErroInv:
             return data
 
 
-    def fix(self, fixMsg, failed = False):
-        if failed:
-            self.fixStatus = FixStatus.FAILED
-            self.fixMsg = fixMsg
-        else:
+    def fix(self, fixMsg):
             self.fixStatus = FixStatus.FIXED
             self.fixMsg = fixMsg
+
+
+    def fail(self,fixMsg):
+        self.fixStatus = FixStatus.FAILED
+        self.fixMsg = fixMsg
 
 
     def errorMsg(self):
