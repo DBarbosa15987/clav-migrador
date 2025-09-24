@@ -37,7 +37,7 @@ def processSheet(sheet, rep: Report):
             if row["Designação"]:
                 myReg["designacao"] = brancos.sub('', row["Designação"])
             else:
-                rep.addWarning("",f"A tipologia {myReg["sigla"]} não tem designação definida.")
+                rep.addWarning(info={"msg":f"A tipologia {myReg["sigla"]} não tem designação definida."})
             myTipologia.append(myReg)
 
     outFilePath = os.path.join(FILES_DIR, "tip.json")

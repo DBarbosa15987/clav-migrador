@@ -45,7 +45,7 @@ def processSheet(sheet, nome, rep: Report):
                 myReg["numero"] = re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', myReg["numero"])
 
             else:
-                rep.addWarning("",f"legindex {str(index+2)}::Legislação sem número")
+                rep.addWarning(info={"msg":f"legindex {str(index+2)}::Legislação sem número"})
                 myReg["numero"] = 'NE'
             # Entidades:--------------------------------------------------
             filtradas = []

@@ -8,6 +8,7 @@ import os
 import uuid
 from log_utils import WEB
 import logging
+from migrador.genHTML import generate_entity_table_dict, generate_error_table, generate_warnings_table
 
 
 logger = logging.getLogger(WEB)
@@ -71,8 +72,9 @@ def process_file():
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
         "ok": ok,
-        "table_by_entity": rep.generate_entity_table_dict(),
-        "table_by_invariant": rep.generate_error_table()
+        "table_by_entity": generate_entity_table_dict(rep.globalErrors,rep),
+        "table_by_invariant": generate_error_table(rep.globalErrors),
+        "warnings": generate_warnings_table(rep.warnings)
     })
 
 

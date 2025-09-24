@@ -53,7 +53,7 @@ def processClasses(sheets,rep: Report):
         # ser marcada como warning e adicionada a um dicionário diferente,
         # não para ser testada, mas para ser consultada caso seja referenciada.
         if classe["estado"] == "H":
-            rep.addWarning("H",cod)
+            rep.addWarning("H",{"proc":cod})
             harmonizacao[cod] = classe
             continue
         elif classe["estado"] in ['A','I']:
@@ -71,7 +71,7 @@ def processClasses(sheets,rep: Report):
                     rep.addErro(cod,f"{cod} não tem pai")
                 elif classePai.get("estado") == 'H':
                     # Tem pai em harmonização
-                    rep.addWarning("",f"O processo {cod} está ativo/inativo, mas o seu pai {pai} está em harmonização")
+                    rep.addWarning(info={"msg":f"O processo {cod} está ativo/inativo, mas o seu pai {pai} está em harmonização"})
 
         else:
             # O valor do estado da classe encontra-se fora do domínio estabelecido.
@@ -95,7 +95,7 @@ def processClasses(sheets,rep: Report):
                 # Se a relação mencionar um processo em harmonização fica anotado
                 # como warning
                 elif data[proc]['estado'] == 'H':
-                    rep.addWarning("R",(cod,rel,proc))
+                    rep.addWarning("R",{"rel":(cod,rel,proc)})
                 else:
                     classe2 = data[proc]
                     proRels2 = classe2.get("processosRelacionados",[])
@@ -120,7 +120,7 @@ def processClasses(sheets,rep: Report):
                             # Se a relação mencionar um processo em harmonização fica anotado
                             # como warning
                             elif data[p]['estado'] == 'H':
-                                rep.addWarning("R",(cod,rel,p))
+                                rep.addWarning("R",{"rel":(cod,rel,p)})
 
         if pca:
             justificacao = pca.get("justificacao")
@@ -134,7 +134,7 @@ def processClasses(sheets,rep: Report):
                             # Se a relação mencionar um processo em harmonização fica anotado
                             # como warning
                             elif data[p]['estado'] == 'H':
-                                rep.addWarning("R",(cod,rel,p))
+                                rep.addWarning("R",{"rel":(cod,rel,p)})
 
     loggerProc.info(f"Foram encontrados {len(harmonizacao)} processos em harmonização")
     loggerProc.info(f"Foram encontradas {len(allClasses)} processos em ativos/inativos")

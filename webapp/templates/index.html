@@ -1,122 +1,140 @@
-<!DOCTYPE html>
-<html lang="pt">
+    <!DOCTYPE html>
+    <html lang="pt">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Migrador CLAV</title>
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Migrador CLAV</title>
+        <!-- Tailwind CSS via CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
 
-<body class="bg-gray-50 min-h-screen">
+    <body class="bg-gray-50 min-h-screen">
 
-    <header class="bg-gradient-to-r from-purple-600 to-indigo-800 text-white shadow-md">
-        <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold tracking-tight">Migrador CLAV</h1>
-            <p class="text-purple-100 mt-2">O Migrador CLAV é responsável por efetuar a migração do ficheiro de excel
-                para a ontologia que alimenta a ontologia CLAV. Também é responsável criar um relatório com todos os
-                erros e inconsistências encontradas nos dados providenciados.
-            </p>
-        </div>
-    </header>
+        <header class="bg-gradient-to-r from-purple-600 to-indigo-800 text-white shadow-md">
+            <div class="container mx-auto px-4 py-6">
+                <h1 class="text-3xl font-bold tracking-tight">Migrador CLAV</h1>
+                <p class="text-purple-100 mt-2">O Migrador CLAV é responsável por efetuar a migração do ficheiro de excel
+                    para a ontologia que alimenta a ontologia CLAV. Também é responsável criar um relatório com todos os
+                    erros e inconsistências encontradas nos dados providenciados.
+                </p>
+            </div>
+        </header>
 
 
-    <main class="container mx-auto px-4 py-10">
-        <div class="w-full max-w-7xl mx-auto">
-            <!-- Upload Card -->
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all hover:shadow-xl">
-                <h4 class="text-xl font-semibold text-gray-800 mb-3">Selecione o ficheiro para efetuar a migração,
-                    depois de completa vai poder descarregar a ontologia final</h4>
+        <main class="container mx-auto px-4 py-10">
+            <div class="w-full max-w-7xl mx-auto">
+                <!-- Upload Card -->
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all hover:shadow-xl">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Selecione o ficheiro para efetuar a migração,
+                        depois de completa vai poder descarregar a ontologia final</h4>
 
-                <form id="upload-form" enctype="multipart/form-data" class="space-y-6">
-                    <!-- Custom File Input -->
-                    <div class="relative">
-                        <div
-                            class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-purple-500 transition-colors">
-                            <input type="file" id="file" name="file"
-                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                            <div id="file-preview" class="flex flex-col items-center gap-2">
-                                <i class="fas fa-cloud-upload-alt text-5xl text-gray-400"></i>
-                                <span id="selected-file" class="text-gray-500 font-medium">Selecione o ficheiro</span>
+                    <form id="upload-form" enctype="multipart/form-data" class="space-y-6">
+                        <!-- Custom File Input -->
+                        <div class="relative">
+                            <div
+                                class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-purple-500 transition-colors">
+                                <input type="file" id="file" name="file"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                <div id="file-preview" class="flex flex-col items-center gap-2">
+                                    <i class="fas fa-cloud-upload-alt text-5xl text-gray-400"></i>
+                                    <span id="selected-file" class="text-gray-500 font-medium">Selecione o ficheiro</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit"
+                            class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center">
+                            <span id="button-text">Carregar Ficheiro</span>
+                            <span id="loading-indicator" class="hidden ml-2">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </span>
+                        </button>
+
+                        <!-- Download Button -->
+                        <a href="/download" id="download-btn" download
+                            class="w-full mt-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center text-center hidden">
+                            <span>Download Output</span>
+                        </a>
+                        <!-- Download Not Available -->
+                        <div id="download-warning"
+                            class="hidden w-full mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg shadow text-center">
+                            <strong>Atenção:</strong> A ontologia final não pôde ser gerada corretamente. Os erros marcados
+                            como <strong>🟥 Erros Graves</strong> têm de ser corrigidos diretamente no Excel original.
+                        </div>
+                        <!-- Generic Error -->
+                        <div id="general-error"
+                            class="hidden w-full mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow text-center">
+                            <span id="general-error-message" class="font-semibold"></span>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Report Container -->
+                <div id="report-container" class="hidden mt-8">
+
+                    <!-- Tabs -->
+                    <div class="mt-6 border-b border-gray-200">
+                        <nav class="flex space-x-6" id="report-tabs">
+                            <button data-tab="errors" class="py-2 font-medium text-gray-700 border-b-2 border-purple-600">
+                                Erros
+                            </button>
+                            <button data-tab="warnings" class="py-2 font-medium text-gray-500 hover:text-gray-700">
+                                Warnings
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Tab Contents -->
+                    <div id="tab-errors" class="mt-4">
+                        <!-- View Selector -->
+                        <div class="mb-6 flex flex-wrap items-center gap-6">
+                            <div class="flex items-center space-x-3">
+                                <label for="view-selector" class="text-sm font-medium text-gray-700">Ver por:</label>
+                                <select id="view-selector"
+                                    class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                    <option value="by-invariant">Invariante</option>
+                                    <option value="by-entity">Entidade</option>
+                                </select>
+                            </div>
+
+                            <!-- Entity Selector -->
+                            <div id="entity-selector-wrapper" class="hidden flex items-center space-x-3">
+                                <label for="entity-selector" class="text-sm font-medium text-gray-700">Entidade:</label>
+                                <select id="entity-selector"
+                                    class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></select>
+                            </div>
+                        </div>
+
+                        <!-- Report Views -->
+                        <div id="report-views">
+                            <div id="by-invariant" class="report-view hidden"></div>
+                            <div id="by-entity" class="report-view hidden">
+                                <div id="entity-report-content"></div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit"
-                        class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center">
-                        <span id="button-text">Carregar Ficheiro</span>
-                        <span id="loading-indicator" class="hidden ml-2">
-                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                    </button>
-
-                    <!-- Download Button -->
-                    <a href="/download" id="download-btn" download
-                        class="w-full mt-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium py-3 px-4 rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex justify-center items-center text-center hidden">
-                        <span>Download Output</span>
-                    </a>
-                    <!-- Download Not Available -->
-                    <div id="download-warning"
-                        class="hidden w-full mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg shadow text-center">
-                        <strong>Atenção:</strong> A ontologia final não pôde ser gerada corretamente. Os erros marcados
-                        como <strong>🟥 Erros Graves</strong> têm de ser corrigidos diretamente no Excel original.
-                    </div>
-                    <!-- Generic Error -->
-                    <div id="general-error"
-                        class="hidden w-full mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow text-center">
-                        <span id="general-error-message" class="font-semibold"></span>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- Report Container -->
-            <div id="report-container" class="hidden mt-8">
-
-                <!-- View Selector -->
-                <div class="mb-6 flex flex-wrap items-center gap-6">
-                    <div class="flex items-center space-x-3">
-                        <label for="view-selector" class="text-sm font-medium text-gray-700">Ver por:</label>
-                        <select id="view-selector"
-                            class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                            <option value="by-invariant">Invariante</option>
-                            <option value="by-entity">Entidade</option>
-                        </select>
-                    </div>
-
-                    <!-- Entity Selector -->
-                    <div id="entity-selector-wrapper" class="hidden flex items-center space-x-3">
-                        <label for="entity-selector" class="text-sm font-medium text-gray-700">Entidade:</label>
-                        <select id="entity-selector"
-                            class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></select>
-                    </div>
-                </div>
-
-                <!-- Report Views -->
-                <div id="report-views">
-                    <div id="by-invariant" class="report-view hidden"></div>
-                    <div id="by-entity" class="report-view hidden">
-                        <div id="entity-report-content"></div>
+                    <div id="tab-warnings" class="hidden mt-4">
+                        <div id="warnings-view"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
+            </div>
 
-    </main>
+        </main>
 
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-</body>
+        <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    </body>
 
-</html>
+    </html>

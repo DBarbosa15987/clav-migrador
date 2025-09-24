@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reportByInvariant = document.getElementById('by-invariant');
     const entityReportContent = document.getElementById('entity-report-content');
     const entitySelector = document.getElementById('entity-selector');
+    const warningsView = document.getElementById('warnings-view');
 
     const form = document.getElementById('upload-form');
     const fileInput = document.getElementById('file');
@@ -45,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    setupMainTabs();
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -84,8 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Setup entity tables
-            if (result.table_by_entity && result.table_by_invariant) {
+            if (result.table_by_entity && result.table_by_invariant && result.warnings) {
                 reportByInvariant.innerHTML = result.table_by_invariant;
+                warningsView.innerHTML = result.warnings;
                 entityTables = result.table_by_entity;
 
                 entitySelector.innerHTML = '';
@@ -155,4 +159,24 @@ function updateViewSelectorUI(selectedView) {
 
     document.getElementById('entity-selector-wrapper')
         .classList.toggle('hidden', selectedView !== 'by-entity');
+}
+
+function setupMainTabs() {
+    document.querySelectorAll('#report-tabs button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // reset styles on all tabs
+            document.querySelectorAll('#report-tabs button').forEach(b => {
+                b.classList.remove('border-purple-600', 'text-gray-700', 'border-b-2');
+                b.classList.add('text-gray-500');
+            });
+
+            // activate clicked tab
+            btn.classList.add('border-purple-600', 'text-gray-700', 'border-b-2');
+
+            // switch content
+            document.getElementById('tab-errors').classList.add('hidden');
+            document.getElementById('tab-warnings').classList.add('hidden');
+            document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+        });
+    });
 }
