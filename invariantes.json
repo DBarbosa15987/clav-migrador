@@ -66,31 +66,31 @@
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "A relação <b>eSinteseDe</b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSinteseDe</i></b> é antissimétrica.",
                     "clarificacao": "Se A é Síntese de B, então B não pode ser Síntese de A",
                     "oldId": "rel_4_inv_2"
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "A relação <b>eSintetizadoPor</b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSintetizadoPor</i></b> é antissimétrica.",
                     "clarificacao": "Se A é Sintetizado por B, então B não pode ser Sintetizado por A",
                     "oldId": "rel_4_inv_3"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "A relação <b>eSucessorDe</b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSucessorDe</i></b> é antissimétrica.",
                     "clarificacao": "Se A é Sucessor de B, então B não pode ser Sucessor de A",
                     "oldId": "rel_4_inv_4"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "A relação <b>eSuplementoDe<b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSuplementoDe</i></b> é antissimétrica.",
                     "clarificacao": "Se A é Suplemento de B, então B não pode ser Suplemento de A",
                     "oldId": "rel_4_inv_5"
                 },
                 {
                     "idInv": "inv_7",
-                    "desc": "A relação <b>eSuplementoPara</b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSuplementoPara</i></b> é antissimétrica.",
                     "clarificacao": "Se A é Suplemento para B, então B não pode ser Suplemento para A",
                     "oldId": "rel_4_inv_6"
                 },
@@ -144,19 +144,19 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Quando o PN em causa é <b>suplementoPara</b> outro, deve ser acrescentado um <b>critério de utilidade administrativa</b> na justificação do respetivo PCA",
+                    "desc": "Quando o PN em causa é <b><i>eSuplementoPara</i></b> outro, deve ser acrescentado um <b>critério de utilidade administrativa</b> na justificação do respetivo PCA",
                     "clarificacao": "",
                     "oldId": "rel_5_inv_1"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "No <b>critério de utilidade administrativa</b> devem aparecer todos os processos com os quais existe uma relação de <b>suplementoPara</b>",
+                    "desc": "No <b>critério de utilidade administrativa</b> devem aparecer todos os processos com os quais existe uma relação de <b><i>eSuplementoPara</i></b>",
                     "clarificacao": "",
                     "oldId": "rel_5_inv_2"
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b>suplementoDe</b> devem constar na justificação do PCA.",
+                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b><i>eSuplementoDe</i></b> devem constar na justificação do PCA.",
                     "clarificacao": "",
                     "oldId": "rel_5_inv_3"
                 }
@@ -198,7 +198,7 @@
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Todos os processos relacionados pela relação <b>eComplementarDe</b>, devem estar relacionados com o <b>critério de complementaridade informacional</b> da respetiva justificação",
+                    "desc": "Todos os processos relacionados pela relação <b><i>eComplementarDe</i></b>, devem estar relacionados com o <b>critério de complementaridade informacional</b> da respetiva justificação",
                     "clarificacao": "",
                     "oldId": "rel_7_inv_3"
                 }
@@ -240,13 +240,13 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Se um PN é <b>eComplementarDe</b> -> DF é de conservação",
+                    "desc": "Se um PN é <b><i>eComplementarDe</i></b> -> DF é de conservação",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_1"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Se um PN é <b>eSinteseDe</b> -> DF é de conservação",
+                    "desc": "Se um PN é <b><i>eSinteseDe</i></b> -> DF é de conservação",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_2"
                 },
@@ -258,19 +258,19 @@
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar devidamente declarados com a relação <b>sinteseDe</b> ou <b>sintetizadoPor</b>",
+                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar devidamente declarados com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_5"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar devidamente declarados com a relação <b>eComplementarDe<b>",
+                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar devidamente declarados com a relação <b><i>eComplementarDe</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_6"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar devidamente declarados com a relação <b>suplementoPara</b>",
+                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar devidamente declarados com a relação <b><i>eSuplementoPara</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_7"
                 }

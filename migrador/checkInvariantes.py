@@ -408,7 +408,7 @@ def rel_2_inv_6(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação <b>eSuplementoDe<b> é antissimétrica."
+    "A relação <b>eSuplementoDe</b> é antissimétrica."
     """
 
     logger.info("Verificação do invariante rel_2_inv_6")
@@ -524,7 +524,7 @@ def rel_3_inv_1(allClasses,rep:Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando o PN em causa é <b>suplementoPara</b> outro,
+    "Quando o PN em causa é <b>eSuplementoPara</b> outro,
     deve ser acrescentado um <b>critério de utilidade
     administrativa</b> na justificação do respetivo PCA"
     """
@@ -558,7 +558,7 @@ def rel_3_inv_2(allClasses,rep:Report):
 
     "No <b>critério de utilidade administrativa</b> devem aparecer
     todos os processos com os quais existe uma relação de
-    <b>suplementoPara</b>"
+    <b>eSuplementoPara</b>"
     """
 
     logger.info("Verificação do invariante rel_3_inv_2")
@@ -663,7 +663,7 @@ def rel_3_inv_3(allClasses,rep:Report):
 
     "Quando o PN em causa é <b>suplemento de</b> outro,
     todos os processos relacionados pela relação
-    <b>suplementoDe</b> devem constar na justificação do PCA."
+    <b>eSuplementoDe</b> devem constar na justificação do PCA."
     """
 
     logger.info("Verificação do invariante rel_3_inv_3")
@@ -1228,7 +1228,7 @@ def rel_8_inv_4(allClasses,rep: Report):
     "Todos os processos referenciados no <b>critério
     de densidade informacional</b> devem estar
     devidamente declarados com a relação
-    <b>sinteseDe</b> ou <b>sintetizadoPor</b>"
+    <b>eSinteseDe</b> ou <b>sintetizadoPor</b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_4")
@@ -1261,7 +1261,7 @@ def rel_8_inv_5(allClasses,rep: Report):
 
     "Todos os processos referenciados no <b>critério
     de complementaridade informacional</b> devem estar
-    devidamente declarados com a relação <b>eComplementarDe<b>"
+    devidamente declarados com a relação <b>eComplementarDe</b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_5")
@@ -1294,7 +1294,7 @@ def rel_8_inv_6(allClasses,rep: Report):
 
     "Todos os processos referenciados no <b>critério
     de utilidade administrativa</b> devem estar devidamente
-    declarados com a relação <b>suplementoPara</b>"
+    declarados com a relação <b>eSuplementoPara</b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_6")

@@ -5,6 +5,7 @@ from path_utils import DUMP_DIR
 import logging
 from log_utils import PROC
 from enum import Enum
+import html
 
 
 class Report:
@@ -219,12 +220,25 @@ class ErroInv:
 
     def __init__(self,inv,cod,info,extra):
         self.inv = inv
-        self.cod = cod
-        self.info = info
-        self.extra = extra
+        self.cod = html.escape(cod)
+        self.info = self.escapeAllHtml(info)
+        self.extra = html.escape(extra)
         self.fixStatus = FixStatus.UNFIXED
         self.fixMsg = ""
         self.msg = self.errorMsg()
+
+
+    def escapeAllHtml(self,data):
+        if isinstance(data, str):
+            return html.escape(data)
+        elif isinstance(data, list):
+            return [self.escapeAllHtml(item) for item in data]
+        elif isinstance(data, dict):
+            return {key: self.escapeAllHtml(value) for key, value in data.items()}
+        elif isinstance(data, tuple):
+            return tuple(self.escapeAllHtml(item) for item in data)
+        else:
+            return data
 
 
     def fix(self, fixMsg, failed = False):
@@ -237,8 +251,13 @@ class ErroInv:
 
 
     def errorMsg(self):
+        """
+        Função que gera a mensagem de erro de acordo com
+        o invariante. Estas mensagens serão inseridas numa
+        tabela html e por isso contêm tags html.
+        """
 
-        def getValue(abrev):
+        def getDfValue(abrev):
 
             dfAbrevDic = {
                 "C": "Conservação",
@@ -251,18 +270,19 @@ class ErroInv:
         msg = ""
         match self.inv:
             case "rel_2_inv_1": # OK
-                msg = f"O processo {self.cod} não tem desdobramento ao nível 4, mas não contém justificação associada ao PCA"
+                msg = f"O processo <b>{self.cod}</b> não tem desdobramento ao nível 4, mas não contém justificação associada ao PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_2_inv_11": # OK
-                msg = f"No processo {self.cod} foram encontradas relações de \"eSinteseDe\" e \"eSintetizadoPor\" em simultâneo:\n"
+                msg = f"No processo <b>{self.cod}</b> foram encontradas relações de <i><b>eSinteseDe</b></i> e <i><b>eSintetizadoPor</b></i> em simultâneo:\n"
                 for rel in self.info["sinteses"]:
-                    msg += f"\t{self.cod} {rel[1]} {rel[0]}\n"
+                    msg += f"\t<b>{self.cod}</b> <i><b>{rel[1]}</i></b> <b>{rel[0]}</b>\n"
+                msg += "."
             case "rel_2_inv_12": # OK
-                msg = f"A legislação {self.info["leg"]} é referenciada na justificação do {self.info["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada."
+                msg = f"A legislação <b>{self.info["leg"]}</b> é referenciada na justificação do <b>{self.info["tipo"]}</b> do processo <b>{self.cod}</b>, mas não se encontra devidamente declarada."
             case "rel_2_inv_13": # OK
-                msg = f"A legislação {self.info["leg"]} é referenciada na justificação do {self.info["tipo"]} do processo {self.cod}, mas não se encontra devidamente declarada (devia estar declarada na coluna \"Diplomas jurídico-administrativos REF\" do seu processo pai: {self.info["pai"]})."
+                msg = f"A legislação <b>{self.info["leg"]}</b> é referenciada na justificação do <b>{self.info["tipo"]}</b> do processo <b>{self.cod}</b>, mas não se encontra devidamente declarada (devia estar declarada na coluna \"Diplomas jurídico-administrativos REF\" do seu processo pai: {self.info["pai"]})."
             case "rel_1_inv_5": # TODO: TEST
                 temPca = self.info["temPca"]
                 temDf = self.info["temDf"]
@@ -273,44 +293,43 @@ class ErroInv:
                     x = "DF"
                 elif not temPca:
                     x = "PCA"
-                msg = f"O processo {self.cod} não tem desdobramento ao nível 4 e não tem {x}."
+                msg = f"O processo <b>{self.cod}</b> não tem desdobramento ao nível 4 e não tem {x}."
             case "rel_1_inv_2": # OK
-                msg = f"Os filhos ({self.info["codF1"]} e {self.info["codF2"]}) do processo {self.cod} tem DFs diferentes, mas não têm uma relação de síntese entre eles."
+                msg = f"Os filhos (<b>{self.info["codF1"]}</b> e <b>{self.info["codF2"]}</b>) do processo <b>{self.cod}</b> tem DFs diferentes, mas não têm uma relação de síntese entre eles."
             case "rel_3_inv_1": # TODO: TEST extra
-                msg = f"O processo {self.cod} é suplemento para outro, mas não contém um critério de utilidade administrativa na justificação do PCA"
+                msg = f"O processo <b>{self.cod}</b> é suplemento para outro, mas não contém um <b>critério de utilidade administrativa</b> na justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_3_inv_2": # TODO: TEST extra
-                msg = f"O processo {self.cod} tem uma relação de \"suplementoPara\" com o processo {self.info["proc"]}, mas este não é mencionado no critério de utilidade da justificação do PCA"
+                msg = f"O processo <b>{self.cod}</b> tem uma relação de <i><b>eSuplementoPara</i></b> com o processo <b>{self.info["proc"]}</b>, mas este não é mencionado no <b>critério de utilidade</b> da justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_5_inv_1": # TODO: TEST um dos extras
-                msg = f"O processo {self.cod} é complementar de outro, no entanto a sua justificação não contém o critério de complementaridade informacional"
+                msg = f"O processo <b>{self.cod}</b> é complementar de outro, no entanto a sua justificação não contém o <b>critério de complementaridade informacional</b>"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_4_inv_1": # OK parcial
                 if self.info["valor"]:
-                    msg = f"O processo {self.cod} é sintetizado por outro, mas o seu DF tem o valor de \"{getValue(self.info["valor"])}\", em vez de \"Eliminação\""
+                    msg = f"O processo <b>{self.cod}</b> é sintetizado por outro, mas o seu DF tem o valor de \"{getDfValue(self.info["valor"])}\", em vez de \"Eliminação\""
                 else:
-                    msg = f"O processo {self.cod} é sintetizado por outro e o valor do seu DF devia ser \"Eliminação\", mas neste caso o processo nem tem DF"
+                    msg = f"O processo <b>{self.cod}</b> é sintetizado por outro e o valor do seu DF devia ser \"Eliminação\", mas neste caso o processo nem tem DF"
                 msg += "."
             case "rel_3_inv_3": # OK...
-                msg = f"O processo {self.cod} contém relações de \"eSuplementoDe\" no processo {self.info["proc"]}, no entanto estes não são mencionados na justificação do PCA"
+                msg = f"O processo <b>{self.cod}</b> contém relações de <i><b>eSuplementoDe</i></b> no processo <b>{self.info["proc"]}</b>, no entanto estes não são mencionados na justificação do PCA"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_8_inv_2": # OK
                 if self.info["valor"]:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\", mas tem o valor de DF de \"{getValue(self.info["valor"])}\", em vez de \"Conservação\""
+                    msg = f"O processo <b>{self.cod}</b> contém uma relação de <i><b>eSinteseDe</b></i>, mas tem o valor de DF de \"{getDfValue(self.info["valor"])}\", em vez de \"Conservação\""
                 else:
-                    msg = f"O processo {self.cod} contém uma relação de \"eSinteseDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
+                    msg = f"O processo <b>{self.cod}</b> contém uma relação de <i><b>eSinteseDe</b></i> e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
                 msg += "."
             case "rel_1_inv_1": # TODO: TEST
-                # TODO: imprimir a lista melhor
-                msg = f"O processo {self.cod} tem desdobramento, mas os seus filhos ({self.info["filhos"]}) têm valores de PCA e DF iguais ({self.info["valor"]})"
+                msg = f"O processo <b>{self.cod}</b> tem desdobramento, mas os seus filhos (<b>{', '.join(self.info["filhos"])}</b>) têm valores de PCA e DF iguais ({self.info["valor"]})."
             case "rel_1_inv_4": # TODO: TEST
                 temPca = self.info["temPca"]
                 temDf = self.info["temDf"]
@@ -321,74 +340,73 @@ class ErroInv:
                     x = "DF"
                 elif not temPca:
                     x = "PCA"
-                msg = f"O processo {self.cod} tem desdobramento ao nível 4 e mesmo assim tem {x}."
+                msg = f"O processo <b>{self.cod}</b> tem desdobramento ao nível 4 e mesmo assim tem {x}."
             case "rel_1_inv_6": # TODO: TEST
-                msg = f"O processo {self.cod} tem uma relação de \"complementar de\" com o processo {self.info["proc"]} e nenhum dos filhos ({self.info["filhos"]}) tem um valor de DF de \"Conservação\""
+                msg = f"O processo <b>{self.cod}</b> tem uma relação de <i><b>eComplementarDe</i></b> com o processo <b>{self.info["proc"]}</b> e nenhum dos filhos ({', '.join(self.info["filhos"])}) tem um valor de DF de \"Conservação\"."
             case "rel_1_inv_3": # OK
-                msg = f"O termo \"{self.info["termo"]}\" do processo {self.cod} não foi replicado para o seu filho {self.info["filho"]}"
+                msg = f"O termo \"{self.info["termo"]}\" do processo <b>{self.cod}</b> não foi replicado para o seu filho <b>{self.info["filho"]}</b>."
             case "rel_4_inv_2": # TODO: TEST extra
-                msg = f"No processo {self.cod} não consta uma justificação com critério de densidade informacional"
+                msg = f"No processo <b>{self.cod}</b> não consta uma justificação com <b>critério de densidade informacional</b>"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_4_inv_3": # TODO: TEST extra
-                msg = f"O processo {self.info["proc"]} está em falta na justificação do DF do processo {self.cod}, sob o critério de densidade informacional"
+                msg = f"O processo <b>{self.info["proc"]}</b> está em falta na justificação do DF do processo <b>{self.cod}</b>, sob o critério de densidade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_5_inv_2": # OK
-                msg = f"O processo {self.info["proc"]} está em falta na justificação do DF do processo {self.cod}, sob o critério de complementaridade informacional"
+                msg = f"O processo <b>{self.info["proc"]}</b> está em falta na justificação do DF do processo <b>{self.cod}</b>, sob o critério de complementaridade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
             case "rel_8_inv_1": # TODO: TEST
                 if self.info["valor"]:
-                    msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\", mas tem o valor de DF de {getValue(self.info["valor"])}"
+                    msg = f"O processo <b>{self.cod}</b> contém uma relação de <i><b>eComplementarDe</i></b>, mas tem o valor de DF de {getDfValue(self.info["valor"])}."
                 else:
-                    msg = f"O processo {self.cod} contém uma relação de \"eComplementarDe\" e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF"
+                    msg = f"O processo <b>{self.cod}</b> contém uma relação de <i><b>eComplementarDe</i></b> e o valor do seu DF devia ser \"Conservação\", mas neste caso o processo nem tem DF."
             case "rel_2_inv_9": # OK
                 relacoes = ""
                 # Aqui sabe-se que terá sempre mais que 1 elemento
                 for rel in self.info["rels"][:-1]:
-                    relacoes += f"\"{self.cod} {rel[1]} {rel[0]}\", "
+                    relacoes += f"\"<b>{self.cod}</b> <i><b>{rel[1]}</i></b> <b>{rel[0]}</b>\", "
                 ultimaRel = self.info["rels"][-1]
-                relacoes += f"e \"{self.cod} {ultimaRel[1]} {ultimaRel[0]}\""
-                msg = f"O processo {self.cod} tem mais do que uma relação com o processo {self.info["proc"]} ({relacoes})."
+                relacoes += f"\"<b>{self.cod}</b> <i><b>{ultimaRel[1]}</i></b> <b>{ultimaRel[0]}</b>\""
+                msg = f"O processo <b>{self.cod}</b> tem mais do que uma relação com o processo <b>{self.info["proc"]}</b> ({relacoes})."
             case "rel_2_inv_2": # OK
-                msg = f"O processo {self.cod} não é transversal, no entanto foram encontrados participantes associados a ele."
+                msg = f"O processo <b>{self.cod}</b> não é transversal, no entanto foram encontrados participantes associados a ele."
             case "rel_2_inv_4": # OK
-                msg = f"Foram encontradas as relações \"{self.cod} {self.info["rel"]} {self.info["c"]}\" e \"{self.info["c"]} {self.info["rel"]} {self.cod}\". Estas duas relações não podem existir em simultâneo."
+                msg = f"Foram encontradas as relações \"<b>{self.cod}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.info["c"]}</b>\" e \"<b>{self.info["c"]}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.cod}</b>\". Estas duas relações não podem existir em simultâneo."
             case "rel_2_inv_5": # OK
-                msg = f"Foram encontradas as relações \"{self.cod} {self.info["rel"]} {self.info["c"]}\" e \"{self.info["c"]} {self.info["rel"]} {self.cod}\". Estas duas relações não podem existir em simultâneo."
+                msg = f"Foram encontradas as relações \"<b>{self.cod}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.info["c"]}</b>\" e \"<b>{self.info["c"]}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.cod}</b>\". Estas duas relações não podem existir em simultâneo."
             case "rel_2_inv_6": # OK, mas por testar
-                msg = f"Foram encontradas as relações \"{self.cod} {self.info["rel"]} {self.info["c"]}\" e \"{self.info["c"]} {self.info["rel"]} {self.cod}\". Estas duas relações não podem existir em simultâneo."
+                msg = f"Foram encontradas as relações \"<b>{self.cod}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.info["c"]}</b>\" e \"<b>{self.info["c"]}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.cod}</b>\". Estas duas relações não podem existir em simultâneo."
             case "rel_2_inv_7": # OK, mas por testar
-                msg = f"Foram encontradas as relações \"{self.cod} {self.info["rel"]} {self.info["c"]}\" e \"{self.info["c"]} {self.info["rel"]} {self.cod}\". Estas duas relações não podem existir em simultâneo."
+                msg = f"Foram encontradas as relações \"<b>{self.cod}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.info["c"]}</b>\" e \"<b>{self.info["c"]}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.cod}</b>\". Estas duas relações não podem existir em simultâneo."
             case "rel_2_inv_3": # OK
-                msg = f"Foram encontradas as relações \"{self.cod} {self.info["rel"]} {self.info["c"]}\" e \"{self.info["c"]} {self.info["rel"]} {self.cod}\". Estas duas relações não podem existir em simultâneo."
+                msg = f"Foram encontradas as relações \"<b>{self.cod}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.info["c"]}</b>\" e \"<b>{self.info["c"]}</b> <i><b>{self.info["rel"]}</b></i> <b>{self.cod}</b>\". Estas duas relações não podem existir em simultâneo."
             case "rel_2_inv_10": # TODO: TEST
-                # TODO: indexar por termo??
-                msg = f"O termo {self.info["t"]} foi encontrado repetido nos seguintes processos {self.info["cods"]}"
+                msg = f"O termo {self.info["t"]} foi encontrado repetido nos seguintes processos {self.info["cods"]}."
             case "rel_2_inv_8": # TODO: TEST
-                msg = f"O processo {self.cod} relaciona-se com ele próprio, através da relação {self.info["rel"]}"
+                msg = f"O processo <b>{self.cod}</b> relaciona-se com ele próprio, através da relação <i><b>{self.info["rel"]}</b></i>."
             case "rel_6_inv_1": # TODO: TEST
-                msg = f"No DF do processo {self.cod} foi encontrado uma justificação do tipo {self.info["tipo"]}"
+                msg = f"No DF do processo <b>{self.cod}</b> foi encontrado uma justificação do tipo \"<b>{self.info["tipo"]}</b>\"."
             case "rel_2_inv_14": # TODO: TEST
-                msg = f"O processo {self.cod} é transversal, mas não tem participantes"
+                msg = f"O processo <b>{self.cod}</b> é transversal, mas não tem participantes."
             case "rel_1_inv_7": # OK
-                msg = f"O processo {self.info["pai"]} está em harmonização, no entanto o seu filho \"{self.cod}\" está ativo."
+                msg = f"O processo <b>{self.info["pai"]}</b> está em harmonização, no entanto o seu filho <b>{self.cod}</b> está ativo."
             case "rel_8_inv_3":
-                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]} na justificação do {self.info["tipo"]}, mas {self.info["proc"]} não está devidamente declarado."
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> na justificação do \"<b>{self.info["tipo"]}</b>\", mas <b>{self.info["proc"]}</b> não está devidamente declarado."
             case "rel_8_inv_4":
-                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]}, mas {self.info["proc"]} não está declarado com a relação \"Suplemento Para\""
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eSuplementoPara</b></i>."
             case "rel_8_inv_5":
-                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]}, mas {self.info["proc"]} não está declarado com uma relação de síntese (É sintetizado por/É sintese de)"
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com uma relação de síntese (<i><b>eSintetizadoPor</i></b>/<i><b>eSinteseDe</i></b>)."
             case "rel_8_inv_6":
-                msg = f"O processo {self.cod} referencia o processo {self.info["proc"]}, mas {self.info["proc"]} não está declarado com a relação \"É Complementar De\""
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eComplementarDe</b></i>."
             case "rel_7_inv_1":
-                msg = f"Na justificação do PCA do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info["tipo"]}."
+                msg = f"Na justificação do PCA do processo <b>{self.cod}</b> foram encontrados mais do que um critério do tipo \"<b>{self.info["tipo"]}</b>\"."
             case "rel_6_inv_2":
-                msg = f"Na justificação do DF do processo {self.cod} foram encontrados mais do que um critério do tipo {self.info["tipo"]}."
+                msg = f"Na justificação do DF do processo <b>{self.cod}</b> foram encontrados mais do que um critério do tipo \"<b>{self.info["tipo"]}</b>\"."
             case _:
                 pass
         return msg

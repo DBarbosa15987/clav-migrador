@@ -2,7 +2,6 @@
 import json
 from path_utils import PROJECT_ROOT,FILES_DIR
 import os
-import html
 from .report import FixStatus, Report
 
 
@@ -25,16 +24,7 @@ def generate_error_table(globalErrors):
                 "clarificacao": i["clarificacao"]
             }
 
-    html_content = """
-    <style>
-        .error-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif; }
-        .error-table th, .error-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        .error-table th { background-color: #f2f2f2; font-weight: bold; }
-        .error-section { background-color: #e0e0e0; font-size: 1.1em; font-weight: bold; padding: 10px; margin-top: 20px; }
-        .msg { color: #444; font-style: italic; }
-    </style>
-    <div>
-    """
+    html_content = "<div>"
 
     if globalErrors["grave"]["declsRepetidas"] or globalErrors["grave"]["relsInvalidas"] or globalErrors["grave"]["outro"]:
         html_content += f'<div class="error-section">🟥 Erros Graves (Estes erros têm de ser corrigidos para a ontologia ser gerada)</div>\n'
@@ -44,7 +34,7 @@ def generate_error_table(globalErrors):
         html_content += f'<div class="error-section">Declarações Repetidas ({len(globalErrors["grave"]["declsRepetidas"])}): Códigos que foram declarados mais do que uma vez</div>\n'
         html_content += '<table class="error-table"><tr><th>Código Repetido</th><th>Folhas</th></tr>'
         for cod, files in globalErrors["grave"]["declsRepetidas"].items():
-            html_content += f"<tr><td><span style='color: yelow;'>{cod}</span></td><td>{', '.join(files)}</td></tr>"
+            html_content += f"<tr><td><span class='error-critical'>{cod}</span></td><td>{', '.join(files)}</td></tr>"
         html_content += '</table>'
 
     # Rels Invalidas (Grave)
@@ -52,9 +42,9 @@ def generate_error_table(globalErrors):
         html_content += f'<div class="error-section">Relações Inválidas ({len(globalErrors["grave"]["relsInvalidas"])}): Declarações que referenciam um processo que não existe</div>\n'
         html_content += '<table class="error-table"><tr><th>Código Inválido</th><th>Relação Inválida</th></tr>'
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
-            html_content += f"<tr><td><span style='color: red;'>{cod}</span></td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
+            html_content += f"<tr><td><span class='error-critical'>{cod}</span></td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
             for rel in rels:
-                html_content += f"<li style='display: list-item;'>{rel[0]} {rel[1]} <span style='color: red;'>{cod}</span></li>"
+                html_content += f"<li style='display: list-item;'>{rel[0]} {rel[1]} <span class='error-critical'>{cod}</span></li>"
             html_content += "</ul></td></tr>"
         html_content += '</table>'
 
@@ -64,7 +54,7 @@ def generate_error_table(globalErrors):
         html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
         for cod, msgs in globalErrors["grave"]["outro"].items():
             for msg in msgs:
-                html_content += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+                html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
         html_content += '</table>'
 
     # Normal
@@ -73,7 +63,7 @@ def generate_error_table(globalErrors):
         html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
         for cod, msgs in globalErrors["normal"].items():
             for msg in msgs:
-                html_content += f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+                html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
         html_content += '</table>'
 
     # Invariantes
@@ -91,9 +81,9 @@ def generate_error_table(globalErrors):
             """
             for err in erros:
                 cod = err.cod
-                msg = html.escape(err.msg)
+                msg = err.msg
                 if err.fixStatus == FixStatus.FIXED:
-                    msg = f"<span style='color: green;'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
+                    msg = f"<span class='error-fixed'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
                 html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
             html_content += "</table>\n"
 
@@ -166,7 +156,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
             ents.add(ent)
 
             # Linhas de cada tabela
-            row = f"<tr><td><span style='color: yelow;'>{cod}</span></td><td>{', '.join(sheet)}</td></tr>"
+            row = f"<tr><td><span class='error-critical'>{cod}</span></td><td>{', '.join(sheet)}</td></tr>"
             addError(ent)
             addRow(entityTables, ent, row)
 
@@ -193,8 +183,8 @@ def generate_entity_table_dict(globalErrors,rep:Report):
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
                 ent = getEnt(rel[0])
-                rels_html = f"<tr><td><span style='color: red;'>{cod}</span></td>"
-                rels_html += f"<td>{rel[0]} {rel[1]} <span style='color: red;'>{cod}</span></td></tr>"
+                rels_html = f"<tr><td><span class='error-critical'>{cod}</span></td>"
+                rels_html += f"<td>{rel[0]} {rel[1]} <span class='error-critical'>{cod}</span></td></tr>"
                 addError(ent)
                 addRow(entityTables, ent, rels_html)
 
@@ -220,7 +210,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
 
             # Linhas de cada tabela
             for msg in msgs:
-                row = f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+                row = f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
                 addError(ent)
                 addRow(entityTables, ent, row)
 
@@ -244,7 +234,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
 
             # Linhas de cada tabela
             for msg in msgs:
-                row = f"<tr><td>{cod}</td><td class='msg'>{html.escape(msg)}</td></tr>"
+                row = f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
                 addError(ent)
                 addRow(entityTables, ent, row)
 
@@ -269,9 +259,9 @@ def generate_entity_table_dict(globalErrors,rep:Report):
                 html_part = f'<div class="error-section">{errTitle}</div>\n'
                 html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
                 for err in erros:
-                    msg = html.escape(err.msg)
+                    msg = err.msg
                     if err.fixStatus == FixStatus.FIXED:
-                        msg = f"<span style='color: green;'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
+                        msg = f"<span class='error-fixed'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
 
                     addError(ent)
                     html_part += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
@@ -301,7 +291,7 @@ def generate_warnings_table(warnings):
             html_content += f'<div class="error-section">Inferências ({len(warnings["inferencias"])})</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
             for msg in warnings["inferencias"]:
-                html_content += f"<tr><td class='msg'>{html.escape(msg)}</td></tr>"
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
         # Harmonização
@@ -309,7 +299,7 @@ def generate_warnings_table(warnings):
             html_content += f'<div class="error-section">Harmonização ({len(warnings["harmonizacao"])})</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
             for msg in warnings["harmonizacao"]:
-                html_content += f"<tr><td class='msg'>{html.escape(msg)}</td></tr>"
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
         # Relações de Harmonização
@@ -317,7 +307,7 @@ def generate_warnings_table(warnings):
             html_content += f'<div class="error-section">Relações de Harmonização ({len(warnings["relHarmonizacao"])})</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
             for msg in warnings["relHarmonizacao"]:
-                html_content += f"<tr><td class='msg'>{html.escape(msg)}</td></tr>"
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
         # Normal
@@ -325,7 +315,7 @@ def generate_warnings_table(warnings):
             html_content += f'<div class="error-section">Warnings Genéricos ({len(warnings["normal"])})</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
             for msg in warnings["normal"]:
-                html_content += f"<tr><td class='msg'>{html.escape(msg)}</td></tr>"
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
     else:
         # Tabela vazia: Não foram registados warnings
