@@ -25,10 +25,6 @@
     margin-top: 20px;
 }
 
-/* .msg {
-    color: #000000;
-} */
-
 .error-critical {
     color: red;
 }
@@ -38,5 +34,24 @@
 }
 
 .error-failed {
-    color: orange;
+    color: red;
+}
+
+summary.error-fixed {
+    color: green;
+    cursor: pointer;
+}
+
+summary.error-failed {
+    color: red;
+    cursor: pointer;
+}
+
+.correction-details {
+    margin-top: 4px;
+    padding: 6px 10px;
+    background: #f9f9f9;
+    border-left: 3px solid #ccc;
+    font-size: 0.9em;
+    color: #444;
 }

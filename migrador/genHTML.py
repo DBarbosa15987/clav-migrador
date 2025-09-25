@@ -80,11 +80,30 @@ def generate_error_table(globalErrors):
                 <tr><th>Código</th><th>Mensagem de Erro</th></tr>
             """
             for err in erros:
-                cod = err.cod
-                msg = err.msg
+                msg = ""
                 if err.fixStatus == FixStatus.FIXED:
-                    msg = f"<span class='error-fixed'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
-                html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
+                    msg = f"""
+                    <details>
+                        <summary class='error-fixed'>✅ {err.msg} <b>(corrigido automaticamente)</b></summary>
+                        <div class='correction-details'>
+                            {(err.fixMsg or "Correção efetuada com sucesso.")}
+                        </div>
+                    </details>
+                    """
+                elif err.fixStatus == FixStatus.FAILED:
+
+                    msg = f"""
+                    <details>
+                        <summary class='error-failed'>❌ {err.msg} <b>(correção automática falhou)</b></summary>
+                        <div class='correction-details'>
+                            {(err.fixMsg or "A correção automática não foi possível.")}
+                        </div>
+                    </details>
+                    """
+                else:
+                    msg = err.msg
+
+                html_content += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
             html_content += "</table>\n"
 
 
@@ -259,9 +278,27 @@ def generate_entity_table_dict(globalErrors,rep:Report):
                 html_part = f'<div class="error-section">{errTitle}</div>\n'
                 html_part += '<table class="error-table"><tr><th>Código</th><th>Mensagem de Erro</th></tr>'
                 for err in erros:
-                    msg = err.msg
+                    msg = ""
                     if err.fixStatus == FixStatus.FIXED:
-                        msg = f"<span class='error-fixed'>✅ {msg} <b>(corrigido automaticamente)</b></span>"
+                        msg = f"""
+                        <details>
+                            <summary class='error-fixed'>✅ {err.msg} <b>(corrigido automaticamente)</b></summary>
+                            <div class='correction-details'>
+                                {(err.fixMsg or "Correção efetuada com sucesso.")}
+                            </div>
+                        </details>
+                        """
+                    elif err.fixStatus == FixStatus.FAILED:
+                        msg = f"""
+                        <details>
+                            <summary class='error-failed'>❌ {err.msg} <b>(correção automática falhou)</b></summary>
+                            <div class='correction-details'>
+                                {(err.fixMsg or "A correção automática não foi possível.")}
+                            </div>
+                        </details>
+                        """
+                    else:
+                        msg = err.msg
 
                     addError(ent)
                     html_part += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
