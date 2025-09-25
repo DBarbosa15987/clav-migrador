@@ -33,7 +33,7 @@ def calcEstado(cod,e,rep:Report):
         return 'I'
     else:
         # ERRO: Estado da classe inválido
-        rep.addErro(cod,f"Estado da classe inválido ({e})")
+        rep.addErro(cod,f"Estado da classe inválido (<b>{e}</b>)")
         return 'Erro'
 # --------------------------------------------------
 #
@@ -50,7 +50,7 @@ def calcNivel(cod,rep:Report):
         res = 1
     else:
         # ERRO: O formato do código é inválido
-        rep.addErro(cod,f"O formato do código \"{cod}\" é inválido")
+        rep.addErro(cod,f"O formato do código \"<b>{cod}</b>\" é inválido")
     return res
 # --------------------------------------------------
 #

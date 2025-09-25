@@ -32,12 +32,12 @@ def processSheet(sheet, rep: Report):
             if myReg["sigla"] not in tipCatalog:
                 tipCatalog.append(myReg["sigla"])
             else:
-                rep.addErro("",f"Tipologia duplicada --> {myReg["sigla"]}")
+                rep.addErro("",f"Tipologia duplicada --> <b>{myReg["sigla"]}</b>")
 
             if row["Designação"]:
                 myReg["designacao"] = brancos.sub('', row["Designação"])
             else:
-                rep.addWarning(info={"msg":f"A tipologia {myReg["sigla"]} não tem designação definida."})
+                rep.addWarning(info={"msg":f"A tipologia <b>{myReg["sigla"]}</b> não tem designação definida."})
             myTipologia.append(myReg)
 
     outFilePath = os.path.join(FILES_DIR, "tip.json")

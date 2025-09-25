@@ -68,10 +68,10 @@ def processClasses(sheets,rep: Report):
                 classePai = data.get(pai)
                 if not classePai:
                     # Não tem pai
-                    rep.addErro(cod,f"{cod} não tem pai")
+                    rep.addErro(cod,f"<b>{cod}</b> não tem pai")
                 elif classePai.get("estado") == 'H':
                     # Tem pai em harmonização
-                    rep.addWarning(info={"msg":f"O processo {cod} está ativo/inativo, mas o seu pai {pai} está em harmonização"})
+                    rep.addWarning(info={"msg":f"O processo <b>{cod}</b> está ativo/inativo, mas o seu pai <b>{pai}</b> está em harmonização"})
 
         else:
             # O valor do estado da classe encontra-se fora do domínio estabelecido.

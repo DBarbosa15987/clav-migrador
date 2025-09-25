@@ -270,7 +270,7 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 err.fix(f"Um novo critério de complementaridade da justificação do DF do processo <b>{err.cod}</b> foi gerado automaticamente com o código <b>{critCod}</b>. O processo <b>{err.info["proc"]}</b> foi adicionado ao critério criado.")
                 errFixed += 1
         else:
-            err.fail(f"O processo {err.cod} não tem DF")
+            err.fail(f"O processo <b>{err.cod}</b> não tem DF")
             errFailed += 1
 
     logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_5_inv_2")

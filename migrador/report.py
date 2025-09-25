@@ -165,11 +165,11 @@ class Report:
 
         match tipo:
             case "I":
-                self.warnings["inferencias"].append(f"A relação {info["rel"][0]} :{info["rel"][1]} {info["rel"][2]} foi inferida automaticamente")
+                self.warnings["inferencias"].append(f"A relação \"<b>{info["rel"][0]}</b> <b><i>{info["rel"][1]}</b></i> <b>{info["rel"][2]}</b>\" foi inferida automaticamente")
             case "H":
-                self.warnings["harmonizacao"].append(f"O processo {info["proc"]} está em harmonização")
+                self.warnings["harmonizacao"].append(f"O processo <b>{info["proc"]}</b> está em harmonização")
             case "R":
-                self.warnings["relHarmonizacao"].append(f"Foi encontrada a relação {info["rel"][0]} :{info["rel"][1]} {info["rel"][2]}, na qual {info["rel"][2]} está em harmonização")
+                self.warnings["relHarmonizacao"].append(f"Foi encontrada a relação \"<b>{info["rel"][0]}</b> <b><i>{info["rel"][1]}</b></i> <b>{info["rel"][2]}</b>\", na qual <b>{info["rel"][2]}</b> está em harmonização")
             case _:
                 self.warnings["normal"].append(info["msg"])
 
