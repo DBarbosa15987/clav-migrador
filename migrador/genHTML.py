@@ -29,33 +29,33 @@ def generate_error_table(globalErrors):
     if globalErrors["grave"]["declsRepetidas"] or globalErrors["grave"]["relsInvalidas"] or globalErrors["grave"]["outro"]:
         html_content += f'<div class="error-section">🟥 Erros Graves (Estes erros têm de ser corrigidos para a ontologia ser gerada)</div>\n'
 
-    # Decls Repetidas (Grave)
-    if globalErrors["grave"]["declsRepetidas"]:
-        html_content += f'<div class="error-section">Declarações Repetidas ({len(globalErrors["grave"]["declsRepetidas"])}): Códigos que foram declarados mais do que uma vez</div>\n'
-        html_content += '<table class="error-table"><tr><th>Código Repetido</th><th>Folhas</th></tr>'
-        for cod, files in globalErrors["grave"]["declsRepetidas"].items():
-            html_content += f"<tr><td><span class='error-critical'>{cod}</span></td><td>{', '.join(files)}</td></tr>"
-        html_content += '</table>'
+        # Decls Repetidas (Grave)
+        if globalErrors["grave"]["declsRepetidas"]:
+            html_content += f'<div class="error-section">Declarações Repetidas ({len(globalErrors["grave"]["declsRepetidas"])}): Códigos que foram declarados mais do que uma vez</div>\n'
+            html_content += '<table class="error-table"><tr><th>Código Repetido</th><th>Folhas</th></tr>'
+            for cod, files in globalErrors["grave"]["declsRepetidas"].items():
+                html_content += f"<tr><td><span class='error-critical'>{cod}</span></td><td><b>{', '.join(files)}</b></td></tr>"
+            html_content += '</table>'
 
-    # Rels Invalidas (Grave)
-    if globalErrors["grave"]["relsInvalidas"]:
-        html_content += f'<div class="error-section">Relações Inválidas ({len(globalErrors["grave"]["relsInvalidas"])}): Declarações que referenciam um processo que não existe</div>\n'
-        html_content += '<table class="error-table"><tr><th>Código Inválido</th><th>Relação Inválida</th></tr>'
-        for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
-            html_content += f"<tr><td><span class='error-critical'>{cod}</span></td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
-            for rel in rels:
-                html_content += f"<li style='display: list-item;'>{rel[0]} {rel[1]} <span class='error-critical'>{cod}</span></li>"
-            html_content += "</ul></td></tr>"
-        html_content += '</table>'
+        # Rels Invalidas (Grave)
+        if globalErrors["grave"]["relsInvalidas"]:
+            html_content += f'<div class="error-section">Relações Inválidas ({len(globalErrors["grave"]["relsInvalidas"])}): Declarações que referenciam um processo que não existe</div>\n'
+            html_content += '<table class="error-table"><tr><th>Código Inválido</th><th>Relação Inválida</th></tr>'
+            for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
+                html_content += f"<tr><td><span class='error-critical'>{cod}</span></td><td><ul style='list-style-type: disc; padding-left: 1.25rem; margin: 0;'>"
+                for rel in rels:
+                    html_content += f"<li style='display: list-item;'><b>{rel[0]}</b> <b><i>{rel[1]}</b></i> <span class='error-critical'><b>{cod}</b></span></li>"
+                html_content += "</ul></td></tr>"
+            html_content += '</table>'
 
-    # Outros (Grave)
-    if globalErrors["grave"]["outro"]:
-        html_content += '<div class="error-section">Outros Erros Graves</div>\n'
-        html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
-        for cod, msgs in globalErrors["grave"]["outro"].items():
-            for msg in msgs:
-                html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
-        html_content += '</table>'
+        # Outros (Grave)
+        if globalErrors["grave"]["outro"]:
+            html_content += '<div class="error-section">Outros Erros Graves</div>\n'
+            html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
+            for cod, msgs in globalErrors["grave"]["outro"].items():
+                for msg in msgs:
+                    html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
+            html_content += '</table>'
 
     # Normal
     if globalErrors["normal"]:
@@ -65,6 +65,43 @@ def generate_error_table(globalErrors):
             for msg in msgs:
                 html_content += f"<tr><td>{cod}</td><td class='msg'>{msg}</td></tr>"
         html_content += '</table>'
+
+    # Outros
+    # TODO: TESTAR!!!!!
+    if globalErrors["outro"]["leg"] or globalErrors["outro"]["tindice"] or globalErrors["outro"]["tipologia"] or globalErrors["outro"]["entidade"]:
+        html_content += f'<div class="error-section">🟧 Outros Erros</div>\n'
+
+        # Legislação (Outros)
+        if globalErrors["outro"]["leg"]:
+            html_content += f'<div class="error-section">Legislação ({len(globalErrors["outro"]["leg"])}): Erros na migração do catálogo das legislações</div>\n'
+            html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
+            for msg in globalErrors["outro"]["leg"]:
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
+            html_content += '</table>'
+
+        # Termos Índice (Outros)
+        if globalErrors["outro"]["tindice"]:
+            html_content += f'<div class="error-section">Termos Índice ({len(globalErrors["outro"]["tindice"])}): Erros na migração do catálogo dos termos índice</div>\n'
+            html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
+            for msg in globalErrors["outro"]["tindice"]:
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
+            html_content += '</table>'
+
+        # Tipologia (Outros)
+        if globalErrors["outro"]["tipologia"]:
+            html_content += f'<div class="error-section">Tipologia ({len(globalErrors["outro"]["tipologia"])}): Erros na migração do catálogo das tipologias</div>\n'
+            html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
+            for msg in globalErrors["outro"]["tipologia"]:
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
+            html_content += '</table>'
+
+        # Entidade (Outros)
+        if globalErrors["outro"]["entidade"]:
+            html_content += f'<div class="error-section">Entidade ({len(globalErrors["outro"]["entidade"])}): Erros na migração do catálogo das entidades</div>\n'
+            html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
+            for msg in globalErrors["outro"]["entidade"]:
+                html_content += f"<tr><td class='msg'>{msg}</td></tr>"
+            html_content += '</table>'
 
     # Invariantes
     if globalErrors["erroInv"]:
@@ -105,7 +142,6 @@ def generate_error_table(globalErrors):
 
                 html_content += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
             html_content += "</table>\n"
-
 
     html_content += "</div>"
     return html_content
@@ -175,7 +211,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
             ents.add(ent)
 
             # Linhas de cada tabela
-            row = f"<tr><td><span class='error-critical'>{cod}</span></td><td>{', '.join(sheet)}</td></tr>"
+            row = f"<tr><td><span class='error-critical'>{cod}</span></td><td><b>{', '.join(sheet)}</b></td></tr>"
             addError(ent)
             addRow(entityTables, ent, row)
 
@@ -203,7 +239,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
             for rel in rels:
                 ent = getEnt(rel[0])
                 rels_html = f"<tr><td><span class='error-critical'>{cod}</span></td>"
-                rels_html += f"<td>{rel[0]} {rel[1]} <span class='error-critical'>{cod}</span></td></tr>"
+                rels_html += f"<td><b>{rel[0]}</b> <b><i>{rel[1]}</b></i> <span class='error-critical'><b>{cod}<b></span></td></tr>"
                 addError(ent)
                 addRow(entityTables, ent, rels_html)
 

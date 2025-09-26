@@ -24,7 +24,13 @@ class Report:
             },
             "normal": {}, # {"200": ["mensagem de erro"]}
             "erroInv": {}, # {"rel_x_inv_y": [erroInv:ErroInv]}
-            "erroInvByEnt": {} # {"200": [erroInv:ErroInv]}
+            "erroInvByEnt": {}, # {"200": [erroInv:ErroInv]}
+            "outro": {
+                "leg": [],
+                "tindice": [],
+                "tipologia": [],
+                "entidade": []
+            }
         }
         self.warnings = {
             "inferencias": [],
@@ -36,7 +42,7 @@ class Report:
 
     def addErro(self,cod,msg,grave=False):
         """
-        Adiciona a `rep` um erro genérico, pode
+        Adiciona ao `rep` um erro genérico, pode
         ou não ser marcado como "grave".
         """
         if grave:
@@ -49,6 +55,17 @@ class Report:
                 self.globalErrors["normal"][cod].append(msg)
             else:
                 self.globalErrors["normal"][cod] = [msg]
+
+
+    def addErroNoCod(self,msg,categ):
+        """
+        Adiciona ao `rep` um erro do tipo "outro", que
+        representa um erro que ocorreu na extração dos
+        dados que não são identificados por um código
+        como o das classes.
+        """
+        if categ in self.globalErrors["outro"]:
+            self.globalErrors["outro"][categ].append(msg)
 
 
     def addMissingRels(self,proc,rel,cod,tipo):

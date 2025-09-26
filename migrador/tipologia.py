@@ -32,7 +32,7 @@ def processSheet(sheet, rep: Report):
             if myReg["sigla"] not in tipCatalog:
                 tipCatalog.append(myReg["sigla"])
             else:
-                rep.addErro("",f"Tipologia duplicada --> <b>{myReg["sigla"]}</b>")
+                rep.addErroNoCod(f"Tipologia duplicada::<b>{myReg["sigla"]}</b>","tipologia")
 
             if row["Designação"]:
                 myReg["designacao"] = brancos.sub('', row["Designação"])
