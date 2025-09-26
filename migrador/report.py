@@ -223,8 +223,8 @@ class Report:
             with open(dumpPath,'w') as f:
                 json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
         except Exception as e:
-            logger.error(f"Criação do dump do relatório de erros falhou: {e}")
-
+            logger.error(f"Criação do dump do relatório de erros falhou")
+            logger.exception(f"[{e.__class__.__name__}]: {e}")
 
 
 class FixStatus(Enum):

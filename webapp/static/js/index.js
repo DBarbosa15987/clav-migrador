@@ -16,18 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadWarning = document.getElementById('download-warning');
     const downloadBtn = document.getElementById('download-btn');
     const generalError = document.getElementById('general-error');
+    const generalErrorMessage = document.getElementById('general-error-message');
 
-    window.addEventListener('load', function () {
-        const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput) {
-            fileInput.value = '';
-        }
+    const viewSelector = document.getElementById('view-selector');
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    // Reset file input on page load
+    window.addEventListener('load', () => {
+        if (fileInput) fileInput.value = '';
     });
 
+    // File input change handler
     fileInput.addEventListener('change', () => {
         const file = fileInput.files[0];
 
-        // When the file changes, the error "banners" are reset
+        // Reset banners
         downloadWarning.classList.add('hidden');
         generalError.classList.add('hidden');
 
@@ -35,8 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedFileText.textContent = `Ficheiro selecionado: ${file.name}`;
             selectedFileText.classList.remove('hidden');
 
-            // Re-enable the submit button when a new file is selected
-            const submitButton = form.querySelector('button[type="submit"]');
+            // Enable submit
             submitButton.disabled = false;
             submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
             buttonText.textContent = 'Processar Ficheiro';
@@ -60,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingIndicator.classList.remove('hidden');
         generalError.classList.add('hidden');
 
-        const submitButton = form.querySelector('button[type="submit"]');
         submitButton.disabled = true;
         submitButton.classList.add('opacity-50', 'cursor-not-allowed');
 
@@ -104,8 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 entityReportContent.innerHTML = entityTables[entitySelector.value];
 
                 document.querySelectorAll('.report-view').forEach(div => div.classList.add('hidden'));
-                document.getElementById(document.getElementById('view-selector').value).classList.remove('hidden');
-
+                document.getElementById(viewSelector.value).classList.remove('hidden');
             } else {
                 throw new Error(result.error || 'Erro ao processar o ficheiro.');
             }
@@ -117,9 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.classList.add('opacity-50', 'cursor-not-allowed');
 
         } catch (error) {
-
             console.error('Erro:', error);
-            const generalErrorMessage = document.getElementById('general-error-message');
             generalErrorMessage.textContent = error.message || 'Erro inesperado';
             generalError.classList.remove('hidden');
 
@@ -136,11 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             loadingIndicator.classList.add('hidden');
         }
-
     });
 
     // Handle view switching
-    const viewSelector = document.getElementById('view-selector');
     viewSelector.addEventListener('change', () => {
         updateViewSelectorUI(viewSelector.value);
     });

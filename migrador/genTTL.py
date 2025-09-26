@@ -10,6 +10,7 @@ import os
 from path_utils import FILES_DIR, ONTOLOGY_DIR, OUTPUT_DIR
 from log_utils import GEN
 import logging
+import zipfile
 
 logger = logging.getLogger(GEN)
 
@@ -413,6 +414,7 @@ def genFinalOntology():
     now = datetime.now()
     timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
     outputFile = os.path.join(OUTPUT_DIR, f"CLAV_{timestamp}.ttl")
+    zipedOutputFile = os.path.join(OUTPUT_DIR, f"CLAV_{timestamp}.zip")
 
     # Concatenação dos ficheiros intermédios num só
     logger.info("Concatenação dos ficheiros ttl intermédios num só")
@@ -424,7 +426,7 @@ def genFinalOntology():
                     outfile.write(infile.read())
                     outfile.write('\n')
     except Exception as e:
-        logger.error(f"[{e.__class__.__name__}]: {e}")
+        logger.exception(f"[{e.__class__.__name__}]: {e}")
 
     # Validação da ontologia final
     cmd = ["rapper", "-c", "-i", "turtle", outputFile]
@@ -438,3 +440,13 @@ def genFinalOntology():
     else:
         logger.info("Ontologia validada")
         logger.info("STDOUT:\n%s", result.stdout)
+
+    # Compressão da ontologia final
+    try:
+        with zipfile.ZipFile(zipedOutputFile, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(outputFile, os.path.basename(zipedOutputFile))
+        logger.info(f"Ontologia comprimida em {zipedOutputFile}")
+    except Exception as e:
+        logger.exception(f"[{e.__class__.__name__}]: Falha na compressão ZIP: {e}")
+
+    return zipedOutputFile

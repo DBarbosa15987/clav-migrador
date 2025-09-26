@@ -52,16 +52,16 @@ def process_file():
             f.write(fileContent)
     except Exception as e:
         logger.warning(f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}")
+        logger.exception(f"[{e.__class__.__name__}]: {e}")
 
     try:
-
         rep,ok = migra(filePath)
         session['migration_ok'] = ok
-
         # A ontologia final só é gerada se não forem encontrados erros "graves"
         if ok:
             logger.info("Geração da ontologia final")
-            genFinalOntology()
+            zipedOutputFile = genFinalOntology()
+            session['zipedOutputFile'] = zipedOutputFile
         else:
             logger.warning("A ontologia final não foi gerada")
 
@@ -71,7 +71,6 @@ def process_file():
 
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
-        "ok": ok,
         "table_by_entity": generate_entity_table_dict(rep.globalErrors,rep),
         "table_by_invariant": generate_error_table(rep.globalErrors),
         "warnings": generate_warnings_table(rep.warnings)
@@ -85,35 +84,16 @@ def download_output():
         logger.error("Tentativa de download da ontologia falhou. A migração não foi bem sucedida")
         return "Não é permitido fazer download. A migração não foi bem-sucedida.", 403
 
-    pattern = os.path.join(OUTPUT_DIR, "CLAV_*.ttl")
-    files = glob.glob(pattern)
-
-    if not files:
-        logger.error("Diretoria da ontologia final está vazia")
-        return "Diretoria da ontologia final está vazia", 500
-    else:
-        try:
-            mostRecentFile = max(files, key=extract_timestamp)
-        except Exception:
-            logger.error("Erro ao encontrar o ficheiro final")
-            return "Erro ao encontrar o ficheiro final", 500
-
-    clav = os.path.join(OUTPUT_DIR, mostRecentFile)
+    zipedOutputFile = session['zipedOutputFile']
+    clav = os.path.join(OUTPUT_DIR, zipedOutputFile)
     if not os.path.exists(clav):
-        logger.error("Erro ao encontrar o ficheiro final")
+        logger.error(f"Erro ao encontrar o ficheiro final::{clav}")
         return "Erro ao encontrar o ficheiro final", 500
     else:
         logger.info(f"Ficheiro selecionado: {clav}")
 
     logger.info("Download da ontologia")
-    return send_file(clav, as_attachment=True, download_name=mostRecentFile)
-
-
-def extract_timestamp(filepath):
-    filename = os.path.basename(filepath)
-    timestamp_str = filename.replace("CLAV_", "").replace(".ttl", "")
-    return datetime.strptime(timestamp_str, "%Y-%m-%d_%H-%M-%S")
-
+    return send_file(clav, as_attachment=True, download_name=zipedOutputFile)
 
 if __name__ == '__main__':
     app.run(debug=True,port=5001)
