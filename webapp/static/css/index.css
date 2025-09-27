@@ -55,3 +55,22 @@ summary.error-failed {
     font-size: 0.9em;
     color: #444;
 }
+
+.no-errors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: green;
+}
+
+.no-errors svg {
+    width: 10rem;
+    height: 10rem;
+}
+
+.no-errors p {
+    font-size: 3.5rem;
+    margin-top: 1rem;
+}

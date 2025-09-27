@@ -143,6 +143,28 @@ def generate_error_table(globalErrors):
                 html_content += f"<tr><td>{err.cod}</td><td class='msg'>{msg}</td></tr>"
             html_content += "</table>\n"
 
+    # Caso não hajam erros nenhuns, em qualquer classe
+    if (any([
+        globalErrors["grave"]["declsRepetidas"],
+        globalErrors["grave"]["relsInvalidas"],
+        globalErrors["grave"]["outro"],
+        globalErrors["normal"],
+        globalErrors["outro"]["leg"],
+        globalErrors["outro"]["tindice"],
+        globalErrors["outro"]["tipologia"],
+        globalErrors["outro"]["entidade"],
+        globalErrors["erroInv"]
+    ])):
+            html_content += """
+            <div class="no-errors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="green" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m-1 15.59-4.29-4.3
+                    1.42-1.41L11 14.17l5.88-5.88 1.42 1.41Z" />
+                </svg>
+                <p>Nenhum erro encontrado 🎉</p>
+            </div>
+            """
+
     html_content += "</div>"
     return html_content
 
@@ -167,41 +189,40 @@ def generate_entity_table_dict(globalErrors,rep:Report):
                 "clarificacao": i["clarificacao"]
             }
 
-    entityTables = {}
-    entityNumErrors = {}
+    # Estas tabelas são incializadas para poder
+    # mostrar as classes todas, mesmo quando não
+    # são registados erros
+    entityTables = {c:"" for c in classesN1}
+    entityNumErrors = {c:0 for c in classesN1}
+
     grave_header = '<div class="error-section">🟥 Erros Graves (Estes erros têm de ser corrigidos para a ontologia ser gerada)</div>\n'
     grave_ents = set()
 
     def addRow(entity_dict, ent, content):
-        if ent not in entity_dict:
-            entity_dict[ent] = ''
-        entity_dict[ent] += content
+        # É sempre verificado se a entidade
+        # existe para poder tolerar erros na
+        # introdução do código
+        if ent in entity_dict:
+            entity_dict[ent] += content
 
     def ensureGraveHeader(ent):
         if ent not in grave_ents:
             addRow(entityTables, ent, grave_header)
             grave_ents.add(ent)
 
-    def getEnt(cod):
-        ent = cod
-        try:
-            ent = cod[:3]
-        except Exception:
-            pass
-        return ent
-
     def addError(ent):
+        # É sempre verificado se a entidade
+        # existe para poder tolerar erros na
+        # introdução do código
         if ent in entityNumErrors:
-            entityNumErrors[ent]+=1
-        else:
-            entityNumErrors[ent]=1
+            entityNumErrors[ent] += 1
 
     # Declarações Repetidas
     # TODO: Falta testar
     if globalErrors["grave"]["declsRepetidas"]:
         ents = set()
         for cod, sheet in globalErrors["grave"]["declsRepetidas"].items():
-            ent = getEnt(cod)
+            ent = cod[:3]
             ensureGraveHeader(ent)
             # Header de cada tabela (uma por entidade)
             if ent not in ents:
@@ -217,7 +238,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
 
         # Conclusão de cada tabela
         for cod in globalErrors["grave"]["declsRepetidas"]:
-            ent = getEnt(cod)
+            ent = cod[:3]
             addRow(entityTables, ent, "</table>")
 
     # Relações Inválidas
@@ -226,7 +247,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
         # Criação dos headers das tabelas para as entidades
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
-                ent = getEnt(rel[0])
+                ent = cod[:3]
                 ensureGraveHeader(ent)
                 if ent not in ents:
                     rels_header = f'<div class="error-section">Relações Inválidas: Declarações que referenciam um processo que não existe</div>\n'
@@ -237,7 +258,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
         # Linhas de cada tabela
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
-                ent = getEnt(rel[0])
+                ent = cod[:3]
                 rels_html = f"<tr><td><span class='error-critical'>{cod}</span></td>"
                 rels_html += f"<td><b>{rel[0]}</b> <b><i>{rel[1]}</b></i> <span class='error-critical'><b>{cod}<b></span></td></tr>"
                 addError(ent)
@@ -246,7 +267,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
         # Conclusão de cada tabela
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
-                ent = getEnt(rel[0])
+                ent = cod[:3]
                 addRow(entityTables, ent, "</table>")
 
     # Outros Erros Graves
@@ -254,7 +275,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
     if globalErrors["grave"]["outro"]:
         ents = set()
         for cod, msgs in globalErrors["grave"]["outro"].items():
-            ent = getEnt(cod)
+            ent = cod[:3]
             ensureGraveHeader(ent)
             # Header de cada tabela (uma por entidade)
             if ent not in ents:
@@ -271,7 +292,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
 
         # Conclusão de cada tabela
         for cod in globalErrors["grave"]["outro"]:
-            ent = getEnt(cod)
+            ent = cod[:3]
             addRow(entityTables, ent, "</table>")
 
     # Erros Genéricos
@@ -279,7 +300,7 @@ def generate_entity_table_dict(globalErrors,rep:Report):
     if globalErrors["normal"]:
         ents = set()
         for cod, msgs in globalErrors["normal"].items():
-            ent = getEnt(cod)
+            ent = cod[:3]
             # Header de cada tabela (uma por entidade)
             if ent not in ents:
                 header = f'<div class="error-section">🟨 Erros Genéricos</div>\n'
@@ -295,14 +316,13 @@ def generate_entity_table_dict(globalErrors,rep:Report):
 
         # Conclusão de cada tabela
         for cod in globalErrors["normal"]:
-            ent = getEnt(cod)
+            ent = cod[:3]
             addRow(entityTables, ent, "</table>")
 
     # Erros de Invariantes por entidade
     if globalErrors["erroInvByEnt"]:
 
         for ent, invs_dict in globalErrors["erroInvByEnt"].items():
-
             addRow(entityTables, ent, '<div class="error-section">🟦 Erros de Invariantes</div>\n')
 
             for inv, erros in invs_dict.items():
@@ -342,11 +362,22 @@ def generate_entity_table_dict(globalErrors,rep:Report):
 
                 addRow(entityTables, ent, html_part)
 
-    # Criar o header para todas as entidades referidas
-    for entCod in entityTables:
-        ent = classesN1.get(entCod, {"titulo": "Sem descrição", "clarificacao": ""})
-        entTitle = f'<div class="error-section">{entCod} ({entityNumErrors[entCod]}): {ent['titulo']}</div>\n'
-        entityTables[entCod] = entTitle + entityTables[entCod]
+    # Criar o header para todas as entidades existentes
+    for entCod,ent in classesN1.items():
+        if entityNumErrors[entCod] > 0:
+            entTitle = f'<div class="error-section">{entCod} ({entityNumErrors[entCod]}): {ent['titulo']}</div>\n'
+            entityTables[entCod] = entTitle + entityTables[entCod]
+        else:
+            entTitle = f'<div class="error-section">{entCod}: {ent['titulo']}</div>\n'
+            content = """
+            <div class="no-errors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="green" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m-1 15.59-4.29-4.3
+                    1.42-1.41L11 14.17l5.88-5.88 1.42 1.41Z" />
+                </svg>
+                <p>Nenhum erro encontrado 🎉</p>
+            </div>"""
+            entityTables[entCod] = entTitle + content
 
     return entityTables
 
@@ -392,6 +423,12 @@ def generate_warnings_table(warnings):
             html_content += '</table>'
     else:
         # Tabela vazia: Não foram registados warnings
-        pass
+        html_content += """<div class="no-errors">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path fill="green" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m-1 15.59-4.29-4.3
+                1.42-1.41L11 14.17l5.88-5.88 1.42 1.41Z" />
+            </svg>
+            <p>Não foram registados warnings</p>
+        </div>"""
 
     return html_content
