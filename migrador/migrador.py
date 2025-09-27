@@ -132,6 +132,9 @@ def migra(filename):
     # A ontologia só é gerada se nenhum erro "grave" for encontrado
     if ok:
 
+        # Remoção das inferências calculadas
+        rep.deleteMissingRels(allClasses)
+
         # Reorganização dos dados
         finalClasses = { c:{} for c in classesN1}
         for cod,proc in allClasses.items():

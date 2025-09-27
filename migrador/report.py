@@ -69,7 +69,8 @@ class Report:
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
-        """Regista e guarda em `rep.missingRels` uma relação
+        """
+        Regista e guarda em `Report.missingRels` uma relação
         (`proc` `rel` `cod`) que está em falta, isto é, que
         não está declarada explicitamente.
         Uma "missingRel" pode ser de `tipo` **relsSimetricas**
@@ -114,6 +115,38 @@ class Report:
             self.addWarning("I",{"rel":r})
 
         logger.info(f"Foram efetuadas {len(self.missingRels["relsInverseOf"])} inferências de relações inversas")
+
+
+    def deleteMissingRels(self,allClasses):
+        """
+        Remove as relações inferidas pelo método
+        `fixMissingRels` para gerar uma ontologia
+        final com um tamanho mais reduzido.
+        """
+
+        logger = logging.getLogger(PROC)
+
+        for r in self.missingRels["relsSimetricas"]:
+            classe = allClasses.get(r[0])
+            proRel = classe.get("proRel")
+            proRelCod = classe.get("processosRelacionados")
+            if proRel and proRelCod:
+                rels = list(zip(proRel,proRelCod))
+                i = rels.index((r[1],r[2]))
+                del proRel[i]
+                del proRelCod[i]
+
+        for r in self.missingRels["relsInverseOf"]:
+            classe = allClasses.get(r[0])
+            proRel = classe.get("proRel")
+            proRelCod = classe.get("processosRelacionados")
+            if proRel and proRelCod:
+                rels = list(zip(proRel,proRelCod))
+                i = rels.index((r[1],r[2]))
+                del proRel[i]
+                del proRelCod[i]
+
+        logger.info("Foram removidas inferências das relações simétricas e inversas.")
 
 
     def addDecl(self,cod,sheet):
