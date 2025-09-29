@@ -90,29 +90,31 @@ class Report:
 
         for r in self.missingRels["relsSimetricas"]:
             classe = allClasses.get(r[0])
-            proRel = classe.get("proRel")
-            proRelCod = classe.get("processosRelacionados")
-            if proRel and proRelCod:
-                classe["proRel"].append(r[1])
-                classe["processosRelacionados"].append(r[2])
-            else:
-                classe["proRel"] = [r[1]]
-                classe["processosRelacionados"] = [r[2]]
-            self.addWarning("I",{"rel":r})
+            if classe:
+                proRel = classe.get("proRel")
+                proRelCod = classe.get("processosRelacionados")
+                if proRel and proRelCod:
+                    classe["proRel"].append(r[1])
+                    classe["processosRelacionados"].append(r[2])
+                else:
+                    classe["proRel"] = [r[1]]
+                    classe["processosRelacionados"] = [r[2]]
+                self.addWarning("I",{"rel":r})
 
         logger.info(f"Foram efetuadas {len(self.missingRels["relsSimetricas"])} inferências de relações simétricas")
 
         for r in self.missingRels["relsInverseOf"]:
             classe = allClasses.get(r[0])
-            proRel = classe.get("proRel")
-            proRelCod = classe.get("processosRelacionados")
-            if proRel and proRelCod:
-                classe["proRel"].append(r[1])
-                classe["processosRelacionados"].append(r[2])
-            else:
-                classe["proRel"] = [r[1]]
-                classe["processosRelacionados"] = [r[2]]
-            self.addWarning("I",{"rel":r})
+            if classe:
+                proRel = classe.get("proRel")
+                proRelCod = classe.get("processosRelacionados")
+                if proRel and proRelCod:
+                    classe["proRel"].append(r[1])
+                    classe["processosRelacionados"].append(r[2])
+                else:
+                    classe["proRel"] = [r[1]]
+                    classe["processosRelacionados"] = [r[2]]
+                self.addWarning("I",{"rel":r})
 
         logger.info(f"Foram efetuadas {len(self.missingRels["relsInverseOf"])} inferências de relações inversas")
 
@@ -128,23 +130,25 @@ class Report:
 
         for r in self.missingRels["relsSimetricas"]:
             classe = allClasses.get(r[0])
-            proRel = classe.get("proRel")
-            proRelCod = classe.get("processosRelacionados")
-            if proRel and proRelCod:
-                rels = list(zip(proRel,proRelCod))
-                i = rels.index((r[1],r[2]))
-                del proRel[i]
-                del proRelCod[i]
+            if classe:
+                proRel = classe.get("proRel")
+                proRelCod = classe.get("processosRelacionados")
+                if proRel and proRelCod:
+                    rels = list(zip(proRel,proRelCod))
+                    i = rels.index((r[1],r[2]))
+                    del proRel[i]
+                    del proRelCod[i]
 
         for r in self.missingRels["relsInverseOf"]:
             classe = allClasses.get(r[0])
-            proRel = classe.get("proRel")
-            proRelCod = classe.get("processosRelacionados")
-            if proRel and proRelCod:
-                rels = list(zip(proRel,proRelCod))
-                i = rels.index((r[1],r[2]))
-                del proRel[i]
-                del proRelCod[i]
+            if classe:
+                proRel = classe.get("proRel")
+                proRelCod = classe.get("processosRelacionados")
+                if proRel and proRelCod:
+                    rels = list(zip(proRel,proRelCod))
+                    i = rels.index((r[1],r[2]))
+                    del proRel[i]
+                    del proRelCod[i]
 
         logger.info("Foram removidas inferências das relações simétricas e inversas.")
 

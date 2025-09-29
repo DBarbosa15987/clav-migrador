@@ -144,7 +144,7 @@ def generate_error_table(globalErrors):
             html_content += "</table>\n"
 
     # Caso não hajam erros nenhuns, em qualquer classe
-    if (any([
+    if (not any([
         globalErrors["grave"]["declsRepetidas"],
         globalErrors["grave"]["relsInvalidas"],
         globalErrors["grave"]["outro"],
