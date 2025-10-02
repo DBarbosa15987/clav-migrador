@@ -33,7 +33,7 @@ def processSheet(sheet, rep: Report):
             if myReg["sigla"] not in entCatalog:
                 entCatalog.append(myReg["sigla"])
             else:
-                rep.addErroNoCod(f"Linha {index}: Entidade duplicada --> <b>{myReg["sigla"]}</b>","entidade")
+                rep.addErroNoCod(f"Linha {str(index+2)}: Entidade duplicada::<b>{myReg["sigla"]}</b>","entidade")
             if row["Estado"]:
                myReg["estado"] = brancos.sub('', str(row["Estado"]))
             if row["ID SIOE"]:

@@ -290,14 +290,13 @@ def rel_2_inv_1(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Um processo sem desdobramento ao 4º nível
-    tem de ter uma justificação associada ao PCA."
+    tem de ter uma justificação associada ao PCA"
     """
 
     logger.info("Verificação do invariante rel_2_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            # Se não tem filhos tem de ter uma justificação associada ao PCA
             if not classe.get("filhos"):
                 pca = classe.get("pca")
                 just = pca.get("justificacao")
@@ -315,7 +314,7 @@ def rel_2_inv_4(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação <b>eSintetizadoPor</b> é antissimétrica."
+    "A relação <b>eSintetizadoPor</b> é antissimétrica"
     """
 
     logger.info("Verificação do invariante rel_2_inv_4")
@@ -331,7 +330,7 @@ def rel_2_inv_5(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação <b>eSucessorDe</b> é antissimétrica."
+    "A relação <b>eSucessorDe</b> é antissimétrica"
     """
 
     logger.info("Verificação do invariante rel_2_inv_5")
@@ -408,7 +407,7 @@ def rel_2_inv_6(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação <b>eSuplementoDe</b> é antissimétrica."
+    "A relação <b>eSuplementoDe</b> é antissimétrica"
     """
 
     logger.info("Verificação do invariante rel_2_inv_6")
@@ -424,7 +423,7 @@ def rel_2_inv_7(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação <b>eSuplementoPara</b> é antissimétrica."
+    "A relação <b>eSuplementoPara</b> é antissimétrica"
     """
 
     logger.info("Verificação do invariante rel_2_inv_7")
@@ -440,7 +439,7 @@ def rel_2_inv_3(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "A relação <b>eSinteseDe</b> é antissimétrica."
+    "A relação <b>eSinteseDe</b> é antissimétrica"
     """
 
     logger.info("Verificação do invariante rel_2_inv_3")
@@ -481,7 +480,7 @@ def rel_1_inv_2(allClasses,rep: Report):
 
     "Quando os filhos resultantes de um desdobramento de
     um PN têm o DF distinto, deve haver uma relação de
-    síntese (de ou por) entre eles."
+    síntese (de ou por) entre eles"
     """
 
     logger.info("Verificação do invariante rel_1_inv_2")
@@ -663,7 +662,7 @@ def rel_3_inv_3(allClasses,rep:Report):
 
     "Quando o PN em causa é <b>suplemento de</b> outro,
     todos os processos relacionados pela relação
-    <b>eSuplementoDe</b> devem constar na justificação do PCA."
+    <b>eSuplementoDe</b> devem constar na justificação do PCA"
     """
 
     logger.info("Verificação do invariante rel_3_inv_3")
@@ -710,7 +709,8 @@ def rel_8_inv_2(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Se um PN é <b>eSinteseDe</b> -> DF é de conservação"
+    "Se um PN é <b><i>eSinteseDe</i></b, então
+    o valor do DF é de \"Conservação\""
     """
 
     logger.info("Verificação do invariante rel_8_inv_2")
@@ -735,7 +735,7 @@ def rel_1_inv_1(allClasses,rep: Report):
 
     "Os PNs só podem ter desbobramento ao nível 4
     quando os descendentes de nível 4 têm valores
-    de PCA ou DF distintos entre eles."
+    de PCA ou DF distintos entre eles"
     """
 
     logger.info("Verificação do invariante rel_1_inv_1")
@@ -758,7 +758,7 @@ def rel_1_inv_1(allClasses,rep: Report):
                     # o invariante falha. É registado o valor em questão e
                     # os sítios onde acontece
                     if len(cods) > 1:
-                        rep.addFalhaInv("rel_1_inv_1",cod,{"valor": valor, "filhos": cods})
+                        rep.addFalhaInv("rel_1_inv_1",cod,{"filhos": cods})
 
     err = len(rep.globalErrors["erroInv"].get("rel_1_inv_1",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_1")
@@ -770,7 +770,7 @@ def rel_1_inv_4(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Uma classe de nível 3 não pode ter valores de
-    DF e PCA se esta tiver desdobramento no nível 4."
+    DF e PCA se esta tiver desdobramento no nível 4"
     """
 
     logger.info("Verificação do invariante rel_1_inv_4")
@@ -796,7 +796,7 @@ def rel_1_inv_6(allClasses,rep: Report):
     que se desdobra ao 4º nível, é necessário, com base no
     <b>critério de complementaridade informacional</b>,
     a relação manter-se ao 3º nível.
-    Pelo menos um dos 4ºs níveis deve ser de conservação."
+    Pelo menos um dos 4ºs níveis deve ser de conservação"
     """
 
     logger.info("Verificação do invariante rel_1_inv_6")
@@ -820,7 +820,7 @@ def rel_1_inv_6(allClasses,rep: Report):
                         # Se nenhum filho tiver o valor de "C",
                         # então o invariante falha
                         if not conservacao:
-                            rep.addFalhaInv("rel_1_inv_6",cod,{"proc": compl,"filhos": filhos})
+                            rep.addFalhaInv("rel_1_inv_6",cod,{"proc": compl,"filhos": codFilhos})
 
     err = len(rep.globalErrors["erroInv"].get("rel_1_inv_6",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_1_inv_6")
@@ -832,7 +832,7 @@ def rel_1_inv_3(allClasses,termosIndice,rep: Report):
     em `rep` os casos em que falha:
 
     "Quando há desdobramento em 4ºs níveis, os termos
-    de índice são replicados em cada um desses níveis."
+    de índice são replicados em cada um desses níveis"
     """
 
     logger.info("Verificação do invariante rel_1_inv_3")
@@ -988,7 +988,8 @@ def rel_8_inv_1(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Se um PN é <b>eComplementarDe</b> -> DF é de conservação"
+    "Se um PN é <b><i>eComplementarDe</i></b>,
+    então o valor do DF é de \"Conservação\""
     """
 
     logger.info("Verificação do invariante rel_8_inv_1")
@@ -1013,7 +1014,7 @@ def rel_2_inv_9(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Um PN só pode ter uma relação com outro PN."
+    "Um PN só pode ter uma relação com outro PN"
     """
 
     logger.info("Verificação do invariante rel_2_inv_9")
@@ -1081,8 +1082,6 @@ def rel_2_inv_10(termosIndice,rep: Report):
     for t,cods in termos.items():
         if len(cods) > 1:
             for c in cods:
-                # TODO: excluir os repetidos? (A :x B e B :x A) ou o próprio código estar pressente em `cods`
-                # TODO: indexar por termos? somehow
                 rep.addFalhaInv("rel_2_inv_10",c,{"t":t,"cods": cods})
 
     err = len(rep.globalErrors["erroInv"].get("rel_2_inv_10",[]))
@@ -1094,7 +1093,7 @@ def rel_2_inv_8(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Um PN não se pode relacionar com ele próprio."
+    "Um PN não se pode relacionar com ele próprio"
     """
 
     logger.info("Verificação do invariante rel_2_inv_8")
@@ -1106,7 +1105,7 @@ def rel_2_inv_8(allClasses,rep: Report):
             if proRelCods:
                 # Identificar os todos os casos em que o processo
                 # se menciona a si próprio
-                selfRels = [(c,r) for c,r in zip(proRelCods,proRels) if cod==c]
+                selfRels = [r for c,r in zip(proRelCods,proRels) if cod==c]
                 for r in selfRels:
                     rep.addFalhaInv("rel_2_inv_8",cod,{"rel":r})
 
@@ -1143,7 +1142,7 @@ def rel_2_inv_14(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Um processo transversal tem que ter participantes."
+    "Um processo transversal tem que ter participantes"
     """
 
     logger.info("Verificação do invariante rel_2_inv_14")
@@ -1165,7 +1164,7 @@ def rel_1_inv_7(allClasses,harmonizacao,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Os PNs em harmonização não podem ter filhos ativos."
+    "Os PNs em harmonização não podem ter filhos ativos"
     """
 
     logger.info("Verificação do invariante rel_1_inv_7")
@@ -1187,9 +1186,9 @@ def rel_8_inv_3(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Qualquer processo referenciado num critério
-    da justificação do PCA/DF tem de estar
-    devidamente declarado."
+    "Qualquer processo referenciado num critério da
+    justificação do PCA/DF tem de estar declarado na
+    zona de contexto"
     """
 
     logger.info("Verificação do invariante rel_8_inv_3")
@@ -1226,14 +1225,13 @@ def rel_8_inv_4(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Todos os processos referenciados no <b>critério
-    de densidade informacional</b> devem estar
-    devidamente declarados com a relação
-    <b>eSinteseDe</b> ou <b>sintetizadoPor</b>"
+    de densidade informacional</b> devem estar declarado
+    na zona de contexto com a relação <b><i>eSinteseDe</i></b>
+    ou <b><i>eSintetizadoPor</i></b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_4")
 
-    # FIXME: verificar as notas
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             filhos = classe.get("filhos")
@@ -1261,12 +1259,12 @@ def rel_8_inv_5(allClasses,rep: Report):
 
     "Todos os processos referenciados no <b>critério
     de complementaridade informacional</b> devem estar
-    devidamente declarados com a relação <b>eComplementarDe</b>"
+    declarado na zona de contexto com a relação
+    <b><i>eComplementarDe</i></b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_5")
 
-    # FIXME: verificar as notas
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             filhos = classe.get("filhos")
@@ -1293,13 +1291,13 @@ def rel_8_inv_6(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Todos os processos referenciados no <b>critério
-    de utilidade administrativa</b> devem estar devidamente
-    declarados com a relação <b>eSuplementoPara</b>"
+    de utilidade administrativa</b> devem estar
+    declarado na zona de contexto com a relação
+    <b><i>eSuplementoPara</i></b>"
     """
 
     logger.info("Verificação do invariante rel_8_inv_6")
 
-    # FIXME: verificar as notas
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
             filhos = classe.get("filhos")

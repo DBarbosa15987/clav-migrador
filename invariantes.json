@@ -6,37 +6,37 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Os PNs só podem ter desbobramento ao nível 4 quando os descendentes de nível 4 têm valores de PCA ou DF distintos entre eles.",
+                    "desc": "Os PNs só podem ter desbobramento ao nível 4 quando os descendentes de nível 4 têm valores de PCA ou DF distintos entre eles",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_1"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Quando os filhos resultantes de um desdobramento de um PN têm o DF distinto, deve haver uma relação de síntese (de ou por) entre eles.",
+                    "desc": "Quando os filhos resultantes de um desdobramento de um PN têm o DF distinto, deve haver uma relação de síntese (de ou por) entre eles",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_3"
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Quando há desdobramento em 4ºs níveis, os termos de índice são replicados em cada um desses níveis.",
+                    "desc": "Quando há desdobramento em 4ºs níveis, os termos de índice são replicados em cada um desses níveis",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_4"
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "Uma classe de nível 3 não pode ter valores de DF e PCA se esta tiver desdobramento no nível 4.",
+                    "desc": "Uma classe de nível 3 não pode ter valores de DF e PCA se esta tiver desdobramento no nível 4",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_5"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "Uma classe de nível 3 tem que ter valores de DF e PCA se esta não tiver desdobramento.",
+                    "desc": "Uma classe de nível 3 tem que ter valores de DF e PCA se esta não tiver desdobramento",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_6"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "Se um PN (Classe 3) for <b>complementar de</b> outro que se desdobra ao 4º nível, é necessário, com base no <b>critério de complementaridade informacional</b>, a relação manter-se ao 3º nível. Pelo menos um dos 4ºs níveis deve ser de conservação.",
+                    "desc": "Se um PN (Classe 3) for <b>complementar de</b> outro que se desdobra ao 4º nível, é necessário, com base no <b>critério de complementaridade informacional</b>, a relação manter-se ao 3º nível. Pelo menos um dos 4ºs níveis deve ser de conservação",
                     "clarificacao": "Se um PN for <b>complementar de</b> um PN com filhos, pelo menos um deles precisa de ter o valor de 'C' (Conservação) no DF.",
                     "oldId": "rel_3_inv_7"
                 },
@@ -66,43 +66,43 @@
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "A relação <b><i>eSinteseDe</i></b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSinteseDe</i></b> é antissimétrica",
                     "clarificacao": "Se A é Síntese de B, então B não pode ser Síntese de A",
                     "oldId": "rel_4_inv_2"
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "A relação <b><i>eSintetizadoPor</i></b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSintetizadoPor</i></b> é antissimétrica",
                     "clarificacao": "Se A é Sintetizado por B, então B não pode ser Sintetizado por A",
                     "oldId": "rel_4_inv_3"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "A relação <b><i>eSucessorDe</i></b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSucessorDe</i></b> é antissimétrica",
                     "clarificacao": "Se A é Sucessor de B, então B não pode ser Sucessor de A",
                     "oldId": "rel_4_inv_4"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "A relação <b><i>eSuplementoDe</i></b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSuplementoDe</i></b> é antissimétrica",
                     "clarificacao": "Se A é Suplemento de B, então B não pode ser Suplemento de A",
                     "oldId": "rel_4_inv_5"
                 },
                 {
                     "idInv": "inv_7",
-                    "desc": "A relação <b><i>eSuplementoPara</i></b> é antissimétrica.",
+                    "desc": "A relação <b><i>eSuplementoPara</i></b> é antissimétrica",
                     "clarificacao": "Se A é Suplemento para B, então B não pode ser Suplemento para A",
                     "oldId": "rel_4_inv_6"
                 },
                 {
                     "idInv": "inv_8",
-                    "desc": "Um PN não se pode relacionar com ele próprio.",
+                    "desc": "Um PN não se pode relacionar com ele próprio",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_7"
                 },
                 {
                     "idInv": "inv_9",
-                    "desc": "Um PN só pode ter uma relação com outro PN.",
+                    "desc": "Um PN só pode ter uma relação com outro PN",
                     "clarificacao": "Independentemente da relação. Não está limitado a relações repetidas",
                     "oldId": "rel_4_inv_8"
                 },
@@ -120,19 +120,19 @@
                 },
                 {
                     "idInv": "inv_12",
-                    "desc": "Um diploma legislativo referenciado num critério de justicação tem de estar associado na zona de contexto do processo.",
+                    "desc": "Um diploma legislativo referenciado num critério de justicação tem de estar associado na zona de contexto do processo",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_12"
                 },
                 {
                     "idInv": "inv_13",
-                    "desc": "Um diploma legislativo referenciado num critério de justicação de nível 4 tem de estar associado na zona de contexto do processo pai.",
+                    "desc": "Um diploma legislativo referenciado num critério de justicação de nível 4 tem de estar associado na zona de contexto do processo pai",
                     "clarificacao": "Como se tratam de classes de nível 4 esta verificação é feita no pai, onde está presente a justificação.",
                     "oldId": "rel_4_inv_13"
                 },
                 {
                     "idInv": "inv_14",
-                    "desc": "Um processo transversal tem que ter participantes.",
+                    "desc": "Um processo transversal tem que ter participantes",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_14"
                 }
@@ -156,7 +156,7 @@
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b><i>eSuplementoDe</i></b> devem constar na justificação do PCA.",
+                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b><i>eSuplementoDe</i></b> devem constar na justificação do PCA",
                     "clarificacao": "",
                     "oldId": "rel_5_inv_3"
                 }
@@ -236,41 +236,41 @@
         },
         {
             "idRel": "rel_8",
-            "desc": "Invariantes das relações temRelProc. Só se aplica ao 3º nível.",
+            "desc": "Invariantes das relações temRelProc. Só se aplica ao 3º nível",
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Se um PN é <b><i>eComplementarDe</i></b> -> DF é de conservação",
+                    "desc": "Se um PN é <b><i>eComplementarDe</i></b>, então o valor do DF é de \"Conservação\"",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_1"
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Se um PN é <b><i>eSinteseDe</i></b> -> DF é de conservação",
+                    "desc": "Se um PN é <b><i>eSinteseDe</i></b, então o valor do DF é de \"Conservação\"",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_2"
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Qualquer processo referenciado num critério da justificação do PCA/DF tem de estar devidamente declarado.",
+                    "desc": "Qualquer processo referenciado num critério da justificação do PCA/DF tem de estar declarado na zona de contexto",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_4"
                 },
                 {
                     "idInv": "inv_4",
-                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar devidamente declarados com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
+                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar declarado na zona de contexto com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_5"
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar devidamente declarados com a relação <b><i>eComplementarDe</i></b>",
+                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar declarado na zona de contexto com a relação <b><i>eComplementarDe</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_6"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar devidamente declarados com a relação <b><i>eSuplementoPara</i></b>",
+                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar declarado na zona de contexto com a relação <b><i>eSuplementoPara</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_7"
                 }
