@@ -119,40 +119,6 @@ class Report:
         logger.info(f"Foram efetuadas {len(self.missingRels["relsInverseOf"])} inferências de relações inversas")
 
 
-    def deleteMissingRels(self,allClasses):
-        """
-        Remove as relações inferidas pelo método
-        `fixMissingRels` para gerar uma ontologia
-        final com um tamanho mais reduzido.
-        """
-
-        logger = logging.getLogger(PROC)
-
-        for r in self.missingRels["relsSimetricas"]:
-            classe = allClasses.get(r[0])
-            if classe:
-                proRel = classe.get("proRel")
-                proRelCod = classe.get("processosRelacionados")
-                if proRel and proRelCod:
-                    rels = list(zip(proRel,proRelCod))
-                    i = rels.index((r[1],r[2]))
-                    del proRel[i]
-                    del proRelCod[i]
-
-        for r in self.missingRels["relsInverseOf"]:
-            classe = allClasses.get(r[0])
-            if classe:
-                proRel = classe.get("proRel")
-                proRelCod = classe.get("processosRelacionados")
-                if proRel and proRelCod:
-                    rels = list(zip(proRel,proRelCod))
-                    i = rels.index((r[1],r[2]))
-                    del proRel[i]
-                    del proRelCod[i]
-
-        logger.info("Foram removidas inferências das relações simétricas e inversas.")
-
-
     def addDecl(self,cod,sheet):
         # "cod" aparece declarado repetidamente na(s) folha(s) self.declaracoes[cod]
         if cod in self.declaracoes:
@@ -296,8 +262,8 @@ class ErroInv:
 
 
     def fix(self, fixMsg):
-            self.fixStatus = FixStatus.FIXED
-            self.fixMsg = fixMsg
+        self.fixStatus = FixStatus.FIXED
+        self.fixMsg = fixMsg
 
 
     def fail(self,fixMsg):
@@ -443,8 +409,6 @@ class ErroInv:
                 msg = f"O termo \"{self.info["t"]}\" foi encontrado repetido nos seguintes processos: <b>{", ".join(self.info["cods"])}</b>."
             case "rel_2_inv_8":
                 msg = f"O processo <b>{self.cod}</b> relaciona-se com ele próprio, através da relação <i><b>{self.info["rel"]}</b></i>."
-            case "rel_6_inv_1":
-                msg = f"No DF do processo <b>{self.cod}</b> foi encontrado uma justificação do tipo \"<b>{self.info["tipo"]}</b>\"."
             case "rel_2_inv_14":
                 msg = f"O processo <b>{self.cod}</b> é transversal, mas não tem participantes."
             case "rel_1_inv_7":
@@ -459,7 +423,7 @@ class ErroInv:
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eComplementarDe</b></i>."
             case "rel_7_inv_1":
                 msg = f"Na justificação do PCA do processo <b>{self.cod}</b> foram encontrados mais do que um critério do tipo \"<b>{self.info["tipo"]}</b>\"."
-            case "rel_6_inv_2":
+            case "rel_6_inv_1":
                 msg = f"Na justificação do DF do processo <b>{self.cod}</b> foram encontrados mais do que um critério do tipo \"<b>{self.info["tipo"]}</b>\"."
             case _:
                 pass

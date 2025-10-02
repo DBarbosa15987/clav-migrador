@@ -91,6 +91,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
         for index,crit in enumerate(criterios):
             jcodigo = "just_pca_c" + cod + "_" + str(index)
             myCrit = {'critCodigo': jcodigo}
+
             # --- Critério Legal ------------------------------------------
             if res := re.search(r'(?:Critério legal:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'legal'
@@ -107,8 +108,9 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
                             myReg['legislacao'].append(ref)
+
             # --- Critério Gestionário ------------------------------------
-            if res := re.search(r'(?:Critério gestionário:\s*)(.+)', crit, re.I):
+            elif res := re.search(r'(?:Critério gestionário:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'gestionário'
                 conteudo = res.group(1)
                 myCrit['conteudo'] = conteudo
@@ -125,12 +127,9 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myRefs.append(ref.group())
                 if len(myRefs) > 0:
                     myCrit['procRefs'] = myRefs
-                    # ERRO: Todos os processos referenciados têm de estar na zona de contexto
-                    for ref in myRefs:
-                        if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            rep.addErro(cod,f"Processo usado no critério não está incluído no contexto::<b>{ref}</b>")
+
             # --- Critério de Utilidade Administrativa ------------------------------------
-            if res := re.search(r'(?:Critério de utilidade administrativa:\s*)(.+)', crit, re.I):
+            elif res := re.search(r'(?:Critério de utilidade administrativa:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'utilidade'
                 conteudo = res.group(1)
                 myCrit['conteudo'] = conteudo
@@ -147,10 +146,11 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myRefs.append(ref.group())
                 if len(myRefs) > 0:
                     myCrit['procRefs'] = myRefs
-                    # ERRO: Todos os processos referenciados têm de estar na zona de contexto (classes N3)
-                    for ref in myRefs:
-                        if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            rep.addErro(cod,f"Processo usado no critério não está incluído no contexto::<b>{ref}</b>")
+
+            else:
+                rep.addErro(cod,f"Critério de justificação do PCA desconhecido::<b>{crit}</b>")
+                myCrit['tipo'] = "NE"
+                myCrit['conteudo'] = "NE"
 
             myReg['pca']['justificacao'].append(myCrit)
 
@@ -162,13 +162,14 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
         if re.search(r'C|CP|E|NE', df):
             myReg['df']['valor'] = df
         else:
+            myReg['df']['valor'] = "NE"
             if myReg["estado"]!='H':
                 rep.addErro(cod,f"Valor inválido para o DF::<b>{df}</b>")
     # Nota ao DF ------------------------------------------------------
     if "Nota ao DF" in classe and classe["Nota ao DF"]:
         myReg['df']['nota'] = brancos.sub('', classe["Nota ao DF"])
     # ERRO: um dos dois, DF ou Nota ao DF, tem de ter um valor válido
-    if myReg["estado"]!='H' and classe["Destino final"] and (myReg['df']['valor'] == "NE") and not myReg['df']['nota']:
+    if myReg["estado"]!='H' and classe["Destino final"] and (myReg['df']['valor'] == "NE") and 'nota' not in myReg['df']:
         rep.addErro(cod,"DF e Nota ao DF não podem ser simultaneamente inválidos")
     # Justificação do DF ----------------------------------------------
     if 'df' in myReg and classe["Justificação DF"]:
@@ -179,6 +180,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
         for index,crit in enumerate(criterios):
             jcodigo = "just_df_c" + cod + "_" + str(index)
             myCrit = {'critCodigo': jcodigo}
+
             # --- Critério Legal ------------------------------------------
             if res := re.search(r'(?:Critério legal:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'legal'
@@ -196,7 +198,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
                             myReg['legislacao'].append(ref)
             # --- Critério de Densidade Informacional ------------------------------------------
-            if res := re.search(r'(?:Critério de densidade informacional:\s*)(.+)', crit, re.I):
+            elif res := re.search(r'(?:Critério de densidade informacional:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'densidade'
                 conteudo = res.group(1)
                 myCrit['conteudo'] = conteudo
@@ -220,12 +222,9 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myRefs.append(ref.group())
                 if len(myRefs) > 0:
                     myCrit['procRefs'] = myRefs
-                    # ERRO: Todos os processos referenciados têm de estar na zona de contexto
-                    for ref in myRefs:
-                        if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            rep.addErro(cod,f"Processo usado no critério não está incluído no contexto::<b>{ref}</b>")
+
             # --- Critério de Complementaridade Informacional ------------------------------------------
-            if res := re.search(r'(?:Critério de complementaridade informacional:\s*)(.+)', crit, re.I):
+            elif res := re.search(r'(?:Critério de complementaridade informacional:\s*)(.+)', crit, re.I):
                 myCrit['tipo'] = 'complementaridade'
                 conteudo = res.group(1)
                 myCrit['conteudo'] = conteudo
@@ -249,10 +248,12 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myRefs.append(ref.group())
                 if len(myRefs) > 0:
                     myCrit['procRefs'] = myRefs
-                    # ERRO: Todos os processos referenciados têm de estar na zona de contexto
-                    for ref in myRefs:
-                        if 'processosRelacionados' in myReg and ref not in myReg['processosRelacionados']:
-                            rep.addErro(cod,f"Processo usado no critério não está incluído no contexto::<b>{ref}</b>")
+
+            else:
+                # ERRO: critério está fora do domínio estabelecido
+                rep.addErro(cod,f"Critério de justificação do DF desconhecido::<b>{crit}</b>")
+                myCrit['tipo'] = "NE"
+                myCrit['conteudo'] = "NE"
 
             myReg['df']['justificacao'].append(myCrit)
 

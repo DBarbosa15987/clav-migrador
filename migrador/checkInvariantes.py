@@ -85,7 +85,7 @@ def processClasses(sheets,rep: Report):
         df = classe.get("df")
         pca = classe.get("pca")
 
-        if proRels:
+        if proRels and rels:
             for proc,rel in zip(proRels, rels):
                 # Se não existir, é registada como inválida, se existir confirma-se
                 # se as simetrias e anti-simetrias estão corretas
@@ -239,49 +239,6 @@ def checkJustRef(allClasses,nivel,rep: Report,invName):
                         if classePai:
                             if leg not in classePai.get("legislacao",[]):
                                 rep.addFalhaInv(invName,cod,{"leg":leg,"tipo": "DF", "pai": pai})
-
-
-def checkUniqueInst(allClasses,rep: Report):
-    """
-    Função que verifica a unicidade das instâncias
-    mencionadas nos seguintes invariantes:
-
-    * 2 Classes (nível 1, 2 ou 3) não podem ter a mesma instância NotaAplicacao;
-    * 2 Classes (nível 1, 2 ou 3) não podem ter a mesma instância NotaExclusao;
-    * 2 Classes (nível 1, 2 ou 3) não podem ter a mesma instância ExemploNotaAplicacao;
-    """
-
-    notas = {
-        "rel_2_inv_1": {}, # ex: {"nota_200.30.301_df9148e99f28": ["200.30.301","100"] }
-        "rel_2_inv_2": {}, # ex: {"exemplo_200.30.301_bdd4fbd33603": ["200.30.301","100"] }
-        "rel_2_inv_3": {}, # ex: {"nota_200.30.301_4f1104c7755b": ["200.30.301","100"] }
-    }
-
-    corr = [
-        ("notasAp","idNota","rel_2_inv_1"),
-        ("exemplosNotasAp","idExemplo","rel_2_inv_2"),
-        ("notasEx","idNota","rel_2_inv_3")
-    ]
-
-    for cod,classe in allClasses.items():
-        if classe["nivel"] in [1,2,3]:
-            for nota,idNota,invName in corr:
-                if classe.get(nota):
-                    for n in classe[nota]:
-                        if n[idNota] in notas[invName]:
-                            notas[invName][n[idNota]].append(cod)
-                        else:
-                            notas[invName][n[idNota]] = [cod]
-
-    for inv,nota in notas.items():
-        for id,cods in nota.items():
-            # Só falha no invariante quando um id tem mais do que um
-            # código associado
-            if len(cods) > 1:
-                rep.addFalhaInv(inv,id,cods)
-
-    # FIXME: como fazer os logs
-    # FIXME: fazer um erro grave se invariante falhar??
 
 
 def rel_2_inv_1(allClasses,rep: Report):
@@ -717,12 +674,14 @@ def rel_8_inv_2(allClasses,rep: Report):
 
     for cod,classe in allClasses.items():
         if classe["nivel"] == 3:
-            proRel = classe.get("proRel")
-            if proRel and "eSinteseDe" in proRel:
-                df = classe.get("df",{})
-                valor = df.get("valor")
-                if valor != "C":
-                    rep.addFalhaInv("rel_8_inv_2",cod,{"valor":valor})
+            filhos = classe.get("filhos")
+            if not filhos:
+                proRel = classe.get("proRel")
+                if proRel and "eSinteseDe" in proRel:
+                    df = classe.get("df",{})
+                    valor = df.get("valor")
+                    if valor != "C":
+                        rep.addFalhaInv("rel_8_inv_2",cod,{"valor":valor})
 
     err = len(rep.globalErrors["erroInv"].get("rel_8_inv_2",[]))
     logger.info(f"Foram encontradas {err} falhas no invariante rel_8_inv_2")
@@ -1113,30 +1072,6 @@ def rel_2_inv_8(allClasses,rep: Report):
     logger.info(f"Foram encontradas {err} falhas no invariante rel_2_inv_8")
 
 
-def rel_6_inv_1(allClasses,rep: Report):
-    """
-    A função testa o seguinte invariante e guarda
-    em `rep` os casos em que falha:
-
-    "Um DF, na sua justificação, deverá conter apenas
-    <b>critérios de densidade informacional</b>,
-    <b>complementaridade informacional</b> e <b>legal</b>"
-    """
-
-    logger.info("Verificação do invariante rel_6_inv_1")
-
-    for cod,classe in allClasses.items():
-        if classe["nivel"] in [3,4]:
-            just = classe.get("df",{}).get("justificacao")
-            if just:
-                for j in just:
-                    if j["tipo"] not in ["complementaridade","densidade","legal"]:
-                        rep.addFalhaInv("rel_6_inv_1",cod,{"tipo":j["tipo"]})
-
-    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_1",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_1")
-
-
 def rel_2_inv_14(allClasses,rep: Report):
     """
     A função testa o seguinte invariante e guarda
@@ -1345,7 +1280,7 @@ def rel_7_inv_1(allClasses, rep: Report):
     logger.info(f"Foram encontradas {err} falhas no invariante rel_7_inv_1")
 
 
-def rel_6_inv_2(allClasses, rep: Report):
+def rel_6_inv_1(allClasses, rep: Report):
     """
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
@@ -1354,7 +1289,7 @@ def rel_6_inv_2(allClasses, rep: Report):
     critério de cada tipo"
     """
 
-    logger.info("Verificação do invariante rel_6_inv_2")
+    logger.info("Verificação do invariante rel_6_inv_1")
 
     for cod,classe in allClasses.items():
         if classe["nivel"] in [3,4]:
@@ -1364,9 +1299,9 @@ def rel_6_inv_2(allClasses, rep: Report):
                 tipos = [x["tipo"] for x in just if "tipo" in x]
                 for t in tipos:
                     if t in tiposSet:
-                        rep.addFalhaInv("rel_6_inv_2",cod,{"tipo":t})
+                        rep.addFalhaInv("rel_6_inv_1",cod,{"tipo":t})
                     else:
                         tiposSet.add(t)
 
-    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_2",[]))
-    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_2")
+    err = len(rep.globalErrors["erroInv"].get("rel_6_inv_1",[]))
+    logger.info(f"Foram encontradas {err} falhas no invariante rel_6_inv_1")

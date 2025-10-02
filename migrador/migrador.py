@@ -89,7 +89,6 @@ def migra(filename):
     c.rel_2_inv_14(allClasses,rep)
     c.rel_1_inv_7(allClasses,harmonizacao,rep)
     c.rel_8_inv_1(allClasses,rep)
-    c.rel_6_inv_1(allClasses,rep)
     c.rel_2_inv_10(termosIndice,rep)
 
     c.rel_8_inv_3(allClasses,rep)
@@ -97,10 +96,7 @@ def migra(filename):
     c.rel_8_inv_5(allClasses,rep)
     c.rel_8_inv_6(allClasses,rep)
     c.rel_7_inv_1(allClasses,rep)
-    c.rel_6_inv_2(allClasses,rep)
-
-    # rel_2_inv_1, rel_2_inv_2 e rel_2_inv_3
-    c.checkUniqueInst(allClasses,rep)
+    c.rel_6_inv_1(allClasses,rep)
 
     loggerInv.info("-"*80)
     loggerInv.info("Verificação dos invariantes terminada")
@@ -132,12 +128,11 @@ def migra(filename):
     # A ontologia só é gerada se nenhum erro "grave" for encontrado
     if ok:
 
-        # Remoção das inferências calculadas
-        rep.deleteMissingRels(allClasses)
-
         # Reorganização dos dados
         finalClasses = { c:{} for c in classesN1}
         for cod,proc in allClasses.items():
+            # Aqui não faz mal ir buscar o cod desta
+            # forma porque não existem erros graves
             if len(cod) >=3:
                 classe = cod[:3]
                 finalClasses[classe][cod] = proc

@@ -210,12 +210,6 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Um DF, na sua justificação, deverá conter apenas <b>critérios de densidade informacional</b>, <b>complementaridade informacional</b> e <b>legal</b>",
-                    "clarificacao": "",
-                    "oldId": "rel_8_inv_1"
-                },
-                {
-                    "idInv": "inv_2",
                     "desc": "A justificação de um DF só pode contem um critério de cada tipo",
                     "clarificacao": "",
                     "oldId": "rel_8_inv_2"
