@@ -72,7 +72,7 @@ def process_file():
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
         "ok": ok,
-        "table_by_entity": generate_entity_table_dict(rep.globalErrors,rep),
+        "table_by_entity": generate_entity_table_dict(rep.globalErrors,rep.classesN1),
         "table_by_invariant": generate_error_table(rep.globalErrors),
         "warnings": generate_warnings_table(rep.warnings)
     })

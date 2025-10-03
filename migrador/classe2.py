@@ -33,7 +33,7 @@ def calcEstado(cod,e,rep:Report):
         return 'I'
     else:
         # ERRO: Estado da classe inválido
-        rep.addErro(cod,f"Estado da classe inválido (<b>{e}</b>)")
+        rep.addErro(cod,f"Estado da classe inválido::<b>{e}</b>")
         return 'Erro'
 # --------------------------------------------------
 #
@@ -50,7 +50,7 @@ def calcNivel(cod,rep:Report):
         res = 1
     else:
         # ERRO: O formato do código é inválido
-        rep.addErro(cod,f"O formato do código \"<b>{cod}</b>\" é inválido")
+        rep.addErro(cod,f"Formato do código inválido::<b>{cod}</b>")
     return res
 # --------------------------------------------------
 #
@@ -89,7 +89,7 @@ def calcSubdivisoes(df,rep:Report):
                 indN3[pai] = True
     return indN3
 
-def processSheet(sheet, nome, rep:Report, classesN1):
+def processSheet(sheet, nome, rep:Report):
 
     loggerProc = logging.getLogger(PROC)
     # Carregam-se os catálogos
@@ -153,10 +153,8 @@ def processSheet(sheet, nome, rep:Report, classesN1):
 
             # Registo das classes de nível 1
             if myReg["nivel"] == 1:
-                classesN1[cod] = {
-                    "titulo": myReg.get("titulo",""),
-                    "descricao": myReg["descricao"]
-                }
+                rep.addClasseN1(cod,myReg.get("titulo",""),myReg["descricao"])
+
             # Processamento do Contexto para classes de nível 3
             if myReg["nivel"] == 3:
                 contexto.procContexto(row,cod, myReg, entCatalog, tipCatalog, legCatalog,rep)

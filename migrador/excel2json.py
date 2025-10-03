@@ -1,5 +1,3 @@
-import os
-from numpy import nan
 from openpyxl import load_workbook
 from . import classe2 as c
 from . import tindice as ti
@@ -7,8 +5,6 @@ from . import entidade as e
 from . import tipologia as tip
 from . import leg
 from .report import Report
-from path_utils import FILES_DIR
-import json
 
 def excel2json(rep: Report,filename):
 
@@ -23,12 +19,6 @@ def excel2json(rep: Report,filename):
     tip.processSheet(wb['tip_ent_csv'], rep)
     leg.processSheet(wb['leg_csv'], 'leg_csv',rep)
 
-    classesN1 = {}
     for s in sheets:
-        c.processSheet(wb[s], s, rep, classesN1)
+        c.processSheet(wb[s], s, rep)
 
-    # Registo das classes de nível 1 para futuro agrupamento
-    with open(os.path.join(FILES_DIR,'classesN1.json'),'w') as f:
-        json.dump(classesN1,f,indent=4,ensure_ascii=False)
-
-    return classesN1

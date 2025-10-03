@@ -38,6 +38,26 @@ class Report:
             "relHarmonizacao": [],
             "normal": []
         }
+        self.inativos = set()
+        self.classesN1 = {}
+
+
+    def addClasseN1(self,cod,titulo,desc):
+        """
+        Addiciona a rep.classesN1 a classe de nível 1
+        juntamente com o seu título e descrição. Este
+        método também adiciona as classes de nível 1
+        como chaves do rep.erroInvByEnt.
+        """
+        self.globalErrors["erroInvByEnt"][cod] = {}
+        self.classesN1[cod] = {
+            "titulo": titulo,
+            "descricao": desc
+        }
+
+
+    def addInativo(self,cod):
+        self.inativos.add(cod)
 
 
     def addErro(self,cod,msg,grave=False):
@@ -120,11 +140,11 @@ class Report:
 
 
     def addDecl(self,cod,sheet):
-        # "cod" aparece declarado repetidamente na(s) folha(s) self.declaracoes[cod]
+        # "cod" aparece declarado na(s) folha(s) self.declaracoes[cod]
         if cod in self.declaracoes:
-            self.declaracoes[cod].append(sheet+"_csv")
+            self.declaracoes[cod].append(sheet)
         else:
-            self.declaracoes[cod] = [sheet+"_csv"]
+            self.declaracoes[cod] = [sheet]
 
 
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
@@ -169,16 +189,34 @@ class Report:
     def addFalhaInv(self,inv,cod,info={},extra=""):
         """
         Regista em `rep` a falha de um invariante `inv`
-        no processo `cod`. O info e extra server para a
-        criação de mensagens de erro mais específicas.
+        no processo `cod`. As falhas de invariante são
+        indexadas por invariante e por código em
+        rep.globalErrors["erroInv"] e
+        rep.globalErrors["erroInvByEnt"], respetivamente.
 
-        O `info` é um `dict`, no entanto não contém entradas
-        iguais, depende sempre do invariante.
+        O `info` e `extra` serve para a criação de mensagens
+        de erro. O `info` é um `dict`, no entanto não contém
+        entradas iguais, depende sempre do invariante.
         """
+
+        err = ErroInv(inv,cod,info,extra)
+        # Aqui consulta-se sempre o self.declaracoes caso o
+        # código esteja com um formato inválido para saber
+        # onde a classe foi declarada. Neste caso só olhamos
+        # para a primeira declaração.
+        if sheets := self.declaracoes.get(cod):
+            ent = sheets[0].replace("_csv","")
+            if ent:
+                if inv in self.globalErrors["erroInvByEnt"][ent]:
+                    self.globalErrors["erroInvByEnt"][ent][inv].append(err)
+                else:
+                    self.globalErrors["erroInvByEnt"][ent][inv] = [err]
+
+
         if inv in self.globalErrors["erroInv"]:
-            self.globalErrors["erroInv"][inv].append(ErroInv(inv,cod,info,extra))
+            self.globalErrors["erroInv"][inv].append(err)
         else:
-            self.globalErrors["erroInv"][inv] = [ErroInv(inv,cod,info,extra)]
+            self.globalErrors["erroInv"][inv] = [err]
 
 
     def addWarning(self,tipo="",info={}):
@@ -192,26 +230,6 @@ class Report:
                 self.warnings["relHarmonizacao"].append(f"Foi encontrada a relação \"<b>{info["rel"][0]}</b> <b><i>{info["rel"][1]}</b></i> <b>{info["rel"][2]}</b>\", na qual <b>{info["rel"][2]}</b> está em harmonização")
             case _:
                 self.warnings["normal"].append(info["msg"])
-
-
-    def errorsByEnt(self):
-        """
-        Função que agrupa os erros por entidade,
-        para ser mostrado no HTML.
-        """
-
-        errors = {}
-
-        for inv, erros in self.globalErrors["erroInv"].items():
-            for err in erros:
-                ent = err.cod[:3]
-                if ent not in errors:
-                    errors[ent] = {}
-                if inv not in errors[ent]:
-                    errors[ent][inv] = []
-                errors[ent][inv].append(err)
-
-        self.globalErrors["erroInvByEnt"] = errors
 
 
     def dumpReport(self,dumpFileName="dump.json"):

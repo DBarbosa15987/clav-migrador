@@ -26,7 +26,7 @@ def migra(filename):
     # --------------------------------------------
 
     loggerProc.info("Criação dos ficheiros JSON intermédios")
-    classesN1 = excel2json(rep,filename)
+    excel2json(rep,filename)
 
     # --------------------------------------------
     # Processamento inicial dos dados
@@ -35,7 +35,7 @@ def migra(filename):
     loggerProc.info("-"*80)
     loggerProc.info("Processamento inicial dos dados")
     loggerProc.info("-"*80)
-    allClasses,harmonizacao = c.processClasses(classesN1,rep)
+    allClasses,harmonizacao = c.processClasses(rep)
 
     # Inferências de relações
     loggerProc.info("Inferências de relações")
@@ -129,7 +129,7 @@ def migra(filename):
     if ok:
 
         # Reorganização dos dados
-        finalClasses = { c:{} for c in classesN1}
+        finalClasses = { c:{} for c in rep.classesN1}
         for cod,proc in allClasses.items():
             # Aqui não faz mal ir buscar o cod desta
             # forma porque não existem erros graves

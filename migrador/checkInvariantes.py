@@ -3,7 +3,7 @@ import re
 from .report import Report
 from collections import Counter
 import os
-from path_utils import FILES_DIR
+from path_utils import FILES_DIR, DUMP_DIR
 from log_utils import INV, PROC
 import logging
 
@@ -21,7 +21,7 @@ relsInverseOf = {
 }
 
 
-def processClasses(sheets,rep: Report):
+def processClasses(rep: Report):
     """
     Função que verifica se existem códigos de classe repetidas
     e se todas as classes mencionadas (em relações) existem de facto.
@@ -39,7 +39,7 @@ def processClasses(sheets,rep: Report):
     """
 
     data = {}
-    for sheet in sheets:
+    for sheet in rep.classesN1:
         with open(os.path.join(FILES_DIR,f"{sheet}.json"),'r') as f:
             x = json.load(f)
             data.update(x)
@@ -57,7 +57,8 @@ def processClasses(sheets,rep: Report):
             harmonizacao[cod] = classe
             continue
         elif classe["estado"] in ['A','I']:
-            allClasses[cod] = classe
+            if classe["estado"] == "I":
+                rep.addInativo(cod)
             if classe["nivel"] == 3:
                 filhos = [c for c,_ in data.items() if c.startswith(cod + ".")]
                 classe["filhos"] = filhos
@@ -73,6 +74,7 @@ def processClasses(sheets,rep: Report):
                     # Tem pai em harmonização
                     rep.addWarning(info={"msg":f"O processo <b>{cod}</b> está ativo/inativo, mas o seu pai <b>{pai}</b> está em harmonização"})
 
+            allClasses[cod] = classe
         else:
             # O valor do estado da classe encontra-se fora do domínio estabelecido.
             # Trata-se de um erro que já foi registado previamente, nestes

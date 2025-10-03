@@ -169,14 +169,11 @@ def generate_error_table(globalErrors):
     return html_content
 
 
-def generate_entity_table_dict(globalErrors,rep:Report):
+def generate_entity_table_dict(globalErrors,classesN1):
     """
     Gera um dicionário indexado por entidade da AP
     em que o seu valor é a tabela HTML correspondente.
     """
-    rep.errorsByEnt()
-    with open(os.path.join(FILES_DIR, "classesN1.json")) as f:
-        classesN1 = json.load(f)
 
     with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
         x = json.load(f)
