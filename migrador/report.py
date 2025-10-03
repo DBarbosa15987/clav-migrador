@@ -150,7 +150,8 @@ class Report:
     def addRelInvalida(self,proRel,rel,cod,tipoProcRef=None):
         """
         Adiciona a `rep` uma relação inválida, ou seja, o processo
-        `proRel` relaciona-se com um processo `cod`, que não existe.
+        `proRel` relaciona-se pela relação `rel` com um processo
+        `cod`, que não existe.
 
         O `tipoProcRef` indica o tipo de relação em questão, pode ter
         os valores de `None` (referente aos "processosRelacionados" de
@@ -433,11 +434,11 @@ class ErroInv:
             case "rel_8_inv_3":
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> na justificação do \"<b>{self.info["tipo"]}</b>\", mas <b>{self.info["proc"]}</b> não está devidamente declarado."
             case "rel_8_inv_4":
-                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eSuplementoPara</b></i>."
-            case "rel_8_inv_5":
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com uma relação de síntese (<i><b>eSintetizadoPor</i></b>/<i><b>eSinteseDe</i></b>)."
-            case "rel_8_inv_6":
+            case "rel_8_inv_5":
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eComplementarDe</b></i>."
+            case "rel_8_inv_6":
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eSuplementoPara</b></i>."
             case "rel_7_inv_1":
                 msg = f"Na justificação do PCA do processo <b>{self.cod}</b> foram encontrados mais do que um critério do tipo \"<b>{self.info["tipo"]}</b>\"."
             case "rel_6_inv_1":

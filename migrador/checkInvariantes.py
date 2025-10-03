@@ -140,6 +140,8 @@ def processClasses(rep: Report):
 
     loggerProc.info(f"Foram encontrados {len(harmonizacao)} processos em harmonização")
     loggerProc.info(f"Foram encontradas {len(allClasses)} processos em ativos/inativos")
+    with open(os.path.join(DUMP_DIR,f"allClasses.json"),'w') as f:
+        json.dump(allClasses,f,ensure_ascii=False,indent=4)
 
     return allClasses,harmonizacao
 
@@ -1173,16 +1175,16 @@ def rel_8_inv_4(allClasses,rep: Report):
         if classe["nivel"] == 3:
             filhos = classe.get("filhos")
             if not filhos:
-                just = classe.get("pca",{}).get("justificacao")
+                just = classe.get("df",{}).get("justificacao")
                 if just:
-                    jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
+                    jDensidade = [x for x in just if x["tipo"]=="densidade"]
                     proRels = classe.get("proRel",[])
                     proRelCods = classe.get("processosRelacionados",[])
-                    supls = [c for r,c in zip(proRels,proRelCods) if r=="eSuplementoPara"]
-                    for crit in jUtilidade:
+                    sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
+                    for crit in jDensidade:
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
-                            if p not in supls:
+                            if p not in sints:
                                 rep.addFalhaInv("rel_8_inv_4",cod,{"proc":p})
 
     err = len(rep.globalErrors["erroInv"].get("rel_8_inv_4",[]))
@@ -1208,14 +1210,14 @@ def rel_8_inv_5(allClasses,rep: Report):
             if not filhos:
                 just = classe.get("df",{}).get("justificacao")
                 if just:
-                    jDensidade = [x for x in just if x["tipo"]=="densidade"]
+                    jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
                     proRels = classe.get("proRel",[])
                     proRelCods = classe.get("processosRelacionados",[])
-                    sints = [c for c,r in zip(proRelCods,proRels) if r in ["eSinteseDe","eSintetizadoPor"]]
-                    for crit in jDensidade:
+                    compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
+                    for crit in jComlpementaridade:
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
-                            if p not in sints:
+                            if p not in compls:
                                 rep.addFalhaInv("rel_8_inv_5",cod,{"proc":p})
 
     err = len(rep.globalErrors["erroInv"].get("rel_8_inv_5",[]))
@@ -1239,16 +1241,16 @@ def rel_8_inv_6(allClasses,rep: Report):
         if classe["nivel"] == 3:
             filhos = classe.get("filhos")
             if not filhos:
-                just = classe.get("df",{}).get("justificacao")
+                just = classe.get("pca",{}).get("justificacao")
                 if just:
-                    jComlpementaridade = [x for x in just if x["tipo"]=="complementaridade"]
+                    jUtilidade = [x for x in just if x["tipo"]=="utilidade"]
                     proRels = classe.get("proRel",[])
                     proRelCods = classe.get("processosRelacionados",[])
-                    compls = [c for c,r in zip(proRelCods,proRels) if r=="eComplementarDe"]
-                    for crit in jComlpementaridade:
+                    supls = [c for r,c in zip(proRels,proRelCods) if r=="eSuplementoPara"]
+                    for crit in jUtilidade:
                         procRefs = crit.get("procRefs",[])
                         for p in procRefs:
-                            if p not in compls:
+                            if p not in supls:
                                 rep.addFalhaInv("rel_8_inv_6",cod,{"proc":p})
 
     err = len(rep.globalErrors["erroInv"].get("rel_8_inv_6",[]))
