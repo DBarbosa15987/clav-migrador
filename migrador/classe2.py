@@ -72,22 +72,6 @@ def procNotas(notas, codClasse, chave1=None, chave2=None):
         })
     return res
 # --------------------------------------------------
-#
-# Calcula um array de booleanos para as N3 com subdivisão
-def calcSubdivisoes(df,rep:Report):
-    indN3 = {}
-    for index, row in df.iterrows():
-        if row["Código"]:
-            # Código -----
-            codigo = re.sub(r'(\r\n|\n|\r|[ \u202F\u00A0])','', str(row["Código"]))
-            # Nível -----
-            nivel = calcNivel(codigo,rep)
-            if nivel == 3:
-                indN3[codigo] = False
-            elif nivel == 4:
-                pai = re.search(r'^(\d{3}\.\d{1,3}\.\d{1,3})\.\d{1,4}$', codigo).group(1)
-                indN3[pai] = True
-    return indN3
 
 def processSheet(sheet, nome, rep:Report):
 
@@ -115,7 +99,6 @@ def processSheet(sheet, nome, rep:Report):
     df = pd.DataFrame(data, index=idx, columns=cols)
 
     myClasse = {}
-    indN3 = calcSubdivisoes(df,rep)
 
     for _, row in df.iterrows():
         myReg = {}
@@ -160,7 +143,7 @@ def processSheet(sheet, nome, rep:Report):
                 contexto.procContexto(row,cod, myReg, entCatalog, tipCatalog, legCatalog,rep)
 
             # Processamento das Decisões
-            if (myReg["nivel"] == 3 and not indN3[cod]) or myReg["nivel"] == 4:
+            if (myReg["nivel"] == 3) or myReg["nivel"] == 4:
                 decisao.procDecisoes(row,cod, myReg, legCatalog,rep)
 
             rep.addDecl(cod,nome)
