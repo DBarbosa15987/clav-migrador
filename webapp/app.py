@@ -8,12 +8,13 @@ import os
 import uuid
 from log_utils import WEB
 import logging
-from migrador.genHTML import generate_entity_table_dict, generate_error_table, generate_warnings_table
+from migrador.genHTML import generate_classe_table_dict, generate_error_table, generate_warnings_table
 
 
 logger = logging.getLogger(WEB)
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4())
+
 
 @app.route('/')
 def index():
@@ -35,7 +36,6 @@ def process_file():
         return jsonify({'error': 'No selected file'})
 
     logger.info(f"Ficheiro recebido: {file.filename}")
-
 
     logger.info("Verificação do ficheiro recebido")
     fileContent = file.read()
@@ -72,8 +72,8 @@ def process_file():
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
         "ok": ok,
-        "table_by_entity": generate_entity_table_dict(rep.globalErrors,rep.classesN1),
-        "table_by_invariant": generate_error_table(rep.globalErrors),
+        "table_by_classe": generate_classe_table_dict(rep.globalErrors,rep.classesN1,rep.inativos,rep.declaracoes),
+        "table_by_invariant": generate_error_table(rep.globalErrors,rep.inativos),
         "warnings": generate_warnings_table(rep.warnings)
     })
 
@@ -95,6 +95,7 @@ def download_output():
 
     logger.info("Download da ontologia")
     return send_file(clav, as_attachment=True, download_name=zipedOutputFile)
+
 
 if __name__ == '__main__':
     app.run(debug=True,port=5001)

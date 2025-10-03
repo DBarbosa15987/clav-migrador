@@ -206,11 +206,10 @@ class Report:
         # para a primeira declaração.
         if sheets := self.declaracoes.get(cod):
             ent = sheets[0].replace("_csv","")
-            if ent:
-                if inv in self.globalErrors["erroInvByEnt"][ent]:
-                    self.globalErrors["erroInvByEnt"][ent][inv].append(err)
-                else:
-                    self.globalErrors["erroInvByEnt"][ent][inv] = [err]
+            if inv in self.globalErrors["erroInvByEnt"][ent]:
+                self.globalErrors["erroInvByEnt"][ent][inv].append(err)
+            else:
+                self.globalErrors["erroInvByEnt"][ent][inv] = [err]
 
 
         if inv in self.globalErrors["erroInv"]:

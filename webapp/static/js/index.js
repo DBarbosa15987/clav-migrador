@@ -1,9 +1,9 @@
-let entityTables = {};
+let classeTables = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     const reportByInvariant = document.getElementById('by-invariant');
-    const entityReportContent = document.getElementById('entity-report-content');
-    const entitySelector = document.getElementById('entity-selector');
+    const classeReportContent = document.getElementById('classe-report-content');
+    const classeSelector = document.getElementById('classe-selector');
     const warningsView = document.getElementById('warnings-view');
 
     const form = document.getElementById('upload-form');
@@ -87,22 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadWarning.classList.remove('hidden');
             }
 
-            // Setup entity tables
-            if (result.table_by_entity && result.table_by_invariant && result.warnings) {
+            // Setup classe tables
+            if (result.table_by_classe && result.table_by_invariant && result.warnings) {
                 reportByInvariant.innerHTML = result.table_by_invariant;
                 warningsView.innerHTML = result.warnings;
-                entityTables = result.table_by_entity;
+                classeTables = result.table_by_classe;
 
-                entitySelector.innerHTML = '';
-                Object.keys(entityTables).forEach(entity => {
+                classeSelector.innerHTML = '';
+                Object.keys(classeTables).forEach(classe => {
                     const option = document.createElement('option');
-                    option.value = entity;
-                    option.textContent = entity;
-                    entitySelector.appendChild(option);
+                    option.value = classe;
+                    option.textContent = classe;
+                    classeSelector.appendChild(option);
                 });
 
-                // Show first entity by default
-                entityReportContent.innerHTML = entityTables[entitySelector.value];
+                // Show first classe by default
+                classeReportContent.innerHTML = classeTables[classeSelector.value];
 
                 document.querySelectorAll('.report-view').forEach(div => div.classList.add('hidden'));
                 document.getElementById(viewSelector.value).classList.remove('hidden');
@@ -123,9 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Reset report display data
             reportContainer.classList.add('hidden');
-            entityReportContent.innerHTML = '';
+            classeReportContent.innerHTML = '';
             reportByInvariant.innerHTML = '';
-            entityTables = {};
+            classeTables = {};
 
             // Re-enable the button on error
             submitButton.disabled = false;
@@ -142,10 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     updateViewSelectorUI(viewSelector.value);
 
-    // Handle entity selection within entity view
-    entitySelector.addEventListener('change', () => {
-        const selectedEntity = entitySelector.value;
-        entityReportContent.innerHTML = entityTables[selectedEntity];
+    // Handle classe selection within classe view
+    classeSelector.addEventListener('change', () => {
+        const selectedClasse = classeSelector.value;
+        classeReportContent.innerHTML = classeTables[selectedClasse];
     });
 });
 
@@ -153,8 +153,8 @@ function updateViewSelectorUI(selectedView) {
     document.querySelectorAll('.report-view').forEach(div => div.classList.add('hidden'));
     document.getElementById(selectedView).classList.remove('hidden');
 
-    document.getElementById('entity-selector-wrapper')
-        .classList.toggle('hidden', selectedView !== 'by-entity');
+    document.getElementById('classe-selector-wrapper')
+        .classList.toggle('hidden', selectedView !== 'by-classe');
 }
 
 function setupMainTabs() {

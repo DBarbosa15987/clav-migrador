@@ -240,7 +240,7 @@
                 },
                 {
                     "idInv": "inv_2",
-                    "desc": "Se um PN é <b><i>eSinteseDe</i></b, então o valor do DF é de \"Conservação\"",
+                    "desc": "Se um PN é <b><i>eSinteseDe</i></b>, então o valor do DF é de \"Conservação\"",
                     "clarificacao": "",
                     "oldId": "rel_9_inv_2"
                 },
