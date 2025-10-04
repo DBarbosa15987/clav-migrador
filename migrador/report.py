@@ -1,9 +1,9 @@
 import json
 import html
 import os
-from path_utils import DUMP_DIR
+from utils.path_utils import DUMP_DIR
 import logging
-from log_utils import PROC
+from utils.log_utils import PROC
 from enum import Enum
 import html
 

@@ -3,8 +3,8 @@ import re
 from .report import Report
 from collections import Counter
 import os
-from path_utils import FILES_DIR, DUMP_DIR
-from log_utils import INV, PROC
+from utils.path_utils import FILES_DIR, DUMP_DIR
+from utils.log_utils import INV, PROC
 import logging
 
 logger = logging.getLogger(INV)

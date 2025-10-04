@@ -8,8 +8,8 @@ from . import contexto
 from . import decisao
 from .report import Report
 import os
-from path_utils import FILES_DIR
-from log_utils import PROC
+from utils.path_utils import FILES_DIR
+from utils.log_utils import PROC
 
 hreg = re.compile(r'[hH][aA][rR][mM][oO]?[nN]?')
 ireg = re.compile(r'[iI][nN][Aa][tT]?[iI]?[vV]?')

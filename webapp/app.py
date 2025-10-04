@@ -3,10 +3,10 @@ import glob
 from flask import Flask, render_template, request, jsonify, send_file, session
 from migrador.migrador import migra
 from migrador.genTTL import genFinalOntology
-from path_utils import UPLOAD_DIR, OUTPUT_DIR
+from utils.path_utils import UPLOAD_DIR, OUTPUT_DIR
 import os
 import uuid
-from log_utils import WEB
+from utils.log_utils import WEB
 import logging
 from migrador.genHTML import generate_classe_table_dict, generate_error_table, generate_warnings_table
 

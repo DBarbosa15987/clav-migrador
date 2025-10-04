@@ -2,7 +2,7 @@ from webapp.app import app
 from datetime import datetime
 import os
 import logging
-from path_utils import DUMP_DIR, LOG_DIR, FILES_DIR, UPLOAD_DIR, OUTPUT_DIR, ONTOLOGY_DIR
+from utils.path_utils import DUMP_DIR, LOG_DIR, FILES_DIR, UPLOAD_DIR, OUTPUT_DIR, ONTOLOGY_DIR
 
 # Criação das diretorias caso não existam
 os.makedirs(DUMP_DIR, exist_ok=True)

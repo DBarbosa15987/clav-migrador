@@ -5,9 +5,9 @@ from . import genTTL as g
 import json
 import os
 from . import queryfix as fix
-from path_utils import FILES_DIR
+from utils.path_utils import FILES_DIR
 import logging
-from log_utils import FIX, GEN, INV, PROC
+from utils.log_utils import FIX, GEN, INV, PROC
 
 def migra(filename):
 

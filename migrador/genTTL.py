@@ -7,8 +7,8 @@ from datetime import date, datetime
 from rdflib import Graph, Namespace, Literal, RDF, RDFS, OWL, URIRef
 from rdflib.namespace import RDF,OWL
 import os
-from path_utils import FILES_DIR, ONTOLOGY_DIR, OUTPUT_DIR
-from log_utils import GEN
+from utils.path_utils import FILES_DIR, ONTOLOGY_DIR, OUTPUT_DIR
+from utils.log_utils import GEN
 import logging
 import zipfile
 

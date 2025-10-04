@@ -5,8 +5,8 @@ import json
 from datetime import datetime
 import re
 import os
-from path_utils import FILES_DIR
-from log_utils import PROC
+from utils.path_utils import FILES_DIR
+from utils.log_utils import PROC
 from .report import Report
 
 brancos = re.compile(r'\r\n|\n|\r|[ \u202F\u00A0]+$|^[ \u202F\u00A0]+')

@@ -1,6 +1,6 @@
 
 import json
-from path_utils import PROJECT_ROOT
+from utils.path_utils import PROJECT_ROOT
 import os
 from .report import FixStatus
 

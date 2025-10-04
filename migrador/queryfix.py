@@ -1,7 +1,7 @@
 import re
 from .report import ErroInv, Report
 from . import checkInvariantes as check
-from log_utils import FIX
+from utils.log_utils import FIX
 import logging
 import copy
 
