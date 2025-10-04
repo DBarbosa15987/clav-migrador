@@ -116,6 +116,8 @@ def migra(filename):
     fix.rel_4_inv_3_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_3"])
     fix.rel_5_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_5_inv_2"])
     fix.rel_1_inv_3_fix(termosIndice,rep.globalErrors["erroInv"]["rel_1_inv_3"])
+    fix.rel_8_inv_5_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_5"])
+    fix.rel_8_inv_6_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_6"])
     loggerCorr.info("-"*80)
     loggerCorr.info("Correção automática dos erros terminada")
     loggerCorr.info("-"*80)

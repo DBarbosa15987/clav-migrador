@@ -1,7 +1,9 @@
 import re
-from .report import ErroInv
+from .report import ErroInv, Report
+from . import checkInvariantes as check
 from log_utils import FIX
 import logging
+import copy
 
 logger = logging.getLogger(FIX)
 
@@ -299,25 +301,147 @@ def rel_1_inv_3_fix(termosIndice,erros: list[ErroInv]):
     logger.info(f"Falharam {errFailed} correções do invariante rel_1_inv_3")
 
 
-def rel_8_inv_4_fix(allClasses,erros: list[ErroInv]):
-    """
-    Faz a correção das falhas do invariante rel_8_inv_4.
-    """
-    # TODO: esperar pelas notas
-
-
 def rel_8_inv_5_fix(allClasses,erros: list[ErroInv]):
     """
     Faz a correção das falhas do invariante rel_8_inv_5.
     """
-    # TODO: esperar pelas notas
+
+    deps = [
+        "rel_1_inv_6",
+        "rel_2_inv_8",
+        "rel_2_inv_9",
+        "rel_5_inv_1",
+        "rel_5_inv_2",
+        "rel_8_inv_1"
+    ]
+
+    logger.info("Correção do invariante rel_8_inv_5")
+    errFixed = 0
+    errFailed = 0
+
+    for err in erros:
+        # Verificação dos erros já existentes na classe,
+        # antes da correção
+        c = allClasses[err.cod]
+        classesTestBefore = {err.cod: c}
+        codFilhos = c.get("filhos",[])
+        for f in codFilhos:
+            classesTestBefore[f] = allClasses.get(f,{})
+        repBefore = testDepends(deps,classesTestBefore)
+
+        # Aplicação da correção numa cópia da classe
+        classeCopy = copy.deepcopy(allClasses[err.cod])
+        proRelCods = classeCopy.get("processosRelacionados",[])
+        proRels = classeCopy.get("proRel",[])
+        if len(proRelCods) == len(proRels):
+            proRelCods.append(err.info["proc"])
+            proRels.append("eComplementarDe")
+
+            # Verificação dos erros depois de aplicar a correção
+            classesTestAfter = {err.cod: classeCopy}
+            repAfter = testDepends(deps,classesTestAfter)
+            diff = diffReports(repBefore,repAfter)
+
+            if diff:
+                err.fail(f"A tentativa de correção automática falhou porque arriscava violar o(s) invariante(s) {', '.join([f"<b>{d}</b>" for d in diff])}")
+                errFailed += 1
+            else:
+                err.fix(f"A relação \"<b>{err.cod}</b> <b><i>eComplementarDe</b></i> <b>{err.info["proc"]}</b>\" foi adicionada à zona de contexto do processo <b>{err.cod}</b>")
+                errFixed += 1
+        else:
+            err.fail("A tentativa de correção automática falhou porque os processos relacionados e respetivas relações não têm a mesma cardinalidade")
+            errFailed += 1
+
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_8_inv_5")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_8_inv_5")
+
 
 
 def rel_8_inv_6_fix(allClasses,erros: list[ErroInv]):
     """
     Faz a correção das falhas do invariante rel_8_inv_6.
     """
-    # TODO: esperar pelas notas
+
+    deps = [
+        "rel_2_inv_7",
+        "rel_2_inv_8",
+        "rel_2_inv_9",
+        "rel_3_inv_1",
+        "rel_3_inv_2"
+    ]
+
+    logger.info("Correção do invariante rel_8_inv_6")
+    errFixed = 0
+    errFailed = 0
+
+    for err in erros:
+        # Verificação dos erros já existentes na classe,
+        # antes da correção
+        classesTestBefore = {err.cod: allClasses[err.cod]}
+        repBefore = testDepends(deps,classesTestBefore)
+
+        # Aplicação da correção numa cópia da classe
+        classeCopy = copy.deepcopy(allClasses[err.cod])
+        proRelCods = classeCopy.get("processosRelacionados",[])
+        proRels = classeCopy.get("proRel",[])
+        if len(proRelCods) == len(proRels):
+            proRelCods.append(err.info["proc"])
+            proRels.append("eSuplementoPara")
+
+            # Verificação dos erros depois de aplicar a correção
+            classesTestAfter = {err.cod: classeCopy}
+            repAfter = testDepends(deps,classesTestAfter)
+            diff = diffReports(repBefore,repAfter)
+
+            if diff:
+                err.fail(f"A tentativa de correção automática falhou porque arriscava violar o(s) invariante(s) {', '.join([f"<b>{d}</b>" for d in diff])}")
+                errFailed += 1
+            else:
+                err.fix(f"A relação \"<b>{err.cod}</b> <b><i>eSuplementoPara</b></i> <b>{err.info["proc"]}</b>\" foi adicionada à zona de contexto do processo <b>{err.cod}</b>")
+                errFixed += 1
+        else:
+            err.fail("A tentativa de correção automática falhou porque os processos relacionados e respetivas relações não têm a mesma cardinalidade")
+            errFailed += 1
+
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_8_inv_6")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_8_inv_6")
+
+
+def testDepends(deps,classes):
+    """
+    Faz a verificação dos invariantes em `deps`
+    para `classes` e retorna um Report com os
+    erros encontrados.
+    """
+
+    rep = Report()
+    for dep in deps:
+        # Não funciona para alguns invariantes
+        # que não recebem estes argumentos
+        func =  getattr(check,dep)
+        func(classes,rep)
+    return rep
+
+
+def diffReports(repBefore: Report, repAfter: Report):
+    """
+    Calcula se foram adicionados erros de falha de invariantes
+    entre o `repBefore` e o `repAfter`. Serve para averiguar se
+    a correção automática de um invariante é viável.
+
+    Retorna a lista de invariantes que seriam
+    violados caso as alterações fossem aplicadas.
+    """
+
+    invs = set()
+    errosInvItems = repBefore.globalErrors["erroInv"].items()
+    errInvBefore = {k:set([x.msg for x in v]) for k,v in errosInvItems}
+    for inv, err in repAfter.globalErrors["erroInv"].items():
+        for e in err:
+            if e.msg not in errInvBefore:
+                invs.add(inv)
+                break
+    return invs
 
 
 def genCritCod(tipo, cod, classe):
@@ -329,8 +453,9 @@ def genCritCod(tipo, cod, classe):
     just = classe.get(tipo,{}).get("justificacao")
     critCod = ""
     if just:
-        # O critCod é criado de forma incremental por isso vai-se buscar
-        # o último critério e incrementa-se para obter o novo critCod
+        # O critCod é criado de forma incremental por isso
+        # vai-se buscar o último critério e incrementa-se
+        # para obter o novo critCod
         lastCritCod = just[-1]["critCodigo"][-1]
         critCod = f"just_{tipo}_c{cod}_{int(lastCritCod)+1}"
     else:
