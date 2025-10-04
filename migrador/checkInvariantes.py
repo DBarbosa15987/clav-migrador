@@ -308,7 +308,7 @@ def rel_2_inv_11(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Um PN não pode ter em simultâneo relações de
-    <b>éSínteseDe</b> e <b>éSintetizadoPor</b> com outros PNs"
+    <b>eSinteseDe</b> e <b>eSintetizadoPor</b> com outros PNs"
     """
 
     logger.info("Verificação do invariante rel_2_inv_11")

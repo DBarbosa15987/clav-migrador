@@ -114,19 +114,19 @@
                 },
                 {
                     "idInv": "inv_11",
-                    "desc": "Um PN não pode ter em simultâneo relações de <b>éSínteseDe</b> e <b>éSintetizadoPor</b> com outros PNs",
+                    "desc": "Um PN não pode ter em simultâneo relações de <b>eSinteseDe</b> e <b>eSintetizadoPor</b> com outros PNs",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_11"
                 },
                 {
                     "idInv": "inv_12",
-                    "desc": "Um diploma legislativo referenciado num critério de justicação tem de estar associado na zona de contexto do processo",
+                    "desc": "Um diploma legislativo referenciado num critério de justificação tem de estar associado na zona de contexto do processo",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_12"
                 },
                 {
                     "idInv": "inv_13",
-                    "desc": "Um diploma legislativo referenciado num critério de justicação de nível 4 tem de estar associado na zona de contexto do processo pai",
+                    "desc": "Um diploma legislativo referenciado num critério de justificação de nível 4 tem de estar associado na zona de contexto do processo pai",
                     "clarificacao": "Como se tratam de classes de nível 4 esta verificação é feita no pai, onde está presente a justificação.",
                     "oldId": "rel_4_inv_13"
                 },
