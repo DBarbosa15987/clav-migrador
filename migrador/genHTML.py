@@ -12,24 +12,13 @@ def getCod(cod,inativos):
     return c
 
 
-def generate_error_table(globalErrors,inativos):
+def generate_error_table(globalErrors,inativos,invs):
     """
     Função que gera a tabela HTML que faz o display dos
     erros ocorridos durante a migração.
 
     Os erros são agrupados por tipo.
     """
-
-    with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
-        x = json.load(f)
-
-    invs = {}
-    for r in x["invariantes"]:
-        for i in r["inv"]:
-            invs[f"{r["idRel"]}_{i["idInv"]}"] = {
-                "desc": i["desc"],
-                "clarificacao": i["clarificacao"]
-            }
 
     html_content = "<div>"
 
@@ -175,22 +164,11 @@ def generate_error_table(globalErrors,inativos):
     return html_content
 
 
-def generate_classe_table_dict(globalErrors,classesN1,inativos,decls):
+def generate_classe_table_dict(globalErrors,classesN1,inativos,decls,invs):
     """
     Gera um dicionário indexado por classe de nível 1
     em que o seu valor é a tabela HTML correspondente.
     """
-
-    with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
-        x = json.load(f)
-
-    invs = {}
-    for r in x["invariantes"]:
-        for i in r["inv"]:
-            invs[f"{r["idRel"]}_{i["idInv"]}"] = {
-                "desc": i["desc"],
-                "clarificacao": i["clarificacao"]
-            }
 
     # Estas tabelas são incializadas para poder
     # mostrar as classes todas, mesmo quando não

@@ -55,7 +55,7 @@ def process_file():
         logger.exception(f"[{e.__class__.__name__}]: {e}")
 
     try:
-        rep,ok = migra(filePath)
+        rep,ok,invs = migra(filePath)
         session['migration_ok'] = ok
         # A ontologia final só é gerada se não forem encontrados erros "graves"
         if ok:
@@ -72,8 +72,8 @@ def process_file():
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
         "ok": ok,
-        "table_by_classe": generate_classe_table_dict(rep.globalErrors,rep.classesN1,rep.inativos,rep.declaracoes),
-        "table_by_invariant": generate_error_table(rep.globalErrors,rep.inativos),
+        "table_by_classe": generate_classe_table_dict(rep.globalErrors,rep.classesN1,rep.inativos,rep.declaracoes,invs),
+        "table_by_invariant": generate_error_table(rep.globalErrors,rep.inativos,invs),
         "warnings": generate_warnings_table(rep.warnings)
     })
 

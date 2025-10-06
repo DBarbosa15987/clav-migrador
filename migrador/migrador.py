@@ -5,7 +5,7 @@ from . import genTTL as g
 import json
 import os
 from . import queryfix as fix
-from utils.path_utils import FILES_DIR
+from utils.path_utils import FILES_DIR, PROJECT_ROOT
 import logging
 from utils.log_utils import FIX, GEN, INV, PROC
 
@@ -106,7 +106,18 @@ def migra(filename):
     # Correções
     # --------------------------------------------
 
-    rep.dumpReport()
+
+    with open(os.path.join(PROJECT_ROOT, "invariantes.json")) as f:
+        invsJson = json.load(f)
+
+    invs = {}
+    for r in invsJson["invariantes"]:
+        for i in r["inv"]:
+            invs[f"{r["idRel"]}_{i["idInv"]}"] = {
+                "desc": i["desc"],
+                "clarificacao": i["clarificacao"]
+            }
+
     loggerCorr.info("-"*80)
     loggerCorr.info("Correção automática dos erros")
     loggerCorr.info("-"*80)
@@ -116,12 +127,12 @@ def migra(filename):
     fix.rel_4_inv_3_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_3"])
     fix.rel_5_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_5_inv_2"])
     fix.rel_1_inv_3_fix(termosIndice,rep.globalErrors["erroInv"]["rel_1_inv_3"])
-    fix.rel_8_inv_5_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_5"])
-    fix.rel_8_inv_6_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_6"])
+    fix.rel_8_inv_5_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_5"],invs)
+    fix.rel_8_inv_6_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_6"],invs)
     loggerCorr.info("-"*80)
     loggerCorr.info("Correção automática dos erros terminada")
     loggerCorr.info("-"*80)
-    rep.dumpReport(dumpFileName="dump-fixed.json")
+    rep.dumpReport()
 
     # --------------------------------------------
     # Geração da ontologia final
@@ -159,5 +170,4 @@ def migra(filename):
         loggerGen.warning("Ontologia não foi criada devido à existência de erros graves")
         loggerGen.info("-"*80)
 
-    return rep,ok
-
+    return rep, ok, invs

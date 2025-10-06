@@ -301,7 +301,7 @@ def rel_1_inv_3_fix(termosIndice,erros: list[ErroInv]):
     logger.info(f"Falharam {errFailed} correções do invariante rel_1_inv_3")
 
 
-def rel_8_inv_5_fix(allClasses,erros: list[ErroInv]):
+def rel_8_inv_5_fix(allClasses,erros: list[ErroInv],invs):
     """
     Faz a correção das falhas do invariante rel_8_inv_5.
     """
@@ -343,7 +343,12 @@ def rel_8_inv_5_fix(allClasses,erros: list[ErroInv]):
             diff = diffReports(repBefore,repAfter)
 
             if diff:
-                err.fail(f"A tentativa de correção automática falhou porque arriscava violar o(s) invariante(s) {', '.join([f"<b>{d}</b>" for d in diff])}")
+                invDesc = []
+                for i in diff:
+                    desc = f"({invs.get(i,{}).get("desc")})" or ""
+                    s = f"<b>{i}</b> {desc}"
+                    invDesc.append(s)
+                err.fail(f"A tentativa de correção automática falhou porque arriscava violar o(s) invariante(s): {'; '.join(invDesc)}")
                 errFailed += 1
             else:
                 err.fix(f"A relação \"<b>{err.cod}</b> <b><i>eComplementarDe</b></i> <b>{err.info["proc"]}</b>\" foi adicionada à zona de contexto do processo <b>{err.cod}</b>")
@@ -357,7 +362,7 @@ def rel_8_inv_5_fix(allClasses,erros: list[ErroInv]):
 
 
 
-def rel_8_inv_6_fix(allClasses,erros: list[ErroInv]):
+def rel_8_inv_6_fix(allClasses,erros: list[ErroInv],invs):
     """
     Faz a correção das falhas do invariante rel_8_inv_6.
     """
@@ -394,7 +399,12 @@ def rel_8_inv_6_fix(allClasses,erros: list[ErroInv]):
             diff = diffReports(repBefore,repAfter)
 
             if diff:
-                err.fail(f"A tentativa de correção automática falhou porque arriscava violar o(s) invariante(s) {', '.join([f"<b>{d}</b>" for d in diff])}")
+                invDesc = []
+                for i in diff:
+                    desc = f"({invs.get(i,{}).get("desc")})" or ""
+                    s = f"<b>{i}</b> {desc}"
+                    invDesc.append(s)
+                err.fail(f"A tentativa de correção automática falhou porque arriscava violar o(s) invariante(s): {'; '.join(invDesc)}")
                 errFailed += 1
             else:
                 err.fix(f"A relação \"<b>{err.cod}</b> <b><i>eSuplementoPara</b></i> <b>{err.info["proc"]}</b>\" foi adicionada à zona de contexto do processo <b>{err.cod}</b>")
