@@ -1,7 +1,7 @@
 let classeTables = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    const reportByInvariant = document.getElementById('by-invariant');
+    const reportByInvariant = document.getElementById('all-errors');
     const classeReportContent = document.getElementById('classe-report-content');
     const classeSelector = document.getElementById('classe-selector');
     const warningsView = document.getElementById('warnings-view');

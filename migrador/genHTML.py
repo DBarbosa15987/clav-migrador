@@ -309,11 +309,16 @@ def generate_classe_table_dict(globalErrors,classesN1,inativos,decls,invs):
 
     # Erros de Invariantes por classe
     if globalErrors["erroInvByEnt"]:
-
+        ents = set()
         for ent, invs_dict in globalErrors["erroInvByEnt"].items():
-            addRow(entityTables, ent, '<div class="error-section">🟦 Erros de Invariantes</div>\n')
 
             for inv, erros in invs_dict.items():
+
+                # Header de cada tabela (uma por classe)
+                if ent not in ents:
+                    addRow(entityTables, ent, '<div class="error-section">🟦 Erros de Invariantes</div>\n')
+                ents.add(ent)
+
                 invariante = invs.get(inv, {"desc": "Sem descrição", "clarificacao": ""})
                 errTitle = f"{inv} ({len(erros)}): {invariante['desc']}"
                 if invariante["clarificacao"]:
