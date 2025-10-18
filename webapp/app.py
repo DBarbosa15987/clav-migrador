@@ -1,5 +1,3 @@
-from datetime import datetime
-import glob
 from flask import Flask, render_template, request, jsonify, send_file, session
 from migrador.migrador import migra
 from migrador.genTTL import genFinalOntology
@@ -26,14 +24,14 @@ def index():
 def process_file():
 
     if 'file' not in request.files:
-        logger.error("Ficheiro não encontrado no request")
-        return jsonify({'error': 'No file part'})
+        logger.error("'file' não encontrado no request")
+        return jsonify({'error': '\'file\' não encontrado no request'}), 400
 
     file = request.files['file']
 
     if file.filename == '':
         logger.error("Ficheiro não selecionado")
-        return jsonify({'error': 'No selected file'})
+        return jsonify({'error': 'Ficheiro não selecionado'}), 400
 
     logger.info(f"Ficheiro recebido: {file.filename}")
 
@@ -43,16 +41,17 @@ def process_file():
     allowedMimetypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.ms-excel"]
     if mimetype not in allowedMimetypes:
         logger.error("Ficheiro não suportado")
-        return jsonify({'error': 'Ficheiro não suportado'})
+        return jsonify({'error': 'Ficheiro não suportado'}), 415
 
     try:
         filePath = os.path.join(UPLOAD_DIR, file.filename)
-        logger.warning(f"Criação de uma cópia do ficheiro recebido em {filePath}")
+        logger.info(f"Criação de uma cópia do ficheiro recebido em {filePath}")
         with open(filePath,"wb") as f:
             f.write(fileContent)
     except Exception as e:
-        logger.warning(f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}")
+        logger.error(f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}")
         logger.exception(f"[{e.__class__.__name__}]: {e}")
+        return jsonify({'error': f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}"}), 500
 
     try:
         rep,ok,invs = migra(filePath)
@@ -66,8 +65,9 @@ def process_file():
             logger.warning("A ontologia final não foi gerada")
 
     except Exception as e:
-        logger.exception(f"Erro na migração: {e}")
-        return jsonify({'error': f"Erro na migração, para mais informação, verifique os logs"})
+        logger.error("Erro na migração")
+        logger.exception(f"[{e.__class__.__name__}]: {e}")
+        return jsonify({'error': f"Erro na migração, para mais informação, verifique os logs"}), 500
 
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
@@ -77,25 +77,20 @@ def process_file():
         "warnings": generate_warnings_table(rep.warnings)
     })
 
-
 @app.route('/download')
 def download_output():
 
     if not session.get('migration_ok'):
-        logger.error("Tentativa de download da ontologia falhou. A migração não foi bem sucedida")
-        return "Não é permitido fazer download. A migração não foi bem-sucedida.", 403
+        logger.error("Tentativa de download da ontologia falhou. A migração não foi bem-sucedida")
+        return jsonify({"error": "Não é permitido fazer download. A migração não foi bem-sucedida."}), 422
 
     zipedOutputFile = session['zipedOutputFile']
     clav = os.path.join(OUTPUT_DIR, zipedOutputFile)
-    if not os.path.exists(clav):
-        logger.error(f"Erro ao encontrar o ficheiro final::{clav}")
-        return "Erro ao encontrar o ficheiro final", 500
-    else:
+    if os.path.exists(clav):
         logger.info(f"Ficheiro selecionado: {clav}")
+    else:
+        logger.error(f"Erro ao encontrar o ficheiro final::{clav}")
+        return jsonify({"error": "Erro ao encontrar o ficheiro final"}), 404
 
-    logger.info("Download da ontologia")
-    return send_file(clav, as_attachment=True, download_name=zipedOutputFile)
-
-
-if __name__ == '__main__':
-    app.run(debug=True,port=5001)
+    logger.info(f"Download da ontologia::{zipedOutputFile}")
+    return send_file(clav, as_attachment=True, download_name=zipedOutputFile, mimetype="application/zip")
