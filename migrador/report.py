@@ -349,7 +349,7 @@ class ErroInv:
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
-            case "rel_4_inv_1":
+            case "rel_8_inv_3":
                 if self.info["valor"]:
                     msg = f"O processo <b>{self.cod}</b> é sintetizado por outro, mas o seu DF tem o valor de \"{getDfValue(self.info["valor"])}\", em vez de \"Eliminação\""
                 else:
@@ -383,12 +383,12 @@ class ErroInv:
                 msg = f"O processo <b>{self.cod}</b> tem uma relação de <i><b>eComplementarDe</i></b> com o processo <b>{self.info["proc"]}</b> e nenhum dos filhos ({', '.join(self.info["filhos"])}) tem um valor de DF de \"Conservação\"."
             case "rel_1_inv_3":
                 msg = f"O termo \"{self.info["termo"]}\" do processo <b>{self.cod}</b> não foi replicado para o seu filho <b>{self.info["filho"]}</b>."
-            case "rel_4_inv_2":
+            case "rel_4_inv_1":
                 msg = f"No processo <b>{self.cod}</b> não consta uma justificação com <b>critério de densidade informacional</b>"
                 if self.extra:
                     msg += f" ({self.extra})"
                 msg += "."
-            case "rel_4_inv_3":
+            case "rel_4_inv_2":
                 msg = f"O processo <b>{self.info["proc"]}</b> está em falta na justificação do DF do processo <b>{self.cod}</b>, sob o critério de densidade informacional"
                 if self.extra:
                     msg += f" ({self.extra})"
@@ -431,13 +431,13 @@ class ErroInv:
                 msg = f"O processo <b>{self.cod}</b> é transversal, mas não tem participantes."
             case "rel_1_inv_7":
                 msg = f"O processo <b>{self.info["pai"]}</b> está em harmonização, no entanto o seu filho <b>{self.cod}</b> está ativo."
-            case "rel_8_inv_3":
-                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> na justificação do \"<b>{self.info["tipo"]}</b>\", mas <b>{self.info["proc"]}</b> não está devidamente declarado."
             case "rel_8_inv_4":
-                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com uma relação de síntese (<i><b>eSintetizadoPor</i></b>/<i><b>eSinteseDe</i></b>)."
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> na justificação do \"<b>{self.info["tipo"]}</b>\", mas <b>{self.info["proc"]}</b> não está devidamente declarado."
             case "rel_8_inv_5":
-                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eComplementarDe</b></i>."
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com uma relação de síntese (<i><b>eSintetizadoPor</i></b>/<i><b>eSinteseDe</i></b>)."
             case "rel_8_inv_6":
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eComplementarDe</b></i>."
+            case "rel_8_inv_7":
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eSuplementoPara</b></i>."
             case "rel_7_inv_1":
                 msg = f"Na justificação do PCA do processo <b>{self.cod}</b> foram encontrados mais do que um critério do tipo \"<b>{self.info["tipo"]}</b>\"."

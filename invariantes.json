@@ -6,7 +6,7 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Os PNs só podem ter desbobramento ao nível 4 quando os descendentes de nível 4 têm valores de PCA ou DF distintos entre eles",
+                    "desc": "Os PNs só podem ter desdobramento ao nível 4 quando os descendentes de nível 4 têm valores de PCA ou DF distintos entre eles",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_1"
                 },
@@ -30,7 +30,7 @@
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "Uma classe de nível 3 tem que ter valores de DF e PCA se esta não tiver desdobramento",
+                    "desc": "Uma classe de nível 3 tem de ter valores de DF e PCA se esta não tiver desdobramento",
                     "clarificacao": "",
                     "oldId": "rel_3_inv_6"
                 },
@@ -132,7 +132,7 @@
                 },
                 {
                     "idInv": "inv_14",
-                    "desc": "Um processo transversal tem que ter participantes",
+                    "desc": "Um processo transversal tem de ter participantes",
                     "clarificacao": "",
                     "oldId": "rel_4_inv_14"
                 }
@@ -168,18 +168,12 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "Quando o PN em causa é <b>síntetizado por</b> outro, o DF deve ter o valor de \"Eliminação\"",
-                    "clarificacao": "",
-                    "oldId": "rel_6_inv_2"
-                },
-                {
-                    "idInv": "inv_2",
                     "desc": "Se um PN tem uma relação de <b>síntese</b>, o seu DF deverá ter uma justificação onde consta um <b>critério de densidade informacional</b>",
                     "clarificacao": "",
                     "oldId": "rel_6_inv_3"
                 },
                 {
-                    "idInv": "inv_3",
+                    "idInv": "inv_2",
                     "desc": "Todos os processos relacionados por uma relação de <b>síntese</b> deverão estar relacionados com o <b>critério de densidade informacional</b> da respetiva justificação",
                     "clarificacao": "",
                     "oldId": "rel_6_inv_4"
@@ -246,24 +240,30 @@
                 },
                 {
                     "idInv": "inv_3",
+                    "desc": "Quando o PN em causa é <b>sintetizado por</b> outro, o DF deve ter o valor de \"Eliminação\"",
+                    "clarificacao": "",
+                    "oldId": "rel_6_inv_2"
+                },
+                {
+                    "idInv": "inv_4",
                     "desc": "Qualquer processo referenciado num critério da justificação do PCA/DF tem de estar declarado na zona de contexto",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_4"
                 },
                 {
-                    "idInv": "inv_4",
+                    "idInv": "inv_5",
                     "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar declarado na zona de contexto com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_5"
                 },
                 {
-                    "idInv": "inv_5",
+                    "idInv": "inv_6",
                     "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar declarado na zona de contexto com a relação <b><i>eComplementarDe</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_6"
                 },
                 {
-                    "idInv": "inv_6",
+                    "idInv": "inv_7",
                     "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar declarado na zona de contexto com a relação <b><i>eSuplementoPara</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_7"

@@ -141,14 +141,14 @@ def rel_3_inv_2_fix(allClasses,erros: list[ErroInv]):
     logger.info(f"Falharam {errFailed} correções do invariante rel_3_inv_2")
 
 
-def rel_4_inv_3_fix(allClasses,erros: list[ErroInv]):
+def rel_4_inv_2_fix(allClasses,erros: list[ErroInv]):
     """
-    Faz a correção das falhas do invariante rel_4_inv_3.
+    Faz a correção das falhas do invariante rel_4_inv_2.
     """
 
     errFixed = 0
     errFailed = 0
-    logger.info("Correção do invariante rel_4_inv_3")
+    logger.info("Correção do invariante rel_4_inv_2")
     for err in erros:
         classe = allClasses[err.cod]
         df = classe.get("df",{})
@@ -208,8 +208,8 @@ def rel_4_inv_3_fix(allClasses,erros: list[ErroInv]):
             err.fail(f"O processo <b>{err.cod}</b> não tem DF")
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_3")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_3")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_4_inv_2")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_4_inv_2")
 
 
 def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
@@ -301,9 +301,9 @@ def rel_1_inv_3_fix(termosIndice,erros: list[ErroInv]):
     logger.info(f"Falharam {errFailed} correções do invariante rel_1_inv_3")
 
 
-def rel_8_inv_5_fix(allClasses,erros: list[ErroInv],invs):
+def rel_8_inv_6_fix(allClasses,erros: list[ErroInv],invs):
     """
-    Faz a correção das falhas do invariante rel_8_inv_5.
+    Faz a correção das falhas do invariante rel_8_inv_6.
     """
 
     deps = [
@@ -315,7 +315,7 @@ def rel_8_inv_5_fix(allClasses,erros: list[ErroInv],invs):
         "rel_8_inv_1"
     ]
 
-    logger.info("Correção do invariante rel_8_inv_5")
+    logger.info("Correção do invariante rel_8_inv_6")
     errFixed = 0
     errFailed = 0
 
@@ -357,14 +357,14 @@ def rel_8_inv_5_fix(allClasses,erros: list[ErroInv],invs):
             err.fail("A tentativa de correção automática falhou porque os processos relacionados e respetivas relações não têm a mesma cardinalidade")
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_8_inv_5")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_8_inv_5")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_8_inv_6")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_8_inv_6")
 
 
 
-def rel_8_inv_6_fix(allClasses,erros: list[ErroInv],invs):
+def rel_8_inv_7_fix(allClasses,erros: list[ErroInv],invs):
     """
-    Faz a correção das falhas do invariante rel_8_inv_6.
+    Faz a correção das falhas do invariante rel_8_inv_7.
     """
 
     deps = [
@@ -375,7 +375,7 @@ def rel_8_inv_6_fix(allClasses,erros: list[ErroInv],invs):
         "rel_3_inv_2"
     ]
 
-    logger.info("Correção do invariante rel_8_inv_6")
+    logger.info("Correção do invariante rel_8_inv_7")
     errFixed = 0
     errFailed = 0
 
@@ -413,8 +413,8 @@ def rel_8_inv_6_fix(allClasses,erros: list[ErroInv],invs):
             err.fail("A tentativa de correção automática falhou porque os processos relacionados e respetivas relações não têm a mesma cardinalidade")
             errFailed += 1
 
-    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_8_inv_6")
-    logger.info(f"Falharam {errFailed} correções do invariante rel_8_inv_6")
+    logger.info(f"Foram corrigidas {errFixed} falhas do invariante rel_8_inv_7")
+    logger.info(f"Falharam {errFailed} correções do invariante rel_8_inv_7")
 
 
 def testDepends(deps,classes):
