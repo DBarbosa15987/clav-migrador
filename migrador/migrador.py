@@ -121,14 +121,22 @@ def migra(filename):
     loggerCorr.info("-"*80)
     loggerCorr.info("Correção automática dos erros")
     loggerCorr.info("-"*80)
-    fix.rel_2_inv_12_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_12"])
-    fix.rel_2_inv_13_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_13"])
-    fix.rel_3_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_3_inv_2"])
-    fix.rel_4_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_2"])
-    fix.rel_5_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_5_inv_2"])
-    fix.rel_1_inv_3_fix(termosIndice,rep.globalErrors["erroInv"]["rel_1_inv_3"])
-    fix.rel_8_inv_6_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_6"],invs)
-    fix.rel_8_inv_7_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_7"],invs)
+    if "rel_2_inv_12" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_2_inv_12_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_12"])
+    if "rel_2_inv_13" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_2_inv_13_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_13"])
+    if "rel_3_inv_2" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_3_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_3_inv_2"])
+    if "rel_4_inv_2" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_4_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_2"])
+    if "rel_5_inv_2" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_5_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_5_inv_2"])
+    if "rel_1_inv_3" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_1_inv_3_fix(termosIndice,rep.globalErrors["erroInv"]["rel_1_inv_3"])
+    if "rel_8_inv_6" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_8_inv_6_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_6"],invs)
+    if "rel_8_inv_7" in rep.globalErrors.get("erroInv",{}):
+        fix.rel_8_inv_7_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_7"],invs)
     loggerCorr.info("-"*80)
     loggerCorr.info("Correção automática dos erros terminada")
     loggerCorr.info("-"*80)
