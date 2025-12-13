@@ -5,7 +5,6 @@ from utils.path_utils import DUMP_DIR
 import logging
 from utils.log_utils import PROC
 from enum import Enum
-import html
 
 
 class Report:
@@ -25,7 +24,7 @@ class Report:
             "normal": {}, # {"200": ["mensagem de erro"]}
             "erroInv": {}, # {"rel_x_inv_y": [erroInv:ErroInv]}
             "erroInvByEnt": {}, # {"200": [erroInv:ErroInv]}
-            "outro": {
+            "catalogo": {
                 "leg": [],
                 "tindice": [],
                 "tipologia": [],
@@ -44,7 +43,7 @@ class Report:
 
     def addClasseN1(self,cod,titulo,desc):
         """
-        Addiciona a rep.classesN1 a classe de nível 1
+        Adiciona a rep.classesN1 a classe de nível 1
         juntamente com o seu título e descrição. Este
         método também adiciona as classes de nível 1
         como chaves do rep.erroInvByEnt.
@@ -77,15 +76,15 @@ class Report:
                 self.globalErrors["normal"][cod] = [msg]
 
 
-    def addErroNoCod(self,msg,categ):
+    def addErroCatalogo(self,msg,catalogo):
         """
-        Adiciona ao `rep` um erro do tipo "outro", que
+        Adiciona ao `rep` um erro do tipo "catalogo", que
         representa um erro que ocorreu na extração dos
         dados que não são identificados por um código
         como o das classes.
         """
-        if categ in self.globalErrors["outro"]:
-            self.globalErrors["outro"][categ].append(msg)
+        if catalogo in self.globalErrors["catalogo"]:
+            self.globalErrors["catalogo"][catalogo].append(msg)
 
 
     def addMissingRels(self,proc,rel,cod,tipo):
@@ -240,11 +239,24 @@ class Report:
 
         dumpPath = os.path.join(DUMP_DIR, dumpFileName)
         try:
-            logger.info(f"Criação de um dump do relatório de erros: {dumpPath}")
-            with open(dumpPath,'w') as f:
+            logger.info(f"Criação do dump do relatório de erros: {dumpPath}")
+            with open(dumpPath,'w',encoding='utf-8') as f:
                 json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
         except Exception as e:
             logger.error(f"Criação do dump do relatório de erros falhou")
+            logger.exception(f"[{e.__class__.__name__}]: {e}")
+
+
+    def dumpClasses(self,allClasses,dumpFileName="allClasses.json"):
+
+        logger = logging.getLogger(PROC)
+        dumpPath = os.path.join(DUMP_DIR, dumpFileName)
+        try:
+            logger.info(f"Criação do dump das classes: {dumpPath}")
+            with open(dumpPath,'w',encoding='utf-8') as f:
+                json.dump(allClasses,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
+        except Exception as e:
+            logger.error(f"Criação do dump das classes falhou")
             logger.exception(f"[{e.__class__.__name__}]: {e}")
 
 

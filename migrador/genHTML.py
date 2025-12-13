@@ -1,7 +1,3 @@
-
-import json
-from utils.path_utils import PROJECT_ROOT
-import os
 from .report import FixStatus
 
 
@@ -62,39 +58,39 @@ def generate_error_table(globalErrors,inativos,invs):
                 html_content += f"<tr><td>{getCod(cod,inativos)}</td><td class='msg'>{msg}</td></tr>"
         html_content += '</table>'
 
-    # Outros
-    if globalErrors["outro"]["leg"] or globalErrors["outro"]["tindice"] or globalErrors["outro"]["tipologia"] or globalErrors["outro"]["entidade"]:
-        html_content += f'<div class="error-section">🟧 Outros Erros</div>\n'
+    # Catálogo
+    if globalErrors["catalogo"]["leg"] or globalErrors["catalogo"]["tindice"] or globalErrors["catalogo"]["tipologia"] or globalErrors["catalogo"]["entidade"]:
+        html_content += f'<div class="error-section">🟧 Erros de Catálogo</div>\n'
 
-        # Legislação (Outros)
-        if globalErrors["outro"]["leg"]:
-            html_content += f'<div class="error-section">Legislação ({len(globalErrors["outro"]["leg"])}): Erros na migração do catálogo das legislações</div>\n'
+        # Legislação
+        if globalErrors["catalogo"]["leg"]:
+            html_content += f'<div class="error-section">Legislação ({len(globalErrors["catalogo"]["leg"])}): Erros na migração do catálogo das legislações</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
-            for msg in globalErrors["outro"]["leg"]:
+            for msg in globalErrors["catalogo"]["leg"]:
                 html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
-        # Termos Índice (Outros)
-        if globalErrors["outro"]["tindice"]:
-            html_content += f'<div class="error-section">Termos Índice ({len(globalErrors["outro"]["tindice"])}): Erros na migração do catálogo dos termos índice</div>\n'
+        # Termos Índice
+        if globalErrors["catalogo"]["tindice"]:
+            html_content += f'<div class="error-section">Termos Índice ({len(globalErrors["catalogo"]["tindice"])}): Erros na migração do catálogo dos termos índice</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
-            for msg in globalErrors["outro"]["tindice"]:
+            for msg in globalErrors["catalogo"]["tindice"]:
                 html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
-        # Tipologia (Outros)
-        if globalErrors["outro"]["tipologia"]:
-            html_content += f'<div class="error-section">Tipologia ({len(globalErrors["outro"]["tipologia"])}): Erros na migração do catálogo das tipologias</div>\n'
+        # Tipologia
+        if globalErrors["catalogo"]["tipologia"]:
+            html_content += f'<div class="error-section">Tipologia ({len(globalErrors["catalogo"]["tipologia"])}): Erros na migração do catálogo das tipologias</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
-            for msg in globalErrors["outro"]["tipologia"]:
+            for msg in globalErrors["catalogo"]["tipologia"]:
                 html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
-        # Entidade (Outros)
-        if globalErrors["outro"]["entidade"]:
-            html_content += f'<div class="error-section">Entidade ({len(globalErrors["outro"]["entidade"])}): Erros na migração do catálogo das entidades</div>\n'
+        # Entidade
+        if globalErrors["catalogo"]["entidade"]:
+            html_content += f'<div class="error-section">Entidade ({len(globalErrors["catalogo"]["entidade"])}): Erros na migração do catálogo das entidades</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
-            for msg in globalErrors["outro"]["entidade"]:
+            for msg in globalErrors["catalogo"]["entidade"]:
                 html_content += f"<tr><td class='msg'>{msg}</td></tr>"
             html_content += '</table>'
 
@@ -144,10 +140,10 @@ def generate_error_table(globalErrors,inativos,invs):
         globalErrors["grave"]["relsInvalidas"],
         globalErrors["grave"]["outro"],
         globalErrors["normal"],
-        globalErrors["outro"]["leg"],
-        globalErrors["outro"]["tindice"],
-        globalErrors["outro"]["tipologia"],
-        globalErrors["outro"]["entidade"],
+        globalErrors["catalogo"]["leg"],
+        globalErrors["catalogo"]["tindice"],
+        globalErrors["catalogo"]["tipologia"],
+        globalErrors["catalogo"]["entidade"],
         globalErrors["erroInv"]
     ])):
             html_content += """

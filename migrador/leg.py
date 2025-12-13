@@ -64,7 +64,7 @@ def processSheet(sheet, nome, rep: Report):
             # ERRO: Verificação da existência das entidades no catálogo de entidades e/ou tipologias
                 for e in myReg['entidade']:
                     if (e not in entCatalog) and (e not in tipCatalog):
-                        rep.addErroNoCod(f"Linha {str(index+2)}: Entidade \"<b>{e}</b>\" não está no catálogo de entidades ou tipologias::<b>{legCod}</b>","leg")
+                        rep.addErroCatalogo(f"Linha {str(index+2)}: Entidade \"<b>{e}</b>\" não está no catálogo de entidades ou tipologias::<b>{legCod}</b>","leg")
             else:
                 legCod = re.sub(r'[ \u202F\u00A0]+', '_', myReg["tipo"])
             if myReg["numero"] != 'NE':
@@ -74,7 +74,7 @@ def processSheet(sheet, nome, rep: Report):
             if legCod not in legCatalog:
                 legCatalog.append(legCod)
             else:
-                rep.addErroNoCod(f"Linha {str(index+2)}: Legislação duplicada::<b>{legCod}</b>.","leg")
+                rep.addErroCatalogo(f"Linha {str(index+2)}: Legislação duplicada::<b>{legCod}</b>.","leg")
             # Estado: ----------------------------------------------------
             if row['Estado'] and str(row['Estado']).strip() != "":
                 myReg["estado"] = 'Revogado'
