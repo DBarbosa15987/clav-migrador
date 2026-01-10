@@ -12,6 +12,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
             pca = brancos.sub('', classe["Prazo de conservação administrativa"])
         else:
             pca = classe["Prazo de conservação administrativa"]
+
         # Verifica-se se tem alguma coisa
         if pd.isna(pca):
             myReg['pca']['valores'] = "NE"
@@ -26,18 +27,21 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         myReg['pca']['valores'] = int(pca)
                 else:
                     myReg['pca']['valores'] = "NE"
+                    if myReg["estado"]!='H':
+                        rep.addErro(cod,f"Valor inválido para o PCA::<b>{pca}</b>")
             else:
                 myReg['pca']['valores'] = pca
-
+                if myReg["estado"]!='H':
+                    rep.addErro(cod,f"Valor inválido para o PCA::<b>{pca}</b>")
     # Nota ao PCA ----------------------------
     if classe["Nota ao PCA"]:
         myReg['pca']['notas'] = brancos.sub('', classe["Nota ao PCA"])
     # ERRO: um dos dois, PCA ou Nota ao PCA, tem de ter um valor válido
     if myReg["estado"]!='H':
-        if classe["Prazo de conservação administrativa"] and (myReg['pca']['valores'] == "NE") and 'notas' not in myReg['pca'].keys():
+        if classe["Prazo de conservação administrativa"] and (myReg['pca']['valores'] == "NE") and 'notas' not in myReg['pca']:
             rep.addErro(cod,"PCA e Nota ao PCA não podem ser simultaneamente inválidos")
     # Forma de Contagem do PCA -----
-    if 'pca' in myReg.keys() and myReg['pca']['valores'] != "NE":
+    if 'pca' in myReg and myReg['pca']['valores'] != "NE":
         formaContagem = brancos.sub('', str(classe["Forma de contagem do PCA"]))
         if re.search(r'conclusão.*procedimento', formaContagem, re.I):
             myReg['pca']['formaContagem'] = 'conclusaoProcedimento'
@@ -78,10 +82,13 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
             elif re.search(r'9\s+-', formaContagem):
                 myReg['pca']['subFormaContagem'] = 'F01.09'
             else:
-                rep.addErro(cod,f"Não foi possível extrair a subforma de contagem::<b>{formaContagem}</b>")
+                if myReg["estado"]!='H':
+                    rep.addErro(cod,f"Não foi possível extrair a subforma de contagem::<b>{formaContagem}</b>")
         else:
             myReg['pca']['formaContagem'] = "Desconhecida"
-            rep.addErro(cod,f"Forma de contagem do PCA desconhecida::<b>{formaContagem}</b>")
+            if myReg["estado"]!='H':
+                rep.addErro(cod,f"Forma de contagem do PCA desconhecida::<b>{formaContagem}</b>")
+
     # Justificação do PCA -----
     if 'pca' in myReg and classe["Justificação PCA"]:
         just = brancos.sub('', classe["Justificação PCA"])
@@ -103,7 +110,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myCrit['legRefs'].append(re.sub(r'[/ \u202F\u00A0()\-\u2010]+', '_', ref.group(1)))
                 for ref in myCrit['legRefs']:
                     # ERRO: Legislação referenciado no critério não existe no catálogo
-                    if ref not in legCatalog:
+                    if myReg["estado"]!='H' and ref not in legCatalog:
                         rep.addErro(cod,f"Legislação inexistente no catálogo legislativo::<b>{ref}</b>")
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
@@ -148,9 +155,10 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myCrit['procRefs'] = myRefs
 
             else:
-                rep.addErro(cod,f"Critério de justificação do PCA desconhecido::<b>{crit}</b>")
                 myCrit['tipo'] = "NE"
                 myCrit['conteudo'] = "NE"
+                if myReg["estado"]!='H':
+                    rep.addErro(cod,f"Critério de justificação do PCA desconhecido::<b>{crit}</b>")
 
             myReg['pca']['justificacao'].append(myCrit)
 
@@ -192,7 +200,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                     myCrit['legRefs'].append(re.sub(r'[/ \u202F\u00A0()\-]+', '_', ref.group(1)))
                 for ref in myCrit['legRefs']:
                     # ERRO: Legislação referenciado no critério não existe no catálogo
-                    if ref not in legCatalog:
+                    if myReg["estado"]!='H' and ref not in legCatalog:
                         rep.addErro(cod,f"Legislação inexistente no catálogo legislativo::<b>{ref}</b>")
                     else:
                         if 'legislacao' in myReg and ref not in myReg['legislacao']:
@@ -210,7 +218,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         myCrit['legRefs'].append(re.sub(r'[/ \u202F\u00A0()\-]+', '_', ref.group(1)))
                     for ref in myCrit['legRefs']:
                         # ERRO: Legislação referenciado no critério não existe no catálogo
-                        if ref not in legCatalog:
+                        if myReg["estado"]!='H' and ref not in legCatalog:
                             rep.addErro(cod,f"Legislação inexistente no catálogo legislativo::<b>{ref}</b>")
                         else:
                             if 'legislacao' in myReg and ref not in myReg['legislacao']:
@@ -236,7 +244,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         myCrit['legRefs'].append(re.sub(r'[/ \u202F\u00A0()\-]+', '_', ref.group(1)))
                     for ref in myCrit['legRefs']:
                         # ERRO: Legislação referenciado no critério não existe no catálogo
-                        if ref not in legCatalog:
+                        if myReg["estado"]!='H' and ref not in legCatalog:
                             rep.addErro(cod,f"Legislação inexistente no catálogo legislativo::<b>{ref}</b>")
                         else:
                             if 'legislacao' in myReg and ref not in myReg['legislacao']:
@@ -251,9 +259,10 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
 
             else:
                 # ERRO: critério está fora do domínio estabelecido
-                rep.addErro(cod,f"Critério de justificação do DF desconhecido::<b>{crit}</b>")
                 myCrit['tipo'] = "NE"
                 myCrit['conteudo'] = "NE"
+                if myReg["estado"]!='H':
+                    rep.addErro(cod,f"Critério de justificação do DF desconhecido::<b>{crit}</b>")
 
             myReg['df']['justificacao'].append(myCrit)
 

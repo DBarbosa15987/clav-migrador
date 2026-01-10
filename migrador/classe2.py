@@ -38,7 +38,7 @@ def calcEstado(cod,e,rep:Report):
 # --------------------------------------------------
 #
 # Calcula o nível da classe
-def calcNivel(cod,rep:Report):
+def calcNivel(cod,rep:Report,estado):
     res = 0
     if n4.fullmatch(cod):
         res = 4
@@ -48,7 +48,7 @@ def calcNivel(cod,rep:Report):
         res = 2
     elif n1.fullmatch(cod):
         res = 1
-    else:
+    elif estado != 'H':
         # ERRO: O formato do código é inválido
         rep.addErro(cod,f"Formato do código inválido::<b>{cod}</b>")
     return res
@@ -105,13 +105,13 @@ def processSheet(sheet, nome, rep:Report):
         if row["Código"]:
             # Código -----
             cod = re.sub(r'(\r\n|\n|\r|[ \u202F\u00A0])','', str(row["Código"]))
-            # Nível -----
-            myReg["nivel"] = calcNivel(cod,rep)
             # Estado -----
             if row["Estado"]:
                 myReg["estado"] = calcEstado(cod,row["Estado"],rep)
             else:
                 myReg["estado"] = 'A'
+            # Nível -----
+            myReg["nivel"] = calcNivel(cod,rep,myReg["estado"])
             # Título -----
             if row["Título"]:
                 myReg["titulo"] = brancos.sub('', row["Título"])

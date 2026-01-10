@@ -92,7 +92,7 @@ def processClasses(rep: Report):
                 # Se não existir, é registada como inválida, se existir confirma-se
                 # se as simetrias e anti-simetrias estão corretas
                 # Aqui "inválida" != "harmonização"
-                if proc not in data.keys():
+                if proc not in data:
                     rep.addRelInvalida(proc,rel,cod)
                 # Se a relação mencionar um processo em harmonização fica anotado
                 # como warning
@@ -106,7 +106,7 @@ def processClasses(rep: Report):
                     if rel in relsSimetricas:
                         if (cod,rel) not in zip(proRels2,rels2):
                             rep.addMissingRels(proc,rel,cod,"relsSimetricas")
-                    elif rel in relsInverseOf.keys():
+                    elif rel in relsInverseOf:
                         if (cod,relsInverseOf[rel]) not in zip(proRels2,rels2):
                             rep.addMissingRels(proc,relsInverseOf[rel],cod,"relsInverseOf")
 
@@ -117,7 +117,7 @@ def processClasses(rep: Report):
                     procRefs = j.get("procRefs")
                     if procRefs:
                         for p in procRefs:
-                            if p not in data.keys():
+                            if p not in data:
                                 rep.addRelInvalida(p,"procRef",cod,"df")
                             # Se a relação mencionar um processo em harmonização fica anotado
                             # como warning
@@ -131,7 +131,7 @@ def processClasses(rep: Report):
                     procRefs = j.get("procRefs")
                     if procRefs:
                         for p in procRefs:
-                            if p not in data.keys():
+                            if p not in data:
                                 rep.addRelInvalida(p,"procRef",cod,"pca")
                             # Se a relação mencionar um processo em harmonização fica anotado
                             # como warning
@@ -1081,7 +1081,7 @@ def rel_2_inv_14(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Um processo transversal tem que ter participantes"
+    "Um processo transversal tem de ter participantes"
     """
 
     logger.info("Verificação do invariante rel_2_inv_14")

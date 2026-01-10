@@ -67,7 +67,7 @@ def process_file():
     except Exception as e:
         logger.error("Erro na migração")
         logger.exception(f"[{e.__class__.__name__}]: {e}")
-        return jsonify({'error': f"Erro na migração, para mais informação, verifique os logs"}), 500
+        return jsonify({'error': f"Erro na migração, para mais informação verifique os logs"}), 500
 
     logger.info("Geração das tabelas a partir do relatório de erros")
     return jsonify({
