@@ -427,19 +427,7 @@ def genFinalOntology():
                     outfile.write('\n')
     except Exception as e:
         logger.exception(f"[{e.__class__.__name__}]: {e}")
-
-    # Validação da ontologia final
-    cmd = ["rapper", "-c", "-i", "turtle", outputFile]
-    logger.info("Validação da ontologia final")
-    logger.info(f"> {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        logger.error("Validação do rapper falhou com código %d", result.returncode)
-        logger.error("STDOUT:\n%s", result.stdout)
-        logger.error("STDERR:\n%s", result.stderr)
-    else:
-        logger.info("Ontologia validada")
-        logger.info("STDOUT:\n%s", result.stdout)
+        raise
 
     # Compressão da ontologia final
     try:
@@ -448,5 +436,6 @@ def genFinalOntology():
         logger.info(f"Ontologia comprimida em {zipedOutputFile}")
     except Exception as e:
         logger.exception(f"[{e.__class__.__name__}]: Falha na compressão ZIP: {e}")
+        raise
 
     return zipedOutputFile

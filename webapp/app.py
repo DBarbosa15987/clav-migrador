@@ -65,7 +65,7 @@ def process_file():
             logger.warning("A ontologia final não foi gerada")
 
     except Exception as e:
-        logger.error("Erro na migração")
+        logger.error("Ocorreu um erro, a migração não foi realizada")
         logger.exception(f"[{e.__class__.__name__}]: {e}")
         return jsonify({'error': f"Erro na migração, para mais informação verifique os logs"}), 500
 
