@@ -106,11 +106,14 @@ def rel_3_inv_2_fix(allClasses,erros: list[ErroInv]):
                     critCod = utilidade[0]["critCodigo"]
                     for crit in just:
                         if crit["tipo"] == "utilidade":
+                            crit["conteudo"] = crit["conteudo"].strip()
                             # Adicionar o conteúdo de acordo com o que já lá está
-                            if crit["conteudo"] and crit["conteudo"][-1] != ';':
-                                crit["conteudo"] += f";É suplemento para {err.info["proc"]};"
+                            if crit["conteudo"] and not crit["conteudo"].endswith((';','.')):
+                                crit["conteudo"] += f". É suplemento para o PN {err.info["proc"]} - {classe.get("titulo","")}."
+                            elif crit["conteudo"]:
+                                crit["conteudo"] += f" É suplemento para o PN {err.info["proc"]} - {classe.get("titulo","")}."
                             else:
-                                crit["conteudo"] += f"É suplemento para {err.info["proc"]};"
+                                crit["conteudo"] += f"É suplemento para o PN {err.info["proc"]} - {classe.get("titulo","")}."
 
                             crit["procRefs"] = procRefs
                             break
@@ -124,7 +127,7 @@ def rel_3_inv_2_fix(allClasses,erros: list[ErroInv]):
                     newCrit = {
                         "critCodigo": critCod,
                         "tipo": "utilidade",
-                        "conteudo": f"É suplemento para {err.info["proc"]};",
+                        "conteudo": f"É suplemento para o PN {err.info["proc"]} - {classe.get("titulo","")}.",
                         "procRefs": [err.info["proc"]]
                     }
                     just.append(newCrit)
@@ -157,9 +160,9 @@ def rel_4_inv_2_fix(allClasses,erros: list[ErroInv]):
             critCod = ""
             rel = ""
             if err.info["rel"] == "eSinteseDe":
-                rel = "É síntese de"
+                rel = "É síntese do"
             elif err.info["rel"] == "eSintetizadoPor":
-                rel = "É sintetizado por"
+                rel = "É sintetizado pelo"
             # Verifica-se primeiro se existe apenas um critério do tipo "densidade"
             # Se existir mais do que 1, não é possível realizar a correção
             densidade = [j for j in just if j.get("tipo") == "densidade"]
@@ -176,11 +179,14 @@ def rel_4_inv_2_fix(allClasses,erros: list[ErroInv]):
                 critCod = densidade[0]["critCodigo"]
                 for crit in just:
                     if crit["tipo"] == "densidade":
+                        crit["conteudo"] = crit["conteudo"].strip()
                         # Adicionar o conteúdo de acordo com o que já lá está
-                        if crit["conteudo"] and crit["conteudo"][-1] != ';':
-                            crit["conteudo"] += f";{rel} {err.info["proc"]};"
+                        if crit["conteudo"] and not crit["conteudo"].endswith((';','.')):
+                            crit["conteudo"] += f". {rel} PN {err.info["proc"]} - {classe.get("titulo","")}."
+                        elif crit["conteudo"]:
+                            crit["conteudo"] += f" {rel} PN {err.info["proc"]} - {classe.get("titulo","")}."
                         else:
-                            crit["conteudo"] += f"{rel} {err.info["proc"]};"
+                            crit["conteudo"] += f"{rel} PN {err.info["proc"]} - {classe.get("titulo","")}."
 
                         crit["procRefs"] = procRefs
                         break
@@ -195,7 +201,7 @@ def rel_4_inv_2_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "densidade",
-                    "conteudo": f"{rel} {err.info["proc"]};",
+                    "conteudo": f"{rel} PN {err.info["proc"]} - {classe.get("titulo","")}.",
                     "procRefs": [err.info["proc"]]
                 }
                 just.append(newCrit)
@@ -243,11 +249,14 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 critCod = compls[0]["critCodigo"]
                 for crit in just:
                     if crit["tipo"] == "complementaridade":
+                        crit["conteudo"] = crit["conteudo"].strip()
                         # Adicionar o conteúdo de acordo com o que já lá está
-                        if crit["conteudo"] and crit["conteudo"][-1] != ';':
-                            crit["conteudo"] += f";É complementar de {err.info["proc"]};"
+                        if crit["conteudo"] and not crit["conteudo"].endswith((';','.')):
+                            crit["conteudo"] += f". É complementar do PN {err.info["proc"]} - {classe.get("titulo","")}."
+                        elif crit["conteudo"]:
+                            crit["conteudo"] += f" É complementar do PN {err.info["proc"]} - {classe.get("titulo","")}."
                         else:
-                            crit["conteudo"] += f"É complementar de {err.info["proc"]};"
+                            crit["conteudo"] += f"É complementar do PN {err.info["proc"]} - {classe.get("titulo","")}."
 
                         crit["procRefs"] = procRefs
                         break
@@ -262,7 +271,7 @@ def rel_5_inv_2_fix(allClasses,erros: list[ErroInv]):
                 newCrit = {
                     "critCodigo": critCod,
                     "tipo": "complementaridade",
-                    "conteudo": f"É complementar de {err.info["proc"]};",
+                    "conteudo": f"É complementar do PN {err.info["proc"]} - {classe.get("titulo","")}.",
                     "procRefs": [err.info["proc"]]
                 }
                 just.append(newCrit)
