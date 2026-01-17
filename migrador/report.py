@@ -10,20 +10,20 @@ from enum import Enum
 class Report:
 
     def __init__(self):
-        self.declaracoes = {} # {"100":["100_csv"], "200":["100_csv","200_csv"]}
+        self.declaracoes = {} # {"100.10.001":["100_csv"], "200.10.001":["100_csv","200_csv"]}
         self.missingRels = {
-            "relsSimetricas": [],
-            "relsInverseOf": []
+            "relsSimetricas": [], # [(100.10.001,"eCruzadoCom",100.10.002)]
+            "relsInverseOf": [] # [(100.10.001,"eComplementarDe",100.10.002)]
         }
         self.globalErrors = {
             "grave":{
-                "declsRepetidas": {}, # {"200":["100_csv","200_csv"]}
-                "relsInvalidas": {}, # {"200":["100.10.001","eCruzadoCom"]} -> "200" é mencionado por "100.10.001"
-                "outro": {} # {"200": ["mensagem de erro"]}
+                "declsRepetidas": {}, # {"200.10.001":["100_csv","200_csv"]}
+                "relsInvalidas": {}, # {"200.10.001":["100.10.001","eCruzadoCom",tipoProcRef]} -> "200.10.001" é mencionado por "100.10.001"
+                "outro": {} # {"200.10.001": ["mensagem de erro"]}
             },
-            "normal": {}, # {"200": ["mensagem de erro"]}
+            "normal": {}, # {"200.10.001": ["mensagem de erro"]}
             "erroInv": {}, # {"rel_x_inv_y": [erroInv:ErroInv]}
-            "erroInvByEnt": {}, # {"200": [erroInv:ErroInv]}
+            "erroInvByEnt": {}, # {"200.10.001": [erroInv:ErroInv]}
             "catalogo": {
                 "leg": [],
                 "tindice": [],
@@ -153,8 +153,8 @@ class Report:
         `cod`, que não existe.
 
         O `tipoProcRef` indica o tipo de relação em questão, pode ter
-        os valores de `None` (referente aos "processosRelacionados" de
-        cada um processo), PCA ou DF.
+        os valores de `None` (referente a processos na zona de contexto
+        do PN), PCA ou DF.
         """
         # O dicionário representa: `cod` (inválido) é mencionado por relacoes[cod]
         relacoes = self.globalErrors["grave"]["relsInvalidas"]
