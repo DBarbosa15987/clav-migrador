@@ -252,19 +252,19 @@
                 },
                 {
                     "idInv": "inv_5",
-                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar declarado na zona de contexto com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
+                    "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar declarados na zona de contexto com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_5"
                 },
                 {
                     "idInv": "inv_6",
-                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar declarado na zona de contexto com a relação <b><i>eComplementarDe</i></b>",
+                    "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar declarados na zona de contexto com a relação <b><i>eComplementarDe</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_6"
                 },
                 {
                     "idInv": "inv_7",
-                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar declarado na zona de contexto com a relação <b><i>eSuplementoPara</i></b>",
+                    "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar declarados na zona de contexto com a relação <b><i>eSuplementoPara</i></b>",
                     "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
                     "oldId": "rel_9_inv_7"
                 }

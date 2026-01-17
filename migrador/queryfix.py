@@ -422,12 +422,16 @@ def testDepends(deps,classes):
     erros encontrados.
     """
 
+    # Desabilitação temporária dos logs
+    logger.disabled = True
     rep = Report()
     for dep in deps:
         # Não funciona para alguns invariantes
-        # que não recebem estes argumentos
+        # que não recebem estes argumentos, está
+        # muito hardcoded
         func =  getattr(check,dep)
         func(classes,rep)
+    logger.disabled = False
     return rep
 
 

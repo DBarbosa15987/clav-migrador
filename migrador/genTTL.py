@@ -426,7 +426,7 @@ def genFinalOntology():
                     outfile.write(infile.read())
                     outfile.write('\n')
     except Exception as e:
-        logger.exception(f"[{e.__class__.__name__}]: {e}")
+        logger.error(f"Falha na concatenação da ontologia")
         raise
 
     # Compressão da ontologia final
@@ -435,7 +435,7 @@ def genFinalOntology():
             zipf.write(outputFile, os.path.basename(zipedOutputFile))
         logger.info(f"Ontologia comprimida em {zipedOutputFile}")
     except Exception as e:
-        logger.exception(f"[{e.__class__.__name__}]: Falha na compressão ZIP: {e}")
+        logger.error(f"Falha na compressão")
         raise
 
     return zipedOutputFile

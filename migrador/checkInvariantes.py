@@ -594,7 +594,7 @@ def rel_8_inv_3(allClasses,rep: Report):
     A função testa o seguinte invariante e guarda
     em `rep` os casos em que falha:
 
-    "Quando o PN em causa é <b>síntetizado por</b>
+    "Quando o PN em causa é <b>sintetizado por</b>
     outro, o DF deve ter o valor de \"Eliminação\""
     """
 
@@ -1164,7 +1164,7 @@ def rel_8_inv_5(allClasses,rep: Report):
     em `rep` os casos em que falha:
 
     "Todos os processos referenciados no <b>critério
-    de densidade informacional</b> devem estar declarado
+    de densidade informacional</b> devem estar declarados
     na zona de contexto com a relação <b><i>eSinteseDe</i></b>
     ou <b><i>eSintetizadoPor</i></b>"
     """
@@ -1198,7 +1198,7 @@ def rel_8_inv_6(allClasses,rep: Report):
 
     "Todos os processos referenciados no <b>critério
     de complementaridade informacional</b> devem estar
-    declarado na zona de contexto com a relação
+    declarados na zona de contexto com a relação
     <b><i>eComplementarDe</i></b>"
     """
 
@@ -1231,7 +1231,7 @@ def rel_8_inv_7(allClasses,rep: Report):
 
     "Todos os processos referenciados no <b>critério
     de utilidade administrativa</b> devem estar
-    declarado na zona de contexto com a relação
+    declarados na zona de contexto com a relação
     <b><i>eSuplementoPara</i></b>"
     """
 
