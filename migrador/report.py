@@ -23,7 +23,7 @@ class Report:
             },
             "normal": {}, # {"200.10.001": ["mensagem de erro"]}
             "erroInv": {}, # {"rel_x_inv_y": [erroInv:ErroInv]}
-            "erroInvByEnt": {}, # {"200.10.001": [erroInv:ErroInv]}
+            "erroInvByCod": {}, # {"200.10.001": [erroInv:ErroInv]}
             "catalogo": {
                 "leg": [],
                 "tindice": [],
@@ -46,9 +46,9 @@ class Report:
         Adiciona a rep.classesN1 a classe de nível 1
         juntamente com o seu título e descrição. Este
         método também adiciona as classes de nível 1
-        como chaves do rep.erroInvByEnt.
+        como chaves do rep.erroInvByCod.
         """
-        self.globalErrors["erroInvByEnt"][cod] = {}
+        self.globalErrors["erroInvByCod"][cod] = {}
         self.classesN1[cod] = {
             "titulo": titulo,
             "descricao": desc
@@ -192,7 +192,7 @@ class Report:
         no processo `cod`. As falhas de invariante são
         indexadas por invariante e por código em
         rep.globalErrors["erroInv"] e
-        rep.globalErrors["erroInvByEnt"], respetivamente.
+        rep.globalErrors["erroInvByCod"], respetivamente.
 
         O `info` e `extra` serve para a criação de mensagens
         de erro. O `info` é um `dict`, no entanto não contém
@@ -206,10 +206,10 @@ class Report:
         # para a primeira declaração.
         if sheets := self.declaracoes.get(cod):
             ent = sheets[0].replace("_csv","")
-            if inv in self.globalErrors["erroInvByEnt"][ent]:
-                self.globalErrors["erroInvByEnt"][ent][inv].append(err)
+            if inv in self.globalErrors["erroInvByCod"][ent]:
+                self.globalErrors["erroInvByCod"][ent][inv].append(err)
             else:
-                self.globalErrors["erroInvByEnt"][ent][inv] = [err]
+                self.globalErrors["erroInvByCod"][ent][inv] = [err]
 
 
         if inv in self.globalErrors["erroInv"]:

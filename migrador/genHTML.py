@@ -31,18 +31,24 @@ def generate_error_table(globalErrors,inativos,invs):
 
         # Rels Invalidas (Grave)
         if globalErrors["grave"]["relsInvalidas"]:
-            html_content += f'<div class="error-section">Relações Inválidas ({len(globalErrors["grave"]["relsInvalidas"])}): Declarações que referenciam um processo que não existe</div>\n'
+            num_err = sum([len(x) for x in globalErrors["grave"]["relsInvalidas"].values()])
+            html_content += f'<div class="error-section">Relações Inválidas ({num_err}): Declarações que referenciam um processo que não existe</div>\n'
             html_content += '<table class="error-table"><tr><th>Código</th><th>Código Inválido</th><th>Relação Inválida</th></tr>'
             for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
                 for rel in rels:
                     html_content += f"<tr><td>{getCod(rel[0],inativos)}</td><td><span class='error-critical'>{getCod(cod,inativos)}</span></td><td>"
-                    html_content += f"<b>{rel[0]}</b> <b><i>{rel[1]}</b></i> <span class='error-critical'><b>{cod}</b></span>"
+                    if rel[2]:
+                        html_content += f"O processo <span class='error-critical'><b>{cod}</b></span> é inválido e é referenciado na justificação do {rel[2].upper()} do processo <b>{rel[0]}</b>."
+                    else:
+                        html_content += f"A relação <b>{rel[0]}</b> <b><i>{rel[1]}</b></i> <span class='error-critical'><b>{cod}</b></span>, declarada na zona de contexto do processo <b>{rel[0]}</b>, é inválida."
+
                 html_content += "</td></tr>"
             html_content += '</table>'
 
         # Outros (Grave)
         if globalErrors["grave"]["outro"]:
-            html_content += '<div class="error-section">Outros Erros Graves</div>\n'
+            num_err = sum([len(x) for x in globalErrors["grave"]["outro"].values()])
+            html_content += f'<div class="error-section">Outros Erros Graves ({num_err})</div>\n'
             html_content += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
             for cod, msgs in globalErrors["grave"]["outro"].items():
                 for msg in msgs:
@@ -58,7 +64,7 @@ def generate_error_table(globalErrors,inativos,invs):
                 html_content += f"<tr><td>{getCod(cod,inativos)}</td><td class='msg'>{msg}</td></tr>"
         html_content += '</table>'
 
-    # Catálogo
+    # Catálogos
     if globalErrors["catalogo"]["leg"] or globalErrors["catalogo"]["tindice"] or globalErrors["catalogo"]["tipologia"] or globalErrors["catalogo"]["entidade"]:
         html_content += f'<div class="error-section">🟧 Erros de Catálogo</div>\n'
 
@@ -166,154 +172,179 @@ def generate_classe_table_dict(globalErrors,classesN1,inativos,decls,invs):
     em que o seu valor é a tabela HTML correspondente.
     """
 
-    # Estas tabelas são incializadas para poder
+    # Estas tabelas são inicializadas para poder
     # mostrar as classes todas, mesmo quando não
     # são registados erros
-    entityTables = {c:"" for c in classesN1}
-    entityNumErrors = {c:0 for c in classesN1}
+    classTables = {c:"" for c in classesN1}
+    classNumErrors = {c:0 for c in classesN1}
 
     grave_header = '<div class="error-section">🟥 Erros Graves (Estes erros têm de ser corrigidos para a ontologia ser gerada)</div>\n'
-    grave_ents = set()
+    grave_classes = set()
 
-    def addRow(entity_dict, ent, content):
+    def addRow(classe_dict, cl, content):
         # É sempre verificado se a classe
         # existe para poder tolerar erros na
         # introdução do código
-        if ent in entity_dict:
-            entity_dict[ent] += content
+        if cl in classe_dict:
+            classe_dict[cl] += content
 
-    def ensureGraveHeader(ent):
-        if ent not in grave_ents:
-            addRow(entityTables, ent, grave_header)
-            grave_ents.add(ent)
+    def ensureGraveHeader(cl):
+        if cl not in grave_classes:
+            addRow(classTables, cl, grave_header)
+            grave_classes.add(cl)
 
-    def addError(ent):
+    def addError(cl):
         # É sempre verificado se a classe
         # existe para poder tolerar erros na
         # introdução do código
-        if ent in entityNumErrors:
-            entityNumErrors[ent] += 1
+        if cl in classNumErrors:
+            classNumErrors[cl] += 1
 
-    def getEnt(cod,decls):
+    def getClasse(cod,decls):
         # Obter a página onde a classe foi declarada.
         # Assim sabe-se sempre em que folha foi declarado
         # o processo, mesmo que tenha um formato inválido.
         if sheets := decls.get(cod):
-            ent = sheets[0].replace("_csv","")
+            cl = sheets[0].replace("_csv","")
         else:
-            ent = cod[:3]
-        return ent
+            cl = cod[:3]
+        return cl
 
     # Declarações Repetidas
     if globalErrors["grave"]["declsRepetidas"]:
-        ents = set()
+        # Contagem dos erros de cada classe
+        num_err = {c:0 for c in classesN1}
+        for c in globalErrors["grave"]["declsRepetidas"].keys():
+            cl = getClasse(c,decls)
+            if cl in num_err:
+                num_err[cl] += 1
+
+
+        classes = set()
         for cod, sheet in globalErrors["grave"]["declsRepetidas"].items():
-            ent = getEnt(cod,decls)
-            ensureGraveHeader(ent)
+            cl = getClasse(cod,decls)
+            ensureGraveHeader(cl)
             # Header de cada tabela (uma por classe)
-            if ent not in ents:
-                header = f'<div class="error-section">Declarações Repetidas: Códigos que foram declarados mais do que uma vez</div>\n'
+            if cl not in classes:
+                header = f'<div class="error-section">Declarações Repetidas ({num_err[cl]}): Códigos que foram declarados mais do que uma vez</div>\n'
                 header += '<table class="error-table"><tr><th>Código Repetido</th><th>Folhas</th></tr>'
-                addRow(entityTables, ent, header)
-            ents.add(ent)
+                addRow(classTables, cl, header)
+                classes.add(cl)
 
             # Linhas de cada tabela
             row = f"<tr><td><span class='error-critical'>{getCod(cod,inativos)}</span></td><td><b>{', '.join(sheet)}</b></td></tr>"
-            addError(ent)
-            addRow(entityTables, ent, row)
+            addError(cl)
+            addRow(classTables, cl, row)
 
         # Conclusão de cada tabela
         for cod in globalErrors["grave"]["declsRepetidas"]:
-            ent = getEnt(cod,decls)
-            addRow(entityTables, ent, "</table>")
+            cl = getClasse(cod,decls)
+            addRow(classTables, cl, "</table>")
 
     # Relações Inválidas
     if globalErrors["grave"]["relsInvalidas"]:
-        ents = set()
+        classes = set()
+
+        # Contagem dos erros de cada classe
+        num_err = {c:0 for c in classesN1}
+        for rels in globalErrors["grave"]["relsInvalidas"].values():
+            for rel in rels:
+                cl = getClasse(rel[0],decls)
+                if cl in num_err:
+                    num_err[cl] += 1
+
         # Criação dos headers das tabelas para as classes
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
-                ent = getEnt(rel[0],decls)
-                ensureGraveHeader(ent)
-                if ent not in ents:
-                    rels_header = f'<div class="error-section">Relações Inválidas: Declarações que referenciam um processo que não existe</div>\n'
+                cl = getClasse(rel[0],decls)
+                ensureGraveHeader(cl)
+                if cl not in classes:
+                    rels_header = f'<div class="error-section">Relações Inválidas ({num_err[cl]}): Declarações que referenciam um processo que não existe</div>\n'
                     rels_header += '<table class="error-table"><tr><th>Código</th><th>Código Inválido</th><th>Relação Inválida</th></tr>'
-                    addRow(entityTables, ent, rels_header)
-                    ents.add(ent)
+                    addRow(classTables, cl, rels_header)
+                    classes.add(cl)
 
         # Linhas de cada tabela
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
-                ent = getEnt(rel[0],decls)
+                cl = getClasse(rel[0],decls)
                 rels_html = f"<tr><td>{getCod(rel[0],inativos)}</td><td><span class='error-critical'>{getCod(cod,inativos)}</span></td>"
                 rels_html += f"<td><b>{rel[0]}</b> <b><i>{rel[1]}</b></i> <span class='error-critical'><b>{cod}<b></span></td></tr>"
-                addError(ent)
-                addRow(entityTables, ent, rels_html)
+                addError(cl)
+                addRow(classTables, cl, rels_html)
 
         # Conclusão de cada tabela
         for cod, rels in globalErrors["grave"]["relsInvalidas"].items():
             for rel in rels:
-                ent = getEnt(rel[0],decls)
-                addRow(entityTables, ent, "</table>")
+                cl = getClasse(rel[0],decls)
+                addRow(classTables, cl, "</table>")
 
     # Outros Erros Graves
     if globalErrors["grave"]["outro"]:
-        ents = set()
+        classes = set()
+        # Contagem dos erros de cada classe
+        num_err = {c:0 for c in classesN1}
+        for c,msgs in globalErrors["grave"]["outro"].items():
+            cl = getClasse(c,decls)
+            if cl in num_err:
+                num_err[cl] += len(msgs)
+
         for cod, msgs in globalErrors["grave"]["outro"].items():
-            ent = getEnt(cod,decls)
-            ensureGraveHeader(ent)
+            cl = getClasse(cod,decls)
+            ensureGraveHeader(cl)
             # Header de cada tabela (uma por classe)
-            if ent not in ents:
-                header = f'<div class="error-section">Outros Erros Graves</div>\n'
+            if cl not in classes:
+                header = f'<div class="error-section">Outros Erros Graves ({num_err[cl]})</div>\n'
                 header += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
-                addRow(entityTables, ent, header)
-            ents.add(ent)
+                addRow(classTables, cl, header)
+                classes.add(cl)
 
             # Linhas de cada tabela
             for msg in msgs:
                 row = f"<tr><td>{getCod(cod,inativos)}</td><td class='msg'>{msg}</td></tr>"
-                addError(ent)
-                addRow(entityTables, ent, row)
+                addError(cl)
+                addRow(classTables, cl, row)
 
         # Conclusão de cada tabela
         for cod in globalErrors["grave"]["outro"]:
-            ent = getEnt(cod,decls)
-            addRow(entityTables, ent, "</table>")
+            cl = getClasse(cod,decls)
+            addRow(classTables, cl, "</table>")
 
     # Erros Genéricos
     if globalErrors["normal"]:
-        ents = set()
+        classes = set()
+
         for cod, msgs in globalErrors["normal"].items():
-            ent = getEnt(cod,decls)
+            cl = getClasse(cod,decls)
             # Header de cada tabela (uma por classe)
-            if ent not in ents:
+            if cl not in classes:
                 header = f'<div class="error-section">🟨 Erros Genéricos</div>\n'
                 header += '<table class="error-table"><tr><th>Código</th><th>Mensagem</th></tr>'
-                addRow(entityTables, ent, header)
-            ents.add(ent)
+                addRow(classTables, cl, header)
+                classes.add(cl)
 
             # Linhas de cada tabela
             for msg in msgs:
                 row = f"<tr><td>{getCod(cod,inativos)}</td><td class='msg'>{msg}</td></tr>"
-                addError(ent)
-                addRow(entityTables, ent, row)
+                addError(cl)
+                addRow(classTables, cl, row)
 
         # Conclusão de cada tabela
         for cod in globalErrors["normal"]:
-            ent = getEnt(cod,decls)
-            addRow(entityTables, ent, "</table>")
+            cl = getClasse(cod,decls)
+            addRow(classTables, cl, "</table>")
 
     # Erros de Invariantes por classe
-    if globalErrors["erroInvByEnt"]:
-        ents = set()
-        for ent, invs_dict in globalErrors["erroInvByEnt"].items():
+    if globalErrors["erroInvByCod"]:
+        classes = set()
+        for cl, invs_dict in globalErrors["erroInvByCod"].items():
 
             for inv, erros in invs_dict.items():
 
                 # Header de cada tabela (uma por classe)
-                if ent not in ents:
-                    addRow(entityTables, ent, '<div class="error-section">🟦 Erros de Invariantes</div>\n')
-                ents.add(ent)
+                if cl not in classes:
+                    addRow(classTables, cl, '<div class="error-section">🟦 Erros de Invariantes</div>\n')
+                    classes.add(cl)
 
                 invariante = invs.get(inv, {"desc": "Sem descrição", "clarificacao": ""})
                 errTitle = f"{inv} ({len(erros)}): {invariante['desc']}"
@@ -345,19 +376,19 @@ def generate_classe_table_dict(globalErrors,classesN1,inativos,decls,invs):
                     else:
                         msg = err.msg
 
-                    addError(ent)
+                    addError(cl)
                     html_part += f"<tr><td>{getCod(err.cod,inativos)}</td><td class='msg'>{msg}</td></tr>"
                 html_part += "</table>\n"
 
-                addRow(entityTables, ent, html_part)
+                addRow(classTables, cl, html_part)
 
     # Criar o header para todas as classes existentes
-    for entCod,ent in classesN1.items():
-        if entityNumErrors[entCod] > 0:
-            entTitle = f'<div class="error-section">{entCod} ({entityNumErrors[entCod]}): {ent['titulo']}</div>\n'
-            entityTables[entCod] = entTitle + entityTables[entCod]
+    for cod,classe in classesN1.items():
+        if classNumErrors[cod] > 0:
+            entTitle = f'<div class="error-section">{cod} ({classNumErrors[cod]}): {classe['titulo']}</div>\n'
+            classTables[cod] = entTitle + classTables[cod]
         else:
-            entTitle = f'<div class="error-section">{entCod}: {ent['titulo']}</div>\n'
+            entTitle = f'<div class="error-section">{cod}: {classe['titulo']}</div>\n'
             content = """
             <div class="no-errors">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -366,18 +397,20 @@ def generate_classe_table_dict(globalErrors,classesN1,inativos,decls,invs):
                 </svg>
                 <p>Nenhum erro encontrado 🎉</p>
             </div>"""
-            entityTables[entCod] = entTitle + content
+            classTables[cod] = entTitle + content
 
-    return entityTables
+    return classTables
 
 
 def generate_warnings_table(warnings):
 
     html_content = ""
-
+    warnings["normal"] = []
+    warnings["relHarmonizacao"] = []
+    warnings["harmonizacao"] = []
+    warnings["inferencias"] = []
     # Warnings
-    # TODO: TESTAR!!!
-    if warnings:
+    if warnings["normal"] or warnings["relHarmonizacao"] or warnings["harmonizacao"] or warnings["inferencias"]:
         html_content += f'<div class="error-section">⚠️ Warnings</div>\n'
 
         # Normal
@@ -398,7 +431,7 @@ def generate_warnings_table(warnings):
 
         # Harmonização
         if warnings["harmonizacao"]:
-            html_content += f'<div class="error-section">Harmonização ({len(warnings["harmonizacao"])})</div>\n'
+            html_content += f'<div class="error-section">Processos em Harmonização ({len(warnings["harmonizacao"])})</div>\n'
             html_content += '<table class="error-table"><tr><th>Mensagem</th></tr>'
             for msg in warnings["harmonizacao"]:
                 html_content += f"<tr><td class='msg'>{msg}</td></tr>"
