@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Setup classe tables
-            if (result.table_by_classe && result.table_by_invariant && result.warnings) {
-                reportByInvariant.innerHTML = result.table_by_invariant;
+            if (result.table_by_classe && result.table_all_errors && result.warnings) {
+                reportByInvariant.innerHTML = result.table_all_errors;
                 warningsView.innerHTML = result.warnings;
                 classeTables = result.table_by_classe;
 

@@ -65,16 +65,26 @@ def process_file():
             logger.warning("A ontologia final não foi gerada")
 
     except Exception as e:
-        logger.error("Ocorreu um erro, a migração não foi realizada")
+        logger.error("Erro durante a migração")
         logger.exception(f"[{e.__class__.__name__}]: {e}")
-        return jsonify({'error': f"Erro na migração, para mais informação verifique os logs"}), 500
+        return jsonify({'error': "Erro na migração, para mais informação verifique os logs"}), 500
 
     logger.info("Geração das tabelas a partir do relatório de erros")
+    try:
+        table_by_classe = generate_classe_table_dict(rep.globalErrors,rep.classesN1,rep.inativos,rep.declaracoes,invs)
+        table_all_errors = generate_error_table(rep.globalErrors,rep.inativos,invs)
+        warnings = generate_warnings_table(rep.warnings)
+    except Exception as e:
+        logger.error("Ocorreu um erro na geração das tabelas html")
+        logger.exception(f"[{e.__class__.__name__}]: {e}")
+        return jsonify({'error': "Erro na geração das tabelas HTML, para mais informação verifique os logs"})
+    logger.info("Tabelas do relatório de erros geradas com sucesso")
+
     return jsonify({
         "ok": ok,
-        "table_by_classe": generate_classe_table_dict(rep.globalErrors,rep.classesN1,rep.inativos,rep.declaracoes,invs),
-        "table_by_invariant": generate_error_table(rep.globalErrors,rep.inativos,invs),
-        "warnings": generate_warnings_table(rep.warnings)
+        "table_by_classe": table_by_classe,
+        "table_all_errors": table_all_errors,
+        "warnings": warnings
     })
 
 @app.route('/download')
