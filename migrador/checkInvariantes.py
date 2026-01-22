@@ -69,7 +69,7 @@ def processClasses(rep: Report):
                 classePai = data.get(pai)
                 if not classePai:
                     # Não tem pai
-                    rep.addErro(cod,f"<b>{cod}</b> não tem pai")
+                    rep.addErro(cod,f"O processo <b>{cod}</b> não tem pai, isto é, o processo <b>{pai}</b> não existe")
                 elif classePai.get("estado") == 'H':
                     # Tem pai em harmonização
                     rep.addWarning(info={"msg":f"O processo <b>{cod}</b> está ativo/inativo, mas o seu pai <b>{pai}</b> está em harmonização"})

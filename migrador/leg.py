@@ -64,7 +64,7 @@ def processSheet(sheet, nome, rep: Report):
             # ERRO: Verificação da existência das entidades no catálogo de entidades e/ou tipologias
                 for e in myReg['entidade']:
                     if (e not in entCatalog) and (e not in tipCatalog):
-                        rep.addErroCatalogo(f"Linha {str(index+2)}: Entidade \"<b>{e}</b>\" não está no catálogo de entidades ou tipologias::<b>{legCod}</b>","leg")
+                        rep.addErroCatalogo(f"Linha {str(index+2)}: Entidade \"<b>{e}</b>\" não está no catálogo de entidades ou tipologias::<b>{legCod}</b>.","leg")
             else:
                 legCod = re.sub(r'[ \u202F\u00A0]+', '_', myReg["tipo"])
             if myReg["numero"] != 'NE':
