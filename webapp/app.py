@@ -7,8 +7,10 @@ import uuid
 from utils.log_utils import WEB
 import logging
 from migrador.genHTML import generate_classe_table_dict, generate_error_table, generate_warnings_table
+import threading
 
 
+lock = threading.Lock()
 logger = logging.getLogger(WEB)
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4())
@@ -23,69 +25,62 @@ def index():
 @app.route('/process', methods=['POST'])
 def process_file():
 
-    if 'file' not in request.files:
-        logger.error("'file' não encontrado no request")
-        return jsonify({'error': '\'file\' não encontrado no request'}), 400
-
-    file = request.files['file']
-
-    if file.filename == '':
-        logger.error("Ficheiro não selecionado")
-        return jsonify({'error': 'Ficheiro não selecionado'}), 400
-
-    logger.info(f"Ficheiro recebido: {file.filename}")
-
-    logger.info("Verificação do ficheiro recebido")
-    fileContent = file.read()
-    mimetype = file.mimetype
-    allowedMimetypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.ms-excel"]
-    if mimetype not in allowedMimetypes:
-        logger.error("Ficheiro não suportado")
-        return jsonify({'error': 'Ficheiro não suportado'}), 415
+    if not lock.acquire(blocking=False):
+        logger.error(f"Endpoint /process não pode ser utilizado até que o processamento dos dados acabe")
+        return jsonify({
+            "error": "Processo já está em execução no segundo plano."
+        }), 429
 
     try:
+
+        if 'file' not in request.files:
+            logger.error("'file' não encontrado no request")
+            return jsonify({'error': '\'file\' não encontrado no request'}), 400
+
+        file = request.files['file']
+
+        if file.filename == '':
+            logger.error("Ficheiro não selecionado")
+            return jsonify({'error': 'Ficheiro não selecionado'}), 400
+
+        logger.info(f"Ficheiro recebido: {file.filename}")
+
+        fileContent = file.read()
+        mimetype = file.mimetype
+        allowedMimetypes = [
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-excel"
+        ]
+        if mimetype not in allowedMimetypes:
+            return jsonify({'error': 'Ficheiro não suportado'}), 415
+
         filePath = os.path.join(UPLOAD_DIR, file.filename)
-        logger.info(f"Criação de uma cópia do ficheiro recebido em {filePath}")
-        with open(filePath,"wb") as f:
+        with open(filePath, "wb") as f:
             f.write(fileContent)
-    except Exception as e:
-        logger.error(f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}")
-        logger.exception(f"[{e.__class__.__name__}]: {e}")
-        return jsonify({'error': f"Erro ao guardar uma cópia do ficheiro recebido em {filePath}"}), 500
 
-    try:
-        rep,ok,invs = migra(filePath)
+        rep, ok, invs = migra(filePath)
         session['migration_ok'] = ok
-        # A ontologia final só é gerada se não forem encontrados erros "graves"
+
         if ok:
-            logger.info("Geração da ontologia final")
             zipedOutputFile = genFinalOntology()
             session['zipedOutputFile'] = zipedOutputFile
-        else:
-            logger.warning("A ontologia final não foi gerada")
 
-    except Exception as e:
-        logger.error("Erro durante a migração")
-        logger.exception(f"[{e.__class__.__name__}]: {e}")
-        return jsonify({'error': "Erro na migração, para mais informação verifique os logs"}), 500
-
-    logger.info("Geração das tabelas a partir do relatório de erros")
-    try:
-        table_by_classe = generate_classe_table_dict(rep.globalErrors,rep.classesN1,rep.inativos,rep.declaracoes,invs)
-        table_all_errors = generate_error_table(rep.globalErrors,rep.inativos,invs)
+        table_by_classe = generate_classe_table_dict(
+            rep.globalErrors, rep.classesN1, rep.inativos, rep.declaracoes, invs
+        )
+        table_all_errors = generate_error_table(rep.globalErrors, rep.inativos, invs)
         warnings = generate_warnings_table(rep.warnings)
-    except Exception as e:
-        logger.error("Ocorreu um erro na geração das tabelas html")
-        logger.exception(f"[{e.__class__.__name__}]: {e}")
-        return jsonify({'error': "Erro na geração das tabelas HTML, para mais informação verifique os logs"})
-    logger.info("Tabelas do relatório de erros geradas com sucesso")
 
-    return jsonify({
-        "ok": ok,
-        "table_by_classe": table_by_classe,
-        "table_all_errors": table_all_errors,
-        "warnings": warnings
-    })
+        return jsonify({
+            "ok": ok,
+            "table_by_classe": table_by_classe,
+            "table_all_errors": table_all_errors,
+            "warnings": warnings
+        })
+
+    finally:
+        lock.release()
+
 
 @app.route('/download')
 def download_output():

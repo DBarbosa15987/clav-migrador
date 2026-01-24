@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // File input change handler
     fileInput.addEventListener('change', () => {
+
         const file = fileInput.files[0];
 
         // Reset banners
@@ -53,7 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
+        fileInput.disabled = true;
+        fileInput.classList.add('pointer-events-none', 'cursor-not-allowed');
+
         if (fileInput.files.length === 0) {
+            fileInput.disabled = false;
+            fileInput.classList.remove('pointer-events-none', 'cursor-not-allowed');
             alert('Por favor selecione um ficheiro');
             return;
         }
@@ -74,10 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData,
             });
 
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
             const result = await response.json();
-            if (result.error) throw new Error(result.error);
+            if (result.error) throw new Error(`${result.error} (Erro HTTP ${response.status})`);
 
             if (result.ok) {
                 downloadBtn.classList.remove('hidden');
@@ -133,6 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonText.textContent = 'Processar Ficheiro';
         } finally {
             loadingIndicator.classList.add('hidden');
+            fileInput.disabled = false;
+            fileInput.classList.remove('pointer-events-none', 'cursor-not-allowed');
         }
     });
 
