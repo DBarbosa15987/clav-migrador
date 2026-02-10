@@ -130,6 +130,8 @@ def migra(filename):
         fix.rel_2_inv_13_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_13"])
     if "rel_3_inv_2" in errosInv:
         fix.rel_3_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_3_inv_2"])
+    if "rel_3_inv_3" in errosInv:
+        fix.rel_3_inv_3_fix(allClasses,rep.globalErrors["erroInv"]["rel_3_inv_3"])
     if "rel_4_inv_2" in errosInv:
         fix.rel_4_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_2"])
     if "rel_5_inv_2" in errosInv:
