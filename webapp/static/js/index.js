@@ -21,6 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewSelector = document.getElementById('view-selector');
     const submitButton = form.querySelector('button[type="submit"]');
 
+    // Restore classeTables if page was saved
+    const savedClasseData = document.getElementById('classe-data');
+    if (savedClasseData) {
+        try {
+            classeTables = JSON.parse(savedClasseData.textContent);
+        } catch (e) {
+            console.error('Erro ao restaurar dados de classe:', e);
+        }
+    }
+
+
     // Reset file input on page load
     window.addEventListener('load', () => {
         if (fileInput) fileInput.value = '';
@@ -96,6 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 reportByInvariant.innerHTML = result.table_all_errors;
                 warningsView.innerHTML = result.warnings;
                 classeTables = result.table_by_classe;
+
+                // Persist classeTables into DOM so "Save Page As" works
+                let dataScript = document.getElementById('classe-data');
+                if (!dataScript) {
+                    dataScript = document.createElement('script');
+                    dataScript.id = 'classe-data';
+                    dataScript.type = 'application/json';
+                    document.body.appendChild(dataScript);
+                }
+                dataScript.textContent = JSON.stringify(classeTables);
 
                 classeSelector.innerHTML = '';
                 Object.keys(classeTables).forEach(classe => {
