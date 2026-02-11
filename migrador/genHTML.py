@@ -405,10 +405,7 @@ def generate_classe_table_dict(globalErrors,classesN1,inativos,decls,invs):
 def generate_warnings_table(warnings):
 
     html_content = ""
-    warnings["normal"] = []
-    warnings["relHarmonizacao"] = []
-    warnings["harmonizacao"] = []
-    warnings["inferencias"] = []
+
     # Warnings
     if warnings["normal"] or warnings["relHarmonizacao"] or warnings["harmonizacao"] or warnings["inferencias"]:
         html_content += f'<div class="error-section">⚠️ Warnings</div>\n'
