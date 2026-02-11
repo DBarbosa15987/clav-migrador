@@ -23,16 +23,16 @@ def processSheet(sheet, rep: Report):
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
 
-    tipCatalog = []
+    tipCatalog = {}
     myTipologia = []
     for index, row in df.iterrows():
         myReg = {}
         if row['Sigla']:
             myReg["sigla"] = brancos.sub('', row['Sigla'])
             if myReg["sigla"] not in tipCatalog:
-                tipCatalog.append(myReg["sigla"])
+                tipCatalog[myReg["sigla"]] = [index+2]
             else:
-                rep.addErroCatalogo(f"Linha {str(index + 2)}: Tipologia duplicada::<b>{myReg["sigla"]}</b>","tipologia")
+                tipCatalog[myReg["sigla"]].append(index+2)
 
             if row["Designação"]:
                 myReg["designacao"] = brancos.sub('', row["Designação"])
@@ -40,15 +40,20 @@ def processSheet(sheet, rep: Report):
                 rep.addWarning(info={"msg":f"A tipologia <b>{myReg["sigla"]}</b> não tem designação definida."})
             myTipologia.append(myReg)
 
+    for sig,linhas in tipCatalog.items():
+        if len(linhas) > 1:
+            for l in linhas:
+                rep.addErroCatalogo(f"Linha {l}:Tipologia duplicada::<b>{sig}</b>.","tipologia")
+
     outFilePath = os.path.join(FILES_DIR, "tip.json")
     outFile = open(outFilePath, "w", encoding="utf-8")
-
     json.dump(myTipologia, outFile, indent = 4, ensure_ascii=False)
     loggerProc.info(f"Tipologias extraídas: {len(myTipologia)}")
     outFile.close()
     catalogPath = os.path.join(FILES_DIR, "tipCatalog.json")
+
     catalog = open(catalogPath, "w", encoding="utf-8")
-    json.dump(tipCatalog, catalog, indent = 4, ensure_ascii=False)
+    json.dump(list(tipCatalog.keys()), catalog, indent = 4, ensure_ascii=False)
     loggerProc.info("Catálogo de tipologias criado.")
     loggerProc.info("# FIM: Migração do Catálogo de Tipologias -----------------")
     return len(myTipologia)

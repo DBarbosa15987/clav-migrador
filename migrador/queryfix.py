@@ -1,7 +1,7 @@
 import re
 from .report import ErroInv, Report
 from . import checkInvariantes as check
-from utils.log_utils import FIX
+from utils.log_utils import FIX,INV
 import logging
 import copy
 
@@ -504,7 +504,8 @@ def testDepends(deps,classes):
     """
 
     # Desabilitação temporária dos logs
-    logger.disabled = True
+    loggerInv = logging.getLogger(INV)
+    loggerInv.disabled = True
     rep = Report()
     for dep in deps:
         # Não funciona para alguns invariantes
@@ -512,7 +513,8 @@ def testDepends(deps,classes):
         # muito hardcoded
         func =  getattr(check,dep)
         func(classes,rep)
-    logger.disabled = False
+    # Reabilitação dos logs
+    loggerInv.disabled = False
     return rep
 
 

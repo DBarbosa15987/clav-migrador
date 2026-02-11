@@ -23,7 +23,7 @@ def processSheet(sheet, rep: Report):
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
 
-    entCatalog = []
+    entCatalog = {}
     myEntidade = []
     for index, row in df.iterrows():
         myReg = {}
@@ -31,9 +31,10 @@ def processSheet(sheet, rep: Report):
             limpa = brancos.sub('', str(row["Sigla"]))
             myReg["sigla"] = re.sub(r'[ \u202F\u00A0,]+', '_', limpa)
             if myReg["sigla"] not in entCatalog:
-                entCatalog.append(myReg["sigla"])
+                entCatalog[myReg["sigla"]] = [index+2]
             else:
-                rep.addErroCatalogo(f"Linha {str(index+2)}: Entidade duplicada::<b>{myReg["sigla"]}</b>","entidade")
+                entCatalog[myReg["sigla"]].append(index+2)
+
             if row["Estado"]:
                myReg["estado"] = brancos.sub('', str(row["Estado"]))
             if row["ID SIOE"]:
@@ -58,15 +59,20 @@ def processSheet(sheet, rep: Report):
 
             myEntidade.append(myReg)
 
+    for sig,linhas in entCatalog.items():
+        if len(linhas) > 1:
+            for l in linhas:
+                rep.addErroCatalogo(f"Linha {l}: Entidade duplicada::<b>{myReg["sigla"]}</b>.","entidade")
+
     outFilePath = os.path.join(FILES_DIR, "ent.json")
     outFile = open(outFilePath, "w", encoding="utf-8")
-
     json.dump(myEntidade, outFile, indent = 4, ensure_ascii=False)
     loggerProc.info(f"Entidades extraídas: {len(myEntidade)}")
     outFile.close()
+
     catalogPath = os.path.join(FILES_DIR, "entCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")
-    json.dump(entCatalog, catalog, indent = 4, ensure_ascii=False)
+    json.dump(list(entCatalog.keys()), catalog, indent = 4, ensure_ascii=False)
     loggerProc.info("Catálogo de entidades criado.")
     loggerProc.info("# FIM: Migração do Catálogo de Entidades -----------------")
     return len(myEntidade)

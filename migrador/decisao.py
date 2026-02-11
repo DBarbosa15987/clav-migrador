@@ -16,6 +16,8 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
         # Verifica-se se tem alguma coisa
         if pd.isna(pca):
             myReg['pca']['valores'] = "NE"
+            if myReg["estado"]!='H':
+                rep.addErro(cod,f"Valor inválido para o PCA")
         else:
             if type(classe["Prazo de conservação administrativa"]) not in [int, float]:
                 if re.search(r'\d+', pca):
@@ -31,8 +33,7 @@ def procDecisoes(classe, cod, myReg, legCatalog,rep: Report):
                         rep.addErro(cod,f"Valor inválido para o PCA::<b>{pca}</b>")
             else:
                 myReg['pca']['valores'] = pca
-                if myReg["estado"]!='H':
-                    rep.addErro(cod,f"Valor inválido para o PCA::<b>{pca}</b>")
+
     # Nota ao PCA ----------------------------
     if classe["Nota ao PCA"]:
         myReg['pca']['notas'] = brancos.sub('', classe["Nota ao PCA"])

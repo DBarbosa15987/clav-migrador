@@ -332,7 +332,7 @@ class ErroInv:
             case "rel_2_inv_12":
                 msg = f"A legislação <b>{self.info["leg"]}</b> é referenciada na justificação do <b>{self.info["tipo"]}</b> do processo <b>{self.cod}</b>, mas não se encontra declarada na sua zona de contexto."
             case "rel_2_inv_13":
-                msg = f"A legislação <b>{self.info["leg"]}</b> é referenciada na justificação do <b>{self.info["tipo"]}</b> do processo <b>{self.cod}</b>, mas não se encontra declarada na zona de contexto  do seu processo pai (<b>{self.info["pai"]}</b>)."
+                msg = f"A legislação <b>{self.info["leg"]}</b> é referenciada na justificação do <b>{self.info["tipo"]}</b> do processo <b>{self.cod}</b>, mas não se encontra declarada na zona de contexto do seu processo pai (<b>{self.info["pai"]}</b>)."
             case "rel_1_inv_5":
                 temPca = self.info["temPca"]
                 temDf = self.info["temDf"]
@@ -441,7 +441,7 @@ class ErroInv:
             case "rel_8_inv_4":
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> na justificação do <b>{self.info["tipo"]}</b>, mas <b>{self.info["proc"]}</b> não está declarado na zona de contexto de <b>{self.cod}</b>."
             case "rel_8_inv_5":
-                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> no critério de densidade informacional , mas <b>{self.info["proc"]}</b> não está declarado com uma relação de síntese (<i><b>eSintetizadoPor</i></b>/<i><b>eSinteseDe</i></b>)."
+                msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> no critério de densidade informacional, mas <b>{self.info["proc"]}</b> não está declarado com uma relação de síntese (<i><b>eSintetizadoPor</i></b>/<i><b>eSinteseDe</i></b>)."
             case "rel_8_inv_6":
                 msg = f"O processo <b>{self.cod}</b> referencia o processo <b>{self.info["proc"]}</b> no critério de complementaridade informacional, mas <b>{self.info["proc"]}</b> não está declarado com a relação <i><b>eComplementarDe</b></i>."
             case "rel_8_inv_7":

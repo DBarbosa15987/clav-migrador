@@ -31,7 +31,7 @@ def processSheet(sheet, nome, rep: Report):
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
 
-    legCatalog = []
+    legCatalog = {}
     myLeg = []
     for index, row in df.iterrows():
         myReg = {}
@@ -72,9 +72,9 @@ def processSheet(sheet, nome, rep: Report):
             # ERRO: Legislação duplicada ---------------------------------
             myReg['codigo'] = legCod
             if legCod not in legCatalog:
-                legCatalog.append(legCod)
+                legCatalog[legCod] = [index+2]
             else:
-                rep.addErroCatalogo(f"Linha {str(index+2)}: Legislação duplicada::<b>{legCod}</b>.","leg")
+                legCatalog[legCod].append(index+2)
             # Estado: ----------------------------------------------------
             if row['Estado'] and str(row['Estado']).strip() != "":
                 myReg["estado"] = 'Revogado'
@@ -100,15 +100,19 @@ def processSheet(sheet, nome, rep: Report):
 
             myLeg.append(myReg)
 
+    for sig,linhas in legCatalog.items():
+        if len(linhas) > 1:
+            for l in linhas:
+                rep.addErroCatalogo(f"Linha {l}: Legislação duplicada::<b>{legCod}</b>.","leg")
+
     outFilePath = os.path.join(FILES_DIR, f"{fnome}.json")
     outFile = open(outFilePath, "w", encoding="utf-8")
-
     json.dump(myLeg, outFile, indent = 4, ensure_ascii=False)
     loggerProc.info(f"Documentos legislativos extraídos: {len(myLeg)}")
     outFile.close()
 
     catalogPath = os.path.join(FILES_DIR, "legCatalog.json")
     catalog = open(catalogPath, "w", encoding="utf-8")
-    json.dump(legCatalog, catalog, indent = 4, ensure_ascii=False)
+    json.dump(list(legCatalog.keys()), catalog, indent = 4, ensure_ascii=False)
     loggerProc.info("Catálogo de legislação criado.")
     loggerProc.info("# FIM: Migração do Catálogo Legislativo ----------------------")
