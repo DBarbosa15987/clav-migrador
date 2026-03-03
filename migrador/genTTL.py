@@ -274,7 +274,8 @@ def classeGenTTL(clN1,classes):
                     prefixo = 'ent_'
                 else:
                     prefixo = 'tip_'
-                g.add((codigoUri,ns[intervCatalog[p['interv']]],ns[prefixo + p['id']]))
+                if p['interv'] in intervCatalog:
+                    g.add((codigoUri,ns[intervCatalog[p['interv']]],ns[prefixo + p['id']]))
 
         # ------------------------------------------------
         # Legislação -------------------------------------
