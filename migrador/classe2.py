@@ -88,7 +88,7 @@ def processSheet(sheet, nome, rep:Report):
     # Load one worksheet.
     # --------------------------------------------------
     fnome = nome.split("_")[0]
-    loggerProc.info(f"# Migração da Classe  {fnome}----------------------")
+    loggerProc.info(f"# Migração da Classe {fnome}----------------------")
 
     ws = sheet
     data = ws.values

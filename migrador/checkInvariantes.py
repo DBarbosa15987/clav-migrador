@@ -30,12 +30,12 @@ def processClasses(rep: Report):
 
     No final a função produz um relatório em que contam os erros
     encontrados, warnings e possíveis inferências a aplicar aos dados.
-    A função retorna dois dicionários:
+    A função retorna três dicionários:
 
     * um dicionário com os dados, que exclui os processos em
-    Harmonização que não serão testados pelos invariantes.
-    * e outro dicionário com os processos em Harmonização,
-    caso precisem de ser consultados
+    harmonização;
+    * um dicionário com os processos em harmonização;
+    * um dicionário com os processos com códigos inválidos;
     """
 
     data = {}
@@ -44,8 +44,9 @@ def processClasses(rep: Report):
             x = json.load(f)
             data.update(x)
 
-    allClasses = {}
+    classes = {}
     harmonizacao = {}
+    outros = {}
     for cod,classe in data.items():
 
         # Se a classe está em harmonização, ainda pode estar incompleta,
@@ -74,11 +75,12 @@ def processClasses(rep: Report):
                     # Tem pai em harmonização
                     rep.addWarning(info={"msg":f"O processo <b>{cod}</b> está ativo/inativo, mas o seu pai <b>{pai}</b> está em harmonização"})
 
-            allClasses[cod] = classe
+            classes[cod] = classe
         else:
             # O valor do estado da classe encontra-se fora do domínio estabelecido.
             # Trata-se de um erro que já foi registado previamente, nestes
             # casos os invariantes não são verificados
+            outros[cod] = classe
             continue
 
 
@@ -139,11 +141,11 @@ def processClasses(rep: Report):
                                 rep.addWarning("R",{"rel":(cod,rel,p)})
 
     loggerProc.info(f"Foram encontrados {len(harmonizacao)} processos em harmonização")
-    loggerProc.info(f"Foram encontradas {len(allClasses)} processos em ativos/inativos")
+    loggerProc.info(f"Foram encontradas {len(classes)} processos em ativos/inativos")
     with open(os.path.join(DUMP_DIR,f"allClasses.json"),'w',encoding='utf-8') as f:
-        json.dump(allClasses,f,ensure_ascii=False,indent=4)
+        json.dump(classes,f,ensure_ascii=False,indent=4)
 
-    return allClasses,harmonizacao
+    return classes, harmonizacao, outros
 
 
 def checkAntissimetrico(allClasses,rel,rep: Report,invName):

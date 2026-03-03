@@ -35,11 +35,11 @@ def migra(filename):
     loggerProc.info("-"*80)
     loggerProc.info("Processamento inicial dos dados")
     loggerProc.info("-"*80)
-    allClasses,harmonizacao = c.processClasses(rep)
+    classes, harmonizacao, outros = c.processClasses(rep)
 
     # Inferências de relações
     loggerProc.info("Inferências de relações")
-    rep.fixMissingRels(allClasses)
+    rep.fixMissingRels(classes)
 
     loggerProc.info("Verificação da estrutura dos dados")
     ok = rep.checkStruct()
@@ -59,50 +59,49 @@ def migra(filename):
     with open(os.path.join(FILES_DIR,"ti.json")) as f:
         termosIndice = json.load(f)
 
-    c.rel_2_inv_3(allClasses,rep)
-    c.rel_2_inv_4(allClasses,rep)
-    c.rel_2_inv_5(allClasses,rep)
-    c.rel_2_inv_12(allClasses,rep)
-    c.rel_2_inv_13(allClasses,rep)
-    c.rel_3_inv_1(allClasses,rep)
-    c.rel_3_inv_3(allClasses,rep)
-    c.rel_1_inv_3(allClasses,termosIndice,rep)
-    c.rel_5_inv_1(allClasses,rep)
-    c.rel_2_inv_1(allClasses,rep)
-    c.rel_5_inv_2(allClasses,rep)
-    c.rel_4_inv_2(allClasses,rep)
-    c.rel_1_inv_2(allClasses,rep)
-    c.rel_1_inv_1(allClasses,rep)
-    c.rel_1_inv_4(allClasses,rep)
-    c.rel_2_inv_6(allClasses,rep)
-    c.rel_2_inv_7(allClasses,rep)
-    c.rel_2_inv_11(allClasses,rep)
-    c.rel_1_inv_5(allClasses,rep)
-    c.rel_8_inv_2(allClasses,rep)
-    c.rel_4_inv_1(allClasses,rep)
-    c.rel_1_inv_6(allClasses,rep)
-    c.rel_2_inv_8(allClasses,rep)
-    c.rel_3_inv_2(allClasses,rep)
-    c.rel_2_inv_9(allClasses,rep)
-    c.rel_2_inv_2(allClasses,rep)
-    c.rel_2_inv_14(allClasses,rep)
-    c.rel_1_inv_7(allClasses,harmonizacao,rep)
-    c.rel_8_inv_1(allClasses,rep)
+    c.rel_2_inv_3(classes,rep)
+    c.rel_2_inv_4(classes,rep)
+    c.rel_2_inv_5(classes,rep)
+    c.rel_2_inv_12(classes,rep)
+    c.rel_2_inv_13(classes,rep)
+    c.rel_3_inv_1(classes,rep)
+    c.rel_3_inv_3(classes,rep)
+    c.rel_1_inv_3(classes,termosIndice,rep)
+    c.rel_5_inv_1(classes,rep)
+    c.rel_2_inv_1(classes,rep)
+    c.rel_5_inv_2(classes,rep)
+    c.rel_4_inv_2(classes,rep)
+    c.rel_1_inv_2(classes,rep)
+    c.rel_1_inv_1(classes,rep)
+    c.rel_1_inv_4(classes,rep)
+    c.rel_2_inv_6(classes,rep)
+    c.rel_2_inv_7(classes,rep)
+    c.rel_2_inv_11(classes,rep)
+    c.rel_1_inv_5(classes,rep)
+    c.rel_8_inv_2(classes,rep)
+    c.rel_4_inv_1(classes,rep)
+    c.rel_1_inv_6(classes,rep)
+    c.rel_2_inv_8(classes,rep)
+    c.rel_3_inv_2(classes,rep)
+    c.rel_2_inv_9(classes,rep)
+    c.rel_2_inv_2(classes,rep)
+    c.rel_2_inv_14(classes,rep)
+    c.rel_1_inv_7(classes,harmonizacao,rep)
+    c.rel_8_inv_1(classes,rep)
     c.rel_2_inv_10(termosIndice,rep)
-
-    c.rel_8_inv_3(allClasses,rep)
-    c.rel_8_inv_4(allClasses,rep)
-    c.rel_8_inv_5(allClasses,rep)
-    c.rel_8_inv_6(allClasses,rep)
-    c.rel_8_inv_7(allClasses,rep)
-    c.rel_7_inv_1(allClasses,rep)
-    c.rel_6_inv_1(allClasses,rep)
+    c.rel_8_inv_3(classes,rep)
+    c.rel_8_inv_4(classes,rep)
+    c.rel_8_inv_5(classes,rep)
+    c.rel_8_inv_6(classes,rep)
+    c.rel_8_inv_7(classes,rep)
+    c.rel_7_inv_1(classes,rep)
+    c.rel_6_inv_1(classes,rep)
 
     loggerInv.info("-"*80)
     loggerInv.info("Verificação dos invariantes terminada")
     loggerInv.info("-"*80)
 
-    rep.dumpClasses(allClasses)
+    rep.dumpClasses(classes)
 
     # --------------------------------------------
     # Correções
@@ -125,28 +124,28 @@ def migra(filename):
     loggerCorr.info("-"*80)
     errosInv = rep.globalErrors.get("erroInv",{})
     if "rel_2_inv_12" in errosInv:
-        fix.rel_2_inv_12_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_12"])
+        fix.rel_2_inv_12_fix(classes,rep.globalErrors["erroInv"]["rel_2_inv_12"])
     if "rel_2_inv_13" in errosInv:
-        fix.rel_2_inv_13_fix(allClasses,rep.globalErrors["erroInv"]["rel_2_inv_13"])
+        fix.rel_2_inv_13_fix(classes,rep.globalErrors["erroInv"]["rel_2_inv_13"])
     if "rel_3_inv_2" in errosInv:
-        fix.rel_3_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_3_inv_2"])
+        fix.rel_3_inv_2_fix(classes,rep.globalErrors["erroInv"]["rel_3_inv_2"])
     if "rel_3_inv_3" in errosInv:
-        fix.rel_3_inv_3_fix(allClasses,rep.globalErrors["erroInv"]["rel_3_inv_3"])
+        fix.rel_3_inv_3_fix(classes,rep.globalErrors["erroInv"]["rel_3_inv_3"])
     if "rel_4_inv_2" in errosInv:
-        fix.rel_4_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_4_inv_2"])
+        fix.rel_4_inv_2_fix(classes,rep.globalErrors["erroInv"]["rel_4_inv_2"])
     if "rel_5_inv_2" in errosInv:
-        fix.rel_5_inv_2_fix(allClasses,rep.globalErrors["erroInv"]["rel_5_inv_2"])
+        fix.rel_5_inv_2_fix(classes,rep.globalErrors["erroInv"]["rel_5_inv_2"])
     if "rel_1_inv_3" in errosInv:
         fix.rel_1_inv_3_fix(termosIndice,rep.globalErrors["erroInv"]["rel_1_inv_3"])
     if "rel_8_inv_6" in errosInv:
-        fix.rel_8_inv_6_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_6"],invs)
+        fix.rel_8_inv_6_fix(classes,rep.globalErrors["erroInv"]["rel_8_inv_6"],invs)
     if "rel_8_inv_7" in errosInv:
-        fix.rel_8_inv_7_fix(allClasses,rep.globalErrors["erroInv"]["rel_8_inv_7"],invs)
+        fix.rel_8_inv_7_fix(classes,rep.globalErrors["erroInv"]["rel_8_inv_7"],invs)
     loggerCorr.info("-"*80)
     loggerCorr.info("Correção automática dos erros terminada")
     loggerCorr.info("-"*80)
     rep.dumpReport()
-    rep.dumpClasses(allClasses,dumpFileName="allClassesFixed.json")
+    rep.dumpClasses(classes,dumpFileName="allClassesFixed.json")
 
     # --------------------------------------------
     # Geração da ontologia final
@@ -157,12 +156,15 @@ def migra(filename):
 
         # Reorganização dos dados
         finalClasses = { c:{} for c in rep.classesN1}
+        allClasses = {}
+        allClasses.update(classes)
+        allClasses.update(harmonizacao)
+        allClasses.update(outros)
         for cod,proc in allClasses.items():
             # Aqui não faz mal ir buscar o cod desta
             # forma porque não existem erros graves
-            if len(cod) >=3:
-                classe = cod[:3]
-                finalClasses[classe][cod] = proc
+            codN1 = rep.declaracoes[cod][0].replace('_csv','')
+            finalClasses[codN1][cod] = proc
 
         loggerGen.info("-"*80)
         loggerGen.info("Geração dos ficheiros de ontologia")
