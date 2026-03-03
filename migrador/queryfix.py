@@ -511,7 +511,7 @@ def testDepends(deps,classes):
         # Não funciona para alguns invariantes
         # que não recebem estes argumentos, está
         # muito hardcoded
-        func =  getattr(check,dep)
+        func = getattr(check,dep)
         func(classes,rep)
     # Reabilitação dos logs
     loggerInv.disabled = False

@@ -422,7 +422,7 @@ def genFinalOntology():
         ontFiles = sorted(glob.glob(os.path.join(ONTOLOGY_DIR, "*.ttl")))
         with open(outputFile, 'w', encoding='utf-8') as outfile:
             for file_path in ontFiles:
-                with open(file_path, 'r', encoding='utf-8') as infile:
+                with open(file_path) as infile:
                     outfile.write(infile.read())
                     outfile.write('\n')
     except Exception as e:

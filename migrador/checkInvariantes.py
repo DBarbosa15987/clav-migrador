@@ -40,7 +40,7 @@ def processClasses(rep: Report):
 
     data = {}
     for sheet in rep.classesN1:
-        with open(os.path.join(FILES_DIR,f"{sheet}.json"),'r') as f:
+        with open(os.path.join(FILES_DIR,f"{sheet}.json")) as f:
             x = json.load(f)
             data.update(x)
 
@@ -140,7 +140,7 @@ def processClasses(rep: Report):
 
     loggerProc.info(f"Foram encontrados {len(harmonizacao)} processos em harmonização")
     loggerProc.info(f"Foram encontradas {len(allClasses)} processos em ativos/inativos")
-    with open(os.path.join(DUMP_DIR,f"allClasses.json"),'w') as f:
+    with open(os.path.join(DUMP_DIR,f"allClasses.json"),'w',encoding='utf-8') as f:
         json.dump(allClasses,f,ensure_ascii=False,indent=4)
 
     return allClasses,harmonizacao

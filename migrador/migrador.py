@@ -56,7 +56,7 @@ def migra(filename):
     loggerInv.info("Verificação dos invariantes")
     loggerInv.info("-"*80)
 
-    with open(os.path.join(FILES_DIR,"ti.json"),'r') as f:
+    with open(os.path.join(FILES_DIR,"ti.json")) as f:
         termosIndice = json.load(f)
 
     c.rel_2_inv_3(allClasses,rep)
