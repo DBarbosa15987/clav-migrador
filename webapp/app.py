@@ -77,7 +77,9 @@ def process_file():
             "table_all_errors": table_all_errors,
             "warnings": warnings
         })
-
+    except Exception as e:
+        logger.exception(f"Exceção levantada na migração dos dados")
+        return jsonify({'error': 'Erro na migração dos dados'}), 500
     finally:
         lock.release()
 

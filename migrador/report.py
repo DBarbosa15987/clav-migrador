@@ -242,10 +242,8 @@ class Report:
             logger.info(f"Criação do dump do relatório de erros: {dumpPath}")
             with open(dumpPath,'w',encoding='utf-8') as f:
                 json.dump(report,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
-        except Exception as e:
-            logger.error(f"Criação do dump do relatório de erros falhou")
-            logger.exception(f"[{e.__class__.__name__}]: {e}")
-
+        except Exception:
+            logger.exception(f"Criação do dump do relatório de erros falhou")
 
     def dumpClasses(self,allClasses,dumpFileName="allClasses.json"):
 
@@ -255,10 +253,8 @@ class Report:
             logger.info(f"Criação do dump das classes: {dumpPath}")
             with open(dumpPath,'w',encoding='utf-8') as f:
                 json.dump(allClasses,f,ensure_ascii=False,cls=CustomEncoder, indent=4)
-        except Exception as e:
-            logger.error(f"Criação do dump das classes falhou")
-            logger.exception(f"[{e.__class__.__name__}]: {e}")
-
+        except Exception:
+            logger.exception(f"Criação do dump das classes falhou")
 
 class FixStatus(Enum):
     FAILED = -1
