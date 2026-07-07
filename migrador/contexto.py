@@ -74,9 +74,13 @@ def procContexto(classe, cod, myReg, entCatalog, tipCatalog, legCatalog, rep: Re
                 rep.addErro(cod,f"Participantes e intervenções não têm a mesma cardinalidade")
             elif len(myReg['participantes']) == len(linterv):
                 for index, i in enumerate(linterv):
-                    myReg['participantes'][index]['interv'] = i
+                    if i in intervCatalog:
+                        myReg['participantes'][index]['interv'] = i
+                    else:
+                        # WARNING: Não são migradas intervenções inválidas
+                        rep.addWarning(info={'msg':f"Processo <b>{cod}</b> contém a intervenção <b>{i}</b>, que não consta no catálogo de intervenções. Esta intervenção e o respetivo participante não foram migrados."})
             else:
-                rep.addWarning(info={'msg':f"Processo <b>{cod}</b> em harmonização e participantes e intervenções não têm a mesma cardinalidade, estas não foram migradas"})
+                rep.addWarning(info={'msg':f"Processo <b>{cod}</b> em harmonização e participantes e intervenções não têm a mesma cardinalidade, estas não foram migradas."})
     # Legislação -----
     if classe["Diplomas jurídico-administrativos REF"]:
         leg = brancos.sub('', classe["Diplomas jurídico-administrativos REF"])
