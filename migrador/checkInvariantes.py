@@ -625,7 +625,8 @@ def rel_3_inv_3(allClasses,rep:Report):
 
     "Quando o PN em causa é <b>suplemento de</b> outro,
     todos os processos relacionados pela relação
-    <b>eSuplementoDe</b> devem constar na justificação do PCA"
+    <b>eSuplementoDe</b> devem constar na justificação do PCA,
+    nomeadamente no <b>critério de utilidade administrativa</b>"
     """
 
     logger.info("Verificação do invariante rel_3_inv_3")

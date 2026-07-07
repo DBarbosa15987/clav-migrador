@@ -156,7 +156,7 @@
                 },
                 {
                     "idInv": "inv_3",
-                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b><i>eSuplementoDe</i></b> devem constar na justificação do PCA",
+                    "desc": "Quando o PN em causa é <b>suplemento de</b> outro, todos os processos relacionados pela relação <b><i>eSuplementoDe</i></b> devem constar na justificação do PCA, com o <b>critério de utilidade administrativa</b>",
                     "clarificacao": "",
                     "oldId": "rel_5_inv_3"
                 }
@@ -204,7 +204,7 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "A justificação de um DF só pode contem um critério de cada tipo",
+                    "desc": "A justificação de um DF só pode conter um critério de cada tipo",
                     "clarificacao": "",
                     "oldId": "rel_8_inv_2"
                 }
@@ -216,7 +216,7 @@
             "inv": [
                 {
                     "idInv": "inv_1",
-                    "desc": "A justificação de um PCA só pode contem um critério de cada tipo",
+                    "desc": "A justificação de um PCA só pode conter um critério de cada tipo",
                     "clarificacao": "",
                     "oldId": "rel_10_inv_1"
                 }
@@ -247,25 +247,25 @@
                 {
                     "idInv": "inv_4",
                     "desc": "Qualquer processo referenciado num critério da justificação do PCA/DF tem de estar declarado na zona de contexto",
-                    "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
+                    "clarificacao": "",
                     "oldId": "rel_9_inv_4"
                 },
                 {
                     "idInv": "inv_5",
                     "desc": "Todos os processos referenciados no <b>critério de densidade informacional</b> devem estar declarados na zona de contexto com a relação <b><i>eSinteseDe</i></b> ou <b><i>eSintetizadoPor</i></b>",
-                    "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
+                    "clarificacao": "",
                     "oldId": "rel_9_inv_5"
                 },
                 {
                     "idInv": "inv_6",
                     "desc": "Todos os processos referenciados no <b>critério de complementaridade informacional</b> devem estar declarados na zona de contexto com a relação <b><i>eComplementarDe</i></b>",
-                    "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
+                    "clarificacao": "",
                     "oldId": "rel_9_inv_6"
                 },
                 {
                     "idInv": "inv_7",
                     "desc": "Todos os processos referenciados no <b>critério de utilidade administrativa</b> devem estar declarados na zona de contexto com a relação <b><i>eSuplementoPara</i></b>",
-                    "clarificacao": "Isto é, devem estar presentes na coluna \"Código do processo relacionado\"",
+                    "clarificacao": "",
                     "oldId": "rel_9_inv_7"
                 }
             ]
