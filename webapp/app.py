@@ -123,6 +123,9 @@ def download_output():
 @app.route("/download-report")
 def download_report():
 
+    if lock.locked():
+        return jsonify({"error": "Relatório indisponível"}), 423
+
     try:
         with open(session["report_file"], encoding="utf-8") as f:
             report = json.load(f)

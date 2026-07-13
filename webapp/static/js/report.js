@@ -28,11 +28,9 @@ function restoreClasseTables() {
 
     try {
         classeTables = JSON.parse(savedClasseData.textContent);
-
         if (Object.keys(classeTables).length > 0) {
             populateClasseSelector();
         }
-
     } catch (e) {
         console.error("Erro ao restaurar dados:", e);
     }
@@ -53,22 +51,17 @@ function loadReport(result) {
     classeTables = result.table_by_classe || {};
 
     persistClasseTables();
-
     populateClasseSelector();
 
     const classeSelector = document.getElementById("classe-selector");
-
     if (classeSelector.options.length > 0) {
-        classeReportContent.innerHTML =
-            classeTables[classeSelector.value];
+        classeReportContent.innerHTML = classeTables[classeSelector.value];
     }
 
     document.getElementById("report-container")
         .classList.remove("hidden");
 
-    updateViewSelectorUI(
-        document.getElementById("view-selector").value
-    );
+    updateViewSelectorUI(document.getElementById("view-selector").value);
 }
 
 /**
@@ -78,25 +71,21 @@ function loadReport(result) {
 function clearReport() {
 
     classeTables = {};
-
     document.getElementById("all-errors").innerHTML = "";
     document.getElementById("warnings-view").innerHTML = "";
     document.getElementById("classe-report-content").innerHTML = "";
 
-    const classeSelector =
-        document.getElementById("classe-selector");
+    const classeSelector = document.getElementById("classe-selector");
 
     if (classeSelector)
         classeSelector.innerHTML = "";
 
-    const reportContainer =
-        document.getElementById("report-container");
+    const reportContainer = document.getElementById("report-container");
 
     if (reportContainer)
         reportContainer.classList.add("hidden");
 
-    const saved =
-        document.getElementById("classe-data");
+    const saved = document.getElementById("classe-data");
 
     if (saved)
         saved.textContent = "{}";
@@ -108,21 +97,16 @@ function clearReport() {
  */
 function persistClasseTables() {
 
-    let dataScript =
-        document.getElementById("classe-data");
+    let dataScript = document.getElementById("classe-data");
 
     if (!dataScript) {
-
         dataScript = document.createElement("script");
-
         dataScript.id = "classe-data";
         dataScript.type = "application/json";
-
         document.body.appendChild(dataScript);
     }
 
-    dataScript.textContent =
-        JSON.stringify(classeTables);
+    dataScript.textContent = JSON.stringify(classeTables);
 }
 
 /**
@@ -130,8 +114,7 @@ function persistClasseTables() {
  */
 function populateClasseSelector() {
 
-    const classeSelector =
-        document.getElementById("classe-selector");
+    const classeSelector = document.getElementById("classe-selector");
 
     if (!classeSelector)
         return;
@@ -139,18 +122,13 @@ function populateClasseSelector() {
     classeSelector.innerHTML = "";
 
     Object.keys(classeTables).forEach(classe => {
-
-        const option =
-            document.createElement("option");
-
+        const option = document.createElement("option");
         option.value = classe;
         option.textContent = classe;
-
         classeSelector.appendChild(option);
     });
 
     if (classeSelector.options.length > 0) {
-
         document.getElementById("classe-report-content")
             .innerHTML = classeTables[
                 classeSelector.value
@@ -163,8 +141,7 @@ function populateClasseSelector() {
  */
 function setupViewSelector() {
 
-    const viewSelector =
-        document.getElementById("view-selector");
+    const viewSelector = document.getElementById("view-selector");
 
     if (!viewSelector)
         return;
@@ -181,8 +158,7 @@ function setupViewSelector() {
  */
 function setupClasseSelector() {
 
-    const classeSelector =
-        document.getElementById("classe-selector");
+    const classeSelector = document.getElementById("classe-selector");
 
     if (!classeSelector)
         return;
@@ -207,17 +183,12 @@ function updateViewSelectorUI(selectedView) {
         .querySelectorAll(".report-view")
         .forEach(div => div.classList.add("hidden"));
 
-    const selected =
-        document.getElementById(selectedView);
+    const selected = document.getElementById(selectedView);
 
     if (selected)
         selected.classList.remove("hidden");
 
-    const wrapper =
-        document.getElementById(
-            "classe-selector-wrapper"
-        );
-
+    const wrapper = document.getElementById("classe-selector-wrapper");
     if (wrapper) {
         wrapper.classList.toggle(
             "hidden",
@@ -230,27 +201,17 @@ function updateViewSelectorUI(selectedView) {
  * Top tabs (Errors / Warnings)
  */
 function setupMainTabs() {
-
-    const tabs =
-        document.querySelectorAll(
-            "#report-tabs button"
-        );
+    const tabs = document.querySelectorAll("#report-tabs button[data-tab]");
 
     tabs.forEach(btn => {
-
         btn.addEventListener("click", () => {
-
             tabs.forEach(b => {
-
                 b.classList.remove(
                     "border-purple-600",
                     "text-gray-700",
                     "border-b-2"
                 );
-
-                b.classList.add(
-                    "text-gray-500"
-                );
+                b.classList.add("text-gray-500");
             });
 
             btn.classList.add(
@@ -259,20 +220,9 @@ function setupMainTabs() {
                 "border-b-2"
             );
 
-            document
-                .getElementById("tab-errors")
-                ?.classList.add("hidden");
-
-            document
-                .getElementById("tab-warnings")
-                ?.classList.add("hidden");
-
-            document
-                .getElementById(
-                    "tab-" + btn.dataset.tab
-                )
-                ?.classList.remove("hidden");
+            document.getElementById("tab-errors")?.classList.add("hidden");
+            document.getElementById("tab-warnings")?.classList.add("hidden");
+            document.getElementById(`tab-${btn.dataset.tab}`)?.classList.remove("hidden");
         });
-
     });
 }

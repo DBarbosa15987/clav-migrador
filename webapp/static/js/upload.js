@@ -9,6 +9,7 @@ function setupUpload() {
     const loadingIndicator = document.getElementById("loading-indicator");
 
     const submitButton = form.querySelector('button[type="submit"]');
+    const downloadReportButton = document.getElementById("download-report-btn");
     const downloadWarning = document.getElementById("download-warning");
     const downloadBtn = document.getElementById("download-btn");
     const generalError = document.getElementById("general-error");
@@ -51,6 +52,16 @@ function setupUpload() {
 
     /*
     ----------------------------------------------------
+    Download Error Report
+    ----------------------------------------------------
+    */
+
+    downloadReportButton.addEventListener("click", () => {
+        window.location.href = "/download-report";
+    });
+
+    /*
+    ----------------------------------------------------
     Upload
     ----------------------------------------------------
     */
@@ -69,8 +80,13 @@ function setupUpload() {
             "cursor-not-allowed"
         );
 
-        submitButton.disabled = true;
+        downloadReportButton.disabled = true
+        downloadReportButton.classList.add(
+            "opacity-50",
+            "cursor-not-allowed"
+        );
 
+        submitButton.disabled = true;
         submitButton.classList.add(
             "opacity-50",
             "cursor-not-allowed"
@@ -127,10 +143,7 @@ function setupUpload() {
                 });
 
             buttonText.textContent = "Ficheiro Processado";
-
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.error(error);
 
@@ -145,9 +158,7 @@ function setupUpload() {
                 "cursor-not-allowed"
             );
             buttonText.textContent = "Processar Ficheiro";
-        }
-
-        finally {
+        } finally {
 
             loadingIndicator.classList.add("hidden");
             fileInput.disabled = false;
@@ -155,9 +166,11 @@ function setupUpload() {
                 "pointer-events-none",
                 "cursor-not-allowed"
             );
-
+            downloadReportButton.disabled = false
+            downloadReportButton.classList.remove(
+                "opacity-50",
+                "cursor-not-allowed"
+            );
         }
-
     });
-
 }
