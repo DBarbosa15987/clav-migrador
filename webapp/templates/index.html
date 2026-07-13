@@ -86,15 +86,27 @@
             <div id="report-container" class="hidden mt-8">
 
                 <!-- Tabs -->
-                <div class="mt-6 border-b border-gray-200">
-                    <nav class="flex space-x-6" id="report-tabs">
-                        <button data-tab="errors" class="py-2 font-medium text-gray-700 border-b-2 border-purple-600">
-                            Erros
-                        </button>
-                        <button data-tab="warnings" class="py-2 font-medium text-gray-500 hover:text-gray-700">
-                            Warnings
-                        </button>
-                    </nav>
+                <div id="report-tabs" class="mt-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <nav class="flex flex-1 space-x-6">
+                            <button data-tab="errors"
+                                class="py-2 font-medium text-gray-700 border-b-2 border-purple-600">
+                                Erros
+                            </button>
+                
+                            <button data-tab="warnings"
+                                class="py-2 font-medium text-gray-500 hover:text-gray-700">
+                                Warnings
+                            </button>
+                        </nav>
+                
+                        <a id="download-report-btn"
+                            href="/download-report"
+                            class="inline-flex items-center gap-2 px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow whitespace-nowrap">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Tab Contents -->
@@ -135,6 +147,8 @@
 
     </main>
 
+    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </body>

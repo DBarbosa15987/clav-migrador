@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório CLAV</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        {{ embedded_css | safe }}
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-gradient-to-r from-purple-600 to-indigo-800 text-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold tracking-tight">
+                Relatório CLAV
+            </h1>
+
+            <p class="text-purple-100 mt-2">
+                Este relatório foi gerado automaticamente e pode ser consultado
+                offline.
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10">
+
+        <div id="report-container">
+
+            <!-- Tabs -->
+            <div class="mt-6 border-b border-gray-200">
+                <nav class="flex space-x-6" id="report-tabs">
+
+                    <button data-tab="errors" class="py-2 font-medium text-gray-700 border-b-2 border-purple-600">
+                        Erros
+                    </button>
+
+                    <button data-tab="warnings" class="py-2 font-medium text-gray-500 hover:text-gray-700">
+                        Warnings
+                    </button>
+
+                </nav>
+            </div>
+
+            <!-- Errors -->
+            <div id="tab-errors" class="mt-4">
+
+                <div class="mb-6 flex flex-wrap items-center gap-6">
+
+                    <div class="flex items-center space-x-3">
+
+                        <label for="view-selector" class="text-sm font-medium text-gray-700">
+
+                            Ver:
+
+                        </label>
+
+                        <select id="view-selector"
+                            class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm">
+
+                            <option value="all-errors">
+                                Todos os Erros
+                            </option>
+
+                            <option value="by-classe">
+                                Erros por Classe
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div id="classe-selector-wrapper" class="hidden flex items-center space-x-3">
+
+                        <label for="classe-selector" class="text-sm font-medium text-gray-700">
+
+                            Classe:
+
+                        </label>
+
+                        <select id="classe-selector"
+                            class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-sm">
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div id="report-views">
+
+                    <div id="all-errors" class="report-view hidden">
+
+                        {{ table_all_errors|safe }}
+
+                    </div>
+
+                    <div id="by-classe" class="report-view hidden">
+
+                        <div id="classe-report-content"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Warnings -->
+            <div id="tab-warnings" class="hidden mt-4">
+
+                <div id="warnings-view">
+
+                    {{ warnings|safe }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- This is what report.js restores -->
+    <script id="classe-data" type="application/json">
+        {{ table_by_classe|tojson }}
+    </script>
+
+    <script>
+        {{ embedded_js | safe }}
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initReport();
+        });
+    </script>
+
+</body>
+
+</html>
