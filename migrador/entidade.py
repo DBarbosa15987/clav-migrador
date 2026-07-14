@@ -22,6 +22,7 @@ def processSheet(sheet, rep: Report):
     idx = list(range(len(data)))
     data = (islice(r, 0, None) for r in data)
     df = pd.DataFrame(data, index=idx, columns=cols)
+    df = df.astype(object).mask(df.isna(), None)
 
     entCatalog = {}
     myEntidade = []

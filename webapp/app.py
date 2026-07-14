@@ -32,7 +32,6 @@ def process_file():
         }), 429
 
     try:
-
         if 'file' not in request.files:
             logger.error("'file' não encontrado no request")
             return jsonify({'error': '\'file\' não encontrado no request'}), 400
