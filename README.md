@@ -10,8 +10,14 @@ O migrador CLAV é o software que realiza a migração dos dados do CLAV vindos 
 * rdflib
 * openpyxl
 
+Para instalar as dependências:
+
+```shell
+pip install -r requirements.txt
+```
+
 ## Como correr o programa
 
 ```shell
-    python run.py
+python run.py
 ```
