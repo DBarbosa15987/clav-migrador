@@ -23,7 +23,7 @@ def processSheet(sheet, nome):
     df = pd.DataFrame(data, index=idx, columns=cols)
 
     myClasse = []
-    for index,row in df.iterrows():
+    for _,row in df.iterrows():
         myReg = {}
         if row["Código"]:
             myReg["codigo"] = brancos.sub('', str(row["Código"]))

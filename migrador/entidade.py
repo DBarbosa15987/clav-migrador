@@ -63,7 +63,7 @@ def processSheet(sheet, rep: Report):
     for sig,linhas in entCatalog.items():
         if len(linhas) > 1:
             for l in linhas:
-                rep.addErroCatalogo(f"Linha {l}: Entidade duplicada::<b>{myReg["sigla"]}</b>.","entidade")
+                rep.addErroCatalogo(f"Linha {l}: Entidade duplicada::<b>{sig}</b>.","entidade")
 
     outFilePath = os.path.join(FILES_DIR, "ent.json")
     outFile = open(outFilePath, "w", encoding="utf-8")

@@ -103,7 +103,7 @@ def processSheet(sheet, nome, rep: Report):
     for sig,linhas in legCatalog.items():
         if len(linhas) > 1:
             for l in linhas:
-                rep.addErroCatalogo(f"Linha {l}: Legislação duplicada::<b>{legCod}</b>.","leg")
+                rep.addErroCatalogo(f"Linha {l}: Legislação duplicada::<b>{sig}</b>.","leg")
 
     outFilePath = os.path.join(FILES_DIR, f"{fnome}.json")
     outFile = open(outFilePath, "w", encoding="utf-8")

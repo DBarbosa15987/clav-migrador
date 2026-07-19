@@ -24,5 +24,8 @@ logging.basicConfig(
     filemode="w",
 )
 
+werkzeug_logger = logging.getLogger("werkzeug")
+werkzeug_logger.propagate = False
+
 if __name__ == '__main__':
     app.run(port=5001)
