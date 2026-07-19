@@ -274,7 +274,7 @@ def classeGenTTL(clN1,classes):
                     prefixo = 'ent_'
                 else:
                     prefixo = 'tip_'
-                if p['interv'] in intervCatalog:
+                if 'interv' in p and p['interv'] in intervCatalog:
                     g.add((codigoUri,ns[intervCatalog[p['interv']]],ns[prefixo + p['id']]))
 
         # ------------------------------------------------
@@ -433,10 +433,10 @@ def genFinalOntology():
     # Compressão da ontologia final
     try:
         with zipfile.ZipFile(zipedOutputFile, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            zipf.write(outputFile, os.path.basename(zipedOutputFile))
+            zipf.write(outputFile, os.path.basename(outputFile))
         logger.info(f"Ontologia comprimida em {zipedOutputFile}")
     except Exception:
         logger.error(f"Falha na compressão")
         raise
 
-    return zipedOutputFile
+    return os.path.basename(zipedOutputFile)
